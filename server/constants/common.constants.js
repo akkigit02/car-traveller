@@ -1,4 +1,4 @@
-const DEVELOPER = [CLIENT
+const DEVELOPER = [
 
 ]
 const ADMIN = [
