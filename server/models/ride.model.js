@@ -30,8 +30,13 @@ const rideSchema = new Schema({
     year: { type: String },
   },
   price: {
-    type: Number,
+    tollTax: {type: Number},
+    basePrice: {type: Number},
+    driverAllowance: {type: Number},
+    otherAllowance: {type: Number}
   },
+  totalDistance: {type: Number},
+  isLaguageCarrier: {type: Boolean}, 
   status: {
     type: String,
     enum: ["scheduled", "inProgress", "completed", "cancelled"],

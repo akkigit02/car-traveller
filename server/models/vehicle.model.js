@@ -8,10 +8,7 @@ const vehicleSchema = new mongoose.Schema({
   },
   capacity: {
     numberOfSeat: { type: Number },
-    laguage: {
-      isCarrierAvailable: { type: Boolean },
-      price: { type: Number },
-    },
+    laguage: { type: String },
     description: { type: String }, // 2 back or 3 back
   },
   fuelType: { type: String, required: true },
