@@ -1,6 +1,6 @@
 require('dotenv').config();
 require('./configs/database.config');
-
+const port = process.env.SERVER_PORT || 5000
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -38,4 +38,8 @@ app.use(async function (error, req, res, next) {
     res.status(500).send(error.message || '');
 });
 
+
+app.listen(port,() => {
+    console.log(`server is listen to port ${port}`)
+})
 module.exports = app;
