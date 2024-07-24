@@ -6,6 +6,7 @@ const PricingSchema = new Schema({
   vehicleType: { type: String },
   baseFare: { type: Number },
   costPerKm: { type: Number },
+  costPerHour: { type: Number },
   laguageCarrierCost: { type: Number },
   minimumFare: { type: Number },
   additionalCharges: {type: Number},

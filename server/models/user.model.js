@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
-const userTypeSchema = new mongoose.Schema(
-  {
+const userTypeSchema = new mongoose.Schema({
     firstName: { type: String, required: true },
     lastName: { type: String },
     email: { type: String, required: true },
@@ -33,20 +32,20 @@ const userTypeSchema = new mongoose.Schema(
     },
     authentication: {
       forgetOtp: {
-        otp: { type: Schema.Types.String },
-        type: { type: Schema.Types.String, enum: ['phone', 'email'] },
-        expiresOn: { type: Schema.Types.Date },
-        resetSessionId: { type: Schema.Types.String }
+        otp: { type: String },
+        type: { type: String, enum: ['phone', 'email'] },
+        expiresOn: { type: Date },
+        resetSessionId: { type: String }
       },
       twoFactor: {
         enabled: { type: Boolean },
-        otp: { type: Schema.Types.String },
-        expiresOn: { type: Schema.Types.Date },
-        sessionId: { type: Schema.Types.String }
+        otp: { type: String },
+        expiresOn: { type: Date },
+        sessionId: { type: String }
       },
-      loginSessionId: { type: Schema.Types.String },
+      loginSessionId: { type: String },
     },
-    logo: { type: Schema.Types.String },
+    logo: { type: String },
   },
   { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } }
 );

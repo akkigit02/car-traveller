@@ -1,0 +1,27 @@
+[
+    {
+        "firstName": "Master",
+        "lastName": "Admin1",
+        "email": "masteradmin@traveller.com",
+        "primaryPhone": "1234567890",
+        "status": "verified",
+        "password": "123456",
+        "modules": {
+          "userType": "ADMIN",
+          "accessibleModule": []
+        },
+        "currentAddress": {
+          "addressLine": "noida",
+          "city": "noida",
+          "state": "noida",
+          "zip": "123456"
+        },
+        "permanentAddress": {
+          "addressLine": "noida",
+          "city": "noida",
+          "state": "noida",
+          "zip": "123456"
+        },
+        "logo": ""
+      }
+]
