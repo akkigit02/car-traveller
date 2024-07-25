@@ -4,4 +4,4 @@ router.get('/driver', (req, res) => {
 
 })
 
-export default router
+module.exports = router
