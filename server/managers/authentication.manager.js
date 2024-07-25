@@ -1,6 +1,7 @@
 const UserModel = require('../models/user.model');
 const { comparePassword, generateSecureRandomString, generateOTP } = require('../utils/common.utils');
 const { JWT_SECRET_KEY } = process.env
+const JWT = require("jsonwebtoken");
 
 const getUserSession = async (userId) => {
     const loginSessionId = generateSecureRandomString(10)
@@ -27,10 +28,9 @@ const getUserSession = async (userId) => {
 const login = async (req, res) => {
     try {
         const { body } = req
-        if (!email)
-            return res.status(401).send({ message: 'Incorrect email or password. Please try again.' })
-        if (password)
-            return res.status(401).send({ message: 'Incorrect email or password. Please try again.' })
+        if (!email || !password) {
+            return res.status(400).send({ message: 'Email and password are required.' });
+        }
 
         const user = await UserModel.findOne({ email: String(body.email) }, { password: 1, status: 1, authentication: 1, email, primaryPhone: 1 })
         if (!user) {
@@ -40,7 +40,7 @@ const login = async (req, res) => {
         if (isPassMatch)
             return res.status(401).send({ message: 'Incorrect email or password. Please try again.' })
         if (user.status === 'sent') {
-            return res.status(401).send({ message: 'Please verified your account via otp', status: 'UN_VARIFIED' })
+            return res.status(403).send({ message: 'Please verify your account via OTP.', status: 'UNVERIFIED' })
         }
         if (authentication?.twoFactor?.enabled) {
             const otp = generateOTP()
@@ -58,9 +58,9 @@ const login = async (req, res) => {
             return res.status(200).send({ session: { otp, sessionId, email: user.email, phone: user.primaryPhone }, status: 'TWO_STEP_AUTHENTICATION' })
         }
         const userSession = await getUserSession(user._id)
-        res.status(200).send({ message: 'Login Success', session: userSession, status: 'LOGIN_SUCCESS' })
+        res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
     } catch (error) {
-        res.status(500).send({ message: 'Something went Wrong' })
+        res.status(500).send({ message: 'Something went wrong. Please try again later.' })
     }
 }
 
@@ -68,19 +68,18 @@ const verifyOtp = async (req, res) => {
     try {
         const { body } = req
         const { otp, sessionId } = body
-        if (!otp)
-            return res.status(401).send({ message: 'Otp is required' })
-        if (sessionId)
-            return res.status(401).send({ message: 'Session is Expired or invalid.' })
+        if (!otp || !sessionId) {
+            return res.status(400).send({ message: 'OTP and session ID are required.' });
+        }
 
         const user = await UserModel.findOne({ 'authentication.twoFactor.sessionId': String(sessionId) }, { password: 1, status: 1, authentication: 1, email, primaryPhone: 1 })
         if (!user) {
-            return res.status(401).send({ message: 'Session Expired' })
+            return res.status(401).send({ message: 'Session expired or invalid. Please resend OTP and try again.' })
         }
         if (new Date() > user?.authentication?.twoFactor?.expiresOn)
-            return res.status(401).send({ message: 'Session Expired  Please resend otp and try again!' })
+            return res.status(401).send({ message: 'Session expired. Please resend OTP and try again.' })
         if (user?.authentication?.twoFactor?.otp !== String(otp))
-            return res.status(401).send({ message: 'Invalid Otp. please try again!' })
+            return res.status(401).send({ message: 'Invalid OTP. Please try again.' })
         await UserModel.updateOne({ _id: user._id }, {
             $unset: {
                 'authentication.twoFactor.otp': 1,
@@ -89,9 +88,9 @@ const verifyOtp = async (req, res) => {
             }
         })
         const userSession = await getUserSession(user._id)
-        res.status(200).send({ message: 'Login Success', session: userSession, status: 'LOGIN_SUCCESS' })
+        res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
     } catch (error) {
-        res.status(500).send({ message: 'Something went Wrong' })
+        res.status(500).send({ message: 'Something went wrong. Please try again later.' })
     }
 }
 
