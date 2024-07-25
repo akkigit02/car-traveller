@@ -64,6 +64,39 @@ const login = async (req, res) => {
     }
 }
 
+const verifyOtp = async (req, res) => {
+    try {
+        const { body } = req
+        const { otp, sessionId } = body
+        if (!otp)
+            return res.status(401).send({ message: 'Otp is required' })
+        if (sessionId)
+            return res.status(401).send({ message: 'Session is Expired or invalid.' })
+
+        const user = await UserModel.findOne({ 'authentication.twoFactor.sessionId': String(sessionId) }, { password: 1, status: 1, authentication: 1, email, primaryPhone: 1 })
+        if (!user) {
+            return res.status(401).send({ message: 'Session Expired' })
+        }
+        if (new Date() > user?.authentication?.twoFactor?.expiresOn)
+            return res.status(401).send({ message: 'Session Expired  Please resend otp and try again!' })
+        if (user?.authentication?.twoFactor?.otp !== String(otp))
+            return res.status(401).send({ message: 'Invalid Otp. please try again!' })
+        await UserModel.updateOne({ _id: user._id }, {
+            $unset: {
+                'authentication.twoFactor.otp': 1,
+                'authentication.twoFactor.expiresOn': 1,
+                'authentication.twoFactor.sessionId': 1
+            }
+        })
+        const userSession = await getUserSession(user._id)
+        res.status(200).send({ message: 'Login Success', session: userSession, status: 'LOGIN_SUCCESS' })
+    } catch (error) {
+        res.status(500).send({ message: 'Something went Wrong' })
+    }
+}
+
+
 module.exports = {
-    login
+    login,
+    verifyOtp
 }
