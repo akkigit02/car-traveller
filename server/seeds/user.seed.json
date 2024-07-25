@@ -30,7 +30,7 @@
     "email": "user0@traveller.com",
     "primaryPhone": "1234567890",
     "status": "verified",
-    "password": "123456",
+    "password": "$2b$10$7A3XZYDwqHbJcMoIulV.qedHSq4T7kExFm4b6M/W0ZJh3GnaaVSdG",
     "modules": {
       "userType": "CLIENT",
       "accessibleModule": []
