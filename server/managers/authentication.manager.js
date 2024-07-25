@@ -28,21 +28,22 @@ const getUserSession = async (userId) => {
 const login = async (req, res) => {
     try {
         const { body } = req
-        if (!email || !password) {
+        const { userName, password } = body
+        if (!userName || !password) {
             return res.status(400).send({ message: 'Email and password are required.' });
         }
 
-        const user = await UserModel.findOne({ email: String(body.email) }, { password: 1, status: 1, authentication: 1, email, primaryPhone: 1 })
+        const user = await UserModel.findOne({ $or: [{ email: String(body.userName) }, { primaryPhone: String(body.userName) }] }, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1 })
         if (!user) {
-            return res.status(401).send({ message: 'Incorrect email or password. Please try again.' })
+            return res.status(401).send({ message: 'Incorrect username or password. Please try again.' })
         }
         const isPassMatch = await comparePassword(password, user.password)
         if (isPassMatch)
-            return res.status(401).send({ message: 'Incorrect email or password. Please try again.' })
+            return res.status(401).send({ message: 'Incorrect username or password. Please try again.' })
         if (user.status === 'sent') {
             return res.status(403).send({ message: 'Please verify your account via OTP.', status: 'UNVERIFIED' })
         }
-        if (authentication?.twoFactor?.enabled) {
+        if (user?.authentication?.twoFactor?.enabled) {
             const otp = generateOTP()
             const sessionId = generateSecureRandomString()
             await UserModel.updateOne({ _id: user._id }, {
@@ -60,6 +61,7 @@ const login = async (req, res) => {
         const userSession = await getUserSession(user._id)
         res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
     } catch (error) {
+        console.log(error)
         res.status(500).send({ message: 'Something went wrong. Please try again later.' })
     }
 }
@@ -71,8 +73,7 @@ const verifyOtp = async (req, res) => {
         if (!otp || !sessionId) {
             return res.status(400).send({ message: 'OTP and session ID are required.' });
         }
-
-        const user = await UserModel.findOne({ 'authentication.twoFactor.sessionId': String(sessionId) }, { password: 1, status: 1, authentication: 1, email, primaryPhone: 1 })
+        const user = await UserModel.findOne({ 'authentication.twoFactor.sessionId': String(sessionId) }, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1 })
         if (!user) {
             return res.status(401).send({ message: 'Session expired or invalid. Please resend OTP and try again.' })
         }
@@ -94,8 +95,30 @@ const verifyOtp = async (req, res) => {
     }
 }
 
+const verifySession = async (req, res) => {
+    try {
+
+        const { query } = req
+        if (!query?.token)
+            return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
+        const token = JWT.verify(query?.token, JWT_SECRET_KEY)
+        if (!token?.sessionId)
+            return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
+        const user = await UserModel.findOne({ 'authentication.loginSessionId': String(token?.sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1 })
+        if (!user)
+            return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
+        const userSession = await getUserSession(user._id)
+        res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: 'Something went wrong. Please try again later.' })
+
+    }
+}
+
 
 module.exports = {
     login,
-    verifyOtp
+    verifyOtp,
+    verifySession
 }

@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server",
     "server": "nodemon server.js",
-    "dev": "concurrently --kill-others-on-fail  \"npm run server\"",
+    "client": "cd ../client/app && npm start",
+    "dev": "concurrently --kill-others-on-fail  \"npm run server\" \"npm run client\" ",
     "seeds": "node seeds/index.js"
   },
   "keywords": [],
