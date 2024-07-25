@@ -1,12 +1,11 @@
-const UserModel = require('../models/user.model')
-
+const UserModel = require('../models/user.model');
 
 const login = async (req, res) => {
     try {
         const { body } = req
         if (email) {
             const user = await UserModel.findOne({ email: String(body.email) }, { password: 1 })
-            if(!user){
+            if (!user) {
                 return res.status(401).send({ message: 'Incorrect email or password. Please try again.' })
             }
         }

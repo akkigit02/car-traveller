@@ -13,7 +13,6 @@ if (process.env.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
 }
 const { bodyParser } = require('./utils/bodyParser.util.js');
-const { encrypt } = require('./utils/crypto.util.js');
 app.use(bodyParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(requestIp.mw());
@@ -27,7 +26,6 @@ app.get('*', (req, res) => {
         msg: 'Sorry, This route is not found on this server',
     });
 });
-    console.log(encrypt('66a139f01e693ce868201dc2'))
 app.use(async function (error, req, res, next) {
     Logger.log('errorHandler', error, req.userId, {
         'query': req?.query,
