@@ -11,6 +11,8 @@ function Protected({userRoute}) {
         <Route path={`${userRoute}/vehicle`} Component={Vehicle} name="VEHICLE" exact/>
         <Route path={`${userRoute}/dashboard`} Component={AdminDashboard} name="ADMIN_DASHBOARD" exact/>
         <Route path={`${userRoute}/vehicle-pricing`} Component={VehiclePricing} name="VEHICLE_PRICING" exact/>
+        <Route path={`/`} Component={Login} exact/>
+
       </Routes>
     </BrowserRouter>
   );

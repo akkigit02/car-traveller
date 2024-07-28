@@ -31,7 +31,7 @@ function Index() {
         });
         setSession(data);
         dispatch(SESSION_INFO(data.session))
-        localStorage.setItem("persistantState", JSON.stringify({}));
+        // localStorage.setItem("persistantState", JSON.stringify({}));
         localStorage.setItem('state', JSON.stringify({ token: data.session.jwtToken }))
         setIsAuthenticated(true);
       }
@@ -44,7 +44,6 @@ function Index() {
 
   const getProtectedRouteByUserType = () => {
     try {
-      console.log(userInfo)
     const userRoute = getUserRoute(userInfo?.modules?.userType)
       switch (userInfo.modules.userType) {
         case "ADMIN":
@@ -63,7 +62,7 @@ function Index() {
 
   useEffect(() => {
     getSession();
-  }, [userInfo?.token]);
+  }, []);
 
   return (
     <>
@@ -74,7 +73,7 @@ function Index() {
           {isAuthenticated ? (
             getProtectedRouteByUserType()
           ) : (
-            <Authetication></Authetication>
+            <Authetication  />
           )}
         </>
       )}
