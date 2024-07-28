@@ -1,9 +1,17 @@
 import React from 'react'
 import { useForm } from "react-hook-form"
 import { emailPattern } from '../constants/Validation.constant'
-import axios from 'axios'
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux'
+import { SESSION_INFO } from '../services/store/slice/userInfoSlice';
+import { useNavigate } from 'react-router-dom';
+import { getUserRoute } from '../services/Authentication.service';
+ 
 function Login() {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm()
+    const { register, handleSubmit, formState: { errors } } = useForm();
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+
     const login = async (formData) => {
         try {
             const { data } = await axios({
@@ -15,13 +23,15 @@ function Login() {
                 }
             })
             localStorage.setItem('state', JSON.stringify({ token: data.session.jwtToken }))
+            dispatch(SESSION_INFO(data.session))
+            if(data.status == "LOGIN_SUCCESS") {
+                const userType = getUserRoute(data.session.modules.userType)
+                navigate(`${userType}/dashboard`)
+            }
         } catch (error) {
             console.log(error?.response?.data?.message || error)
         }
     }
-
-
-
     return (
         <>
             <div className="background">
