@@ -1,0 +1,10 @@
+/node_modules
+package-lock.json
+*.env*
+log
+.zip
+node_modules
+.eslintcache
+server/uploads
+.idea
+.vscode
