@@ -1,4 +1,6 @@
-import Route from './routes/Index'
+import { useEffect } from 'react';
+import Common from './routes/Common';
+import Route from './routes/Index';
 
 function App() {
 
@@ -6,6 +8,7 @@ function App() {
   return (
     <>
       <Route></Route>
+      {/* <Common /> */}
     </>
   );
 }
