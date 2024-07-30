@@ -34,7 +34,7 @@ app.use(async function (error, req, res, next) {
         'route': req?._parsedUrl?.pathname,
         'method': req?.method
     });
-    res.status(500).send(error.message || '');
+    return res.status(500).send(error.message || '');
 });
 
 

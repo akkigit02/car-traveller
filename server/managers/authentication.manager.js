@@ -34,11 +34,13 @@ const login = async (req, res) => {
             return res.status(400).send({ message: 'Email and password are required.' });
         }
         const user = await UserModel.findOne({ $or: [{ email: String(body.userName) }, { primaryPhone: String(body.userName) }] }, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1, modules: 1 })
+        console.log(user)
         if (!user) {
             return res.status(401).send({ message: 'Incorrect username or password. Please try again.' })
         }
         const isPassMatch = await comparePassword(password, user.password)
-        if (isPassMatch)
+        console.log
+        if (!isPassMatch)
             return res.status(401).send({ message: 'Incorrect username or password. Please try again.' })
         if (user.status === 'sent') {
             return res.status(403).send({ message: 'Please verify your account via OTP.', status: 'UNVERIFIED' })
@@ -101,14 +103,22 @@ const verifySession = async (req, res) => {
         const { query } = req
         if (!query?.token)
             return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
-        const token = JWT.verify(query?.token, JWT_SECRET_KEY)
+        console.log(105)
+        try {
+            JWT.verify(query?.token, JWT_SECRET_KEY)
+        } catch (error) {
+            console.log(111,error)
+            return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
+        }
+        const token = JWT.decode(query.token)
         if (!token?.sessionId)
             return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
         const user = await UserModel.findOne({ 'authentication.loginSessionId': String(token?.sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1 })
+        console.log(113, user)
         if (!user)
             return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
         const userSession = await getUserSession(user._id)
-        res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
+        return res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
     } catch (error) {
         console.log(error)
         res.status(500).send({ message: 'Something went wrong. Please try again later.' })
