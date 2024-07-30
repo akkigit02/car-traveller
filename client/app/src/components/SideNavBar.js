@@ -1,14 +1,23 @@
 import React from "react";
 import { getUserRoute } from "../services/Authentication.service";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { SESSION_INFO } from "../services/store/slice/userInfoSlice";
 
 export default function SideNavBar() {
   const userType = useSelector(
     (state) => state.userInfo.userInfo.modules.userType
   );
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   const userRoute = getUserRoute(userType);
   const { pathname } = useLocation();
+  const handleLogout = () => {
+    localStorage.clear()
+    dispatch(SESSION_INFO({}))
+    navigate('/')
+    window.location.reload()
+  }
   return (
     <div>
          <header>
@@ -64,10 +73,10 @@ export default function SideNavBar() {
                 <i className="fas fa-users fa-fw me-3"></i>
                 <span>Users</span>
               </a>
-              <a href="#" className="list-group-item list-group-item-action py-2 ripple">
+              <div onClick={handleLogout} className="list-group-item list-group-item-action py-2 ripple">
                 <i className="fas fa-money-bill fa-fw me-3"></i>
-                <span>Sales</span>
-              </a>
+                <span>Logout</span>
+              </div>
             </div>
           </div>
         </nav>

@@ -27,6 +27,8 @@ function Login() {
             if(data.status == "LOGIN_SUCCESS") {
                 const userType = getUserRoute(data.session.modules.userType)
                 navigate(`${userType}/dashboard`)
+            } else {
+                navigate('/')
             }
             window.location.reload()
         } catch (error) {
