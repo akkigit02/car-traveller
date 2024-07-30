@@ -8,6 +8,7 @@ import DriverRoute from "./protected/DriverRoute";
 import ClientRoute from "./protected/ClientRoute";
 import DeveloperRoute from "./protected/DeveloperRoute";
 import { SESSION_INFO } from "../services/store/slice/userInfoSlice";
+import SideNavBar from "../components/SideNavBar";
 
 function Index() {
   const [isLoading, setIsLoading] = useState(false);
@@ -47,13 +48,13 @@ function Index() {
     const userRoute = getUserRoute(userInfo?.modules?.userType)
       switch (userInfo.modules.userType) {
         case "ADMIN":
-          return <AdminProtected userRoute={userRoute} />;
+          return <AdminProtected userRoute={userRoute} userType={userInfo.modules.userType} />;
         case "DRIVER":
-          return <DriverRoute userRoute={userRoute} />;
+          return <DriverRoute userRoute={userRoute} userType={userInfo.modules.userType} />;
         case "CLIENT":
-          return <ClientRoute userRoute={userRoute} />;
+          return <ClientRoute userRoute={userRoute} userType={userInfo.modules.userType} />;
         case "DEVELOPER":
-          return <DeveloperRoute userRoute={userRoute} />;
+          return <DeveloperRoute userRoute={userRoute} userType={userInfo.modules.userType} />;
       }
     } catch (error) {
       console.error(error);
@@ -66,6 +67,7 @@ function Index() {
 
   return (
     <>
+    {/* <SideNavBar userType={userInfo.modules.userType} /> */}
       {isLoading ? (
         <div>Loading</div>
       ) : (
