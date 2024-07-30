@@ -38,6 +38,7 @@ function Index() {
       }
     } catch (error) {
       console.log(error);
+      setIsAuthenticated(false)
     } finally {
       setIsLoading(false);
     }
