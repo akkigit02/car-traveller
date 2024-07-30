@@ -3,11 +3,8 @@ import App from './App';
 import './configs/axios.config.js'
 import './css/style.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Provider } from 'react-redux'
-import store from './services/store/index.js';
+console.log(process.env.REACT_APP_SERVER_BASE_URL)
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <App />
 );

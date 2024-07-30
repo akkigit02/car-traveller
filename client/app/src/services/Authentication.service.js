@@ -1,21 +1,17 @@
-import { USER_ROUTE } from "../constants/common.constants"
+const { REACT_APP_LOCAL_STORAGE_KEY } = process.env
 
-export const getToken = () => {
-    let localStore = localStorage.getItem('state')
-    if (localStore){
-        localStore= JSON.parse(localStore)
+export const getTokenFromLocal = () => {
+    let localStore = localStorage.getItem(REACT_APP_LOCAL_STORAGE_KEY)
+    if (localStore) {
+        localStore = JSON.parse(localStore)
         return localStore.token
     }
     return null
 }
-
-
-
-export const getUserRoute = (userType) => {
-    return USER_ROUTE[userType]
+export const setTokenToLocal = (token) => {
+    localStorage.setItem(REACT_APP_LOCAL_STORAGE_KEY, JSON.stringify({ token }))
 }
 
 export const clearLocalStorage = () => {
     localStorage.clear()
-
 }

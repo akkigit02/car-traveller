@@ -7,6 +7,8 @@ const USER_ROUTE = {
     DEVELOPER: '/developer',
 }
 
+
+
 const VEHICLE_TYPE = [
     {
       "name": "SUV",

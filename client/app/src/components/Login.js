@@ -2,15 +2,14 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import { emailPattern } from '../constants/Validation.constant'
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux'
-import { SESSION_INFO } from '../services/store/slice/userInfoSlice';
+
+
 import { useNavigate } from 'react-router-dom';
-import { getUserRoute } from '../services/Authentication.service';
- 
+import store from '../store';
+import { setTokenToLocal } from '../services/Authentication.service';
+
 function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
 
     const login = async (formData) => {
         try {
@@ -22,15 +21,8 @@ function Login() {
                     password: formData.password
                 }
             })
-            localStorage.setItem('state', JSON.stringify({ token: data.session.jwtToken }))
-            dispatch(SESSION_INFO(data.session))
-            if(data.status == "LOGIN_SUCCESS") {
-                const userType = getUserRoute(data.session.modules.userType)
-                navigate(`${userType}/dashboard`)
-            } else {
-                navigate('/')
-            }
-            window.location.reload()
+            setTokenToLocal(data.session.jwtToken)
+            store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: data.session } })
         } catch (error) {
             console.log(error?.response?.data?.message || error)
         }
