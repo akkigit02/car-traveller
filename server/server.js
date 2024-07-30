@@ -1,5 +1,6 @@
 require('dotenv').config();
 require('./configs/database.config');
+require('./configs/whatsapp.config.js')
 const port = process.env.SERVER_PORT || 5000
 const express = require('express');
 const cors = require('cors');
@@ -8,7 +9,6 @@ const requestIp = require('request-ip');
 const userAgent = require('express-useragent');
 const Logger = require('./utils/logger.util.js');
 const app = express();
-
 if (process.env.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
 }
