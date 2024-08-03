@@ -8,3 +8,4 @@ node_modules
 server/uploads
 .idea
 .vscode
+.wwebjs_cache

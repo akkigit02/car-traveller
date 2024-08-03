@@ -7,3 +7,5 @@ log
 server/uploads
 .idea
 .vscode
+/.wwebjs_cache
+whatsapp
