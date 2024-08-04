@@ -1,4 +1,6 @@
-const PricingModel = require('../models/pricing.model')
+const PricingModel = require('../models/pricing.model');
+const VehicleModel = require('../models/vehicle.model');
+const RideModel = require('../models/ride.model')
 
 
 const saveVehiclePrice = async(req, res) => {
@@ -18,10 +20,6 @@ const getVehiclePrice = async(req, res) => {
         console.log(error)
     }
 }
-
-// router.put('/vehicle-price',AdminManager.updateVehiclePrice)
-// router.delete('/vehicle-price/:id',AdminManager.deleteVehiclePrice)
-// router.get('/vehicle-price/:id',AdminManager.getVehiclePriceById)
 
 const updateVehiclePrice = async(req, res) => {
     try {
@@ -49,6 +47,60 @@ const getVehiclePriceById = async(req, res) => {
         console.log(error)
     }
 }
+/*********************************Vehicle Detail***********************************************************/
+const saveVehicle = async(req, res) => {
+    try {
+        const price = await VehicleModel.create(req.body)
+        res.status(201).send({message: 'Vehicle add successfully!', price})
+    } catch (error) {
+      console.log(error);  
+    }
+}
+
+const getVehicle = async(req, res) => {
+    try {
+        const price = await VehicleModel.find().lean();
+        res.status(200).send({price})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const updateVehicle = async(req, res) => {
+    try {
+        await VehicleModel.updateOne({_id: req.body._id}, req.body)
+        res.status(200).send({message: 'Vehicle update successfully!'})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const deleteVehicle = async(req, res) => {
+    try {
+        await VehicleModel.deleteOne({_id: req.params.id})
+        res.status(200).send({message: 'Vehicle delete successfully!'})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getVehicleById = async(req, res) => {
+    try {
+       const price = await VehicleModel.findOne({_id: req.params.id})
+        res.status(200).send({price})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getBookingInfo = async () => {
+    try {
+        const ride = await RideModel.find({}).populate('passengerId','firstName lastName')
+        res.status(200).send({ride})
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 
 module.exports = {
@@ -56,6 +108,14 @@ module.exports = {
     getVehiclePrice,
     updateVehiclePrice,
     deleteVehiclePrice,
-    getVehiclePriceById
+    getVehiclePriceById,
+    
+    saveVehicle,
+    getVehicle,
+    updateVehicle,
+    deleteVehicle,
+    getVehicleById,
+
+    getBookingInfo
 
 }

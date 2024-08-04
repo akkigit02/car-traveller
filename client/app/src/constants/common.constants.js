@@ -78,11 +78,27 @@ const VEHICLE_TYPE = [
       "name": "Sports Car",
       "value": "sports_car"
     }
+  ];
+
+  const FUEL_TYPE = [
+    {
+      "name": "Petrol",
+      "value": "petrol"
+    },
+    {
+      "name": "Diesel",
+      "value": "diesel"
+    },
+    {
+      "name": "CNG",
+      "value": "cng"
+    }
   ]
   
 
 
 module.exports = {
     USER_ROUTE,
-    VEHICLE_TYPE
+    VEHICLE_TYPE,
+    FUEL_TYPE
 }

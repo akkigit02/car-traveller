@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 const rideSchema = new Schema({
   driverId: { type: Schema.type.ObjectId, ref: "user" },
   vehicleId: { type: Schema.type.ObjectId, ref: "vehicle" },
-  passenger: {type: Schema.type.ObjectId, ref: "user"},
+  passengerId: {type: Schema.type.ObjectId, ref: "user"},
   pickupLocation: {
     type: String,
     required: true,
@@ -29,12 +29,8 @@ const rideSchema = new Schema({
     month: { type: String },
     year: { type: String },
   },
-  price: {
-    tollTax: {type: Number},
-    basePrice: {type: Number},
-    driverAllowance: {type: Number},
-    otherAllowance: {type: Number}
-  },
+  totalPrice: {type: String },
+  advancePayment: {type: String},
   totalDistance: {type: Number},
   isLaguageCarrier: {type: Boolean}, 
   status: {

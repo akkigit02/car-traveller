@@ -10,5 +10,13 @@ router.put('/vehicle-price',AdminManager.updateVehiclePrice)
 router.delete('/vehicle-price/:id',AdminManager.deleteVehiclePrice)
 router.get('/vehicle-price/:id',AdminManager.getVehiclePriceById)
 
+router.post('/vehicle',AdminManager.saveVehicle)
+router.get('/vehicle',AdminManager.getVehicle)
+router.put('/vehicle',AdminManager.updateVehicle)
+router.delete('/vehicle/:id',AdminManager.deleteVehicle)
+router.get('/vehicle/:id',AdminManager.getVehicleById)
+
+router.post('/booking',AdminManager.getBookingInfo)
+
 
 module.exports = router

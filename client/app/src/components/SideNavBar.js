@@ -1,11 +1,13 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import store from "../store";
 
 
 export default function SideNavBar() {
   const { pathname } = useLocation();
   const handleLogout = () => {
     localStorage.clear()
+    store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: null } })
   }
   return (
     <nav id="sidebarMenu" className="sidebar bg-white" style={{width:220}}>
@@ -32,10 +34,20 @@ export default function SideNavBar() {
             <i className="fas fa-lock fa-fw me-3"></i>
             <span>Pricing</span>
           </Link>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-chart-line fa-fw me-3"></i>
-            <span>Analytics</span>
-          </a>
+          <Link
+            to={`/booking`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/booking` ? 'active' : ''}`}
+          >
+            <i className="fas fa-lock fa-fw me-3"></i>
+            <span>Booking Info</span>
+          </Link>
+          <Link
+            to={`/demo`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/demo` ? 'active' : ''}`}
+          >
+            <i className="fas fa-lock fa-fw me-3"></i>
+            <span>Demo</span>
+          </Link>
           <a href="#" className="list-group-item list-group-item-action py-2 ripple">
             <i className="fas fa-chart-pie fa-fw me-3"></i>
             <span>SEO</span>
