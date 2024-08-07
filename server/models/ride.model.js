@@ -2,17 +2,15 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 // Define the Ride schema
-const rideSchema = new mongoose.Schema({
-  driverId: { type: ObjectId, ref: "user" },
-  vehicleId: { type: ObjectId, ref: "vehicle" },
-  passengerId: {type: ObjectId, ref: "user"},
+const rideSchema = new Schema({
+  driverId: { type: Schema.Types.ObjectId, ref: "user" },
+  vehicleId: { type: Schema.Types.ObjectId, ref: "vehicle" },
+  passengerId: {type: Schema.Types.ObjectId, ref: "user"},
   pickupLocation: {
     type: String,
-    required: true,
   },
   dropoffLocation: {
     type: String,
-    required: true,
   },
   pickupDate: {
     date: { type: String,required: true, },
@@ -21,7 +19,6 @@ const rideSchema = new mongoose.Schema({
   },
   pickupTime: {
     type: String,
-    required: true,
   },
   dropDate: {
     date: { type: String },

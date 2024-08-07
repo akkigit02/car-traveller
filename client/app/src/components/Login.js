@@ -13,14 +13,16 @@ function Login() {
 
     const login = async (formData) => {
         try {
+            console.log('111111111',formData)
             const { data } = await axios({
                 url: '/api/auth/login',
-                method: 'post',
+                method: 'POST',
                 data: {
                     userName: formData.userName,
                     password: formData.password
                 }
             })
+            console.log('2222222')
             setTokenToLocal(data.session.jwtToken)
             store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: data.session } })
         } catch (error) {

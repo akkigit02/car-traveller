@@ -28,6 +28,7 @@ const getUserSession = async (userId) => {
 
 const login = async (req, res) => {
     try {
+        console.log('111111111')
         const { body } = req
         const { userName, password } = body
         if (!userName || !password) {
