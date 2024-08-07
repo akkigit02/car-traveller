@@ -1,10 +1,10 @@
-const CityModel = require('../models/city.model');
+const CitiesModel = require('../models/cities.model');
 
 
 const getCities = async (req, res) => {
     try {
         const search = req?.query?.search
-        const cities = await CityModel.aggregate([
+        const cities = await CitiesModel.aggregate([
             {
                 $match: {
                     $or: [
