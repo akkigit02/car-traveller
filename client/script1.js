@@ -7,12 +7,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const setSuggestionVisible = (inputType, isVisible) => {
         const suggestion = document.getElementById(`${inputType}Suggestion`)
         suggestion.style.display = isVisible ? 'block' : 'none'
+        if (isVisible)
+            filterFunction(inputType)
+        else {
+            const suggestion = document.getElementById(`${inputType}Suggestion`)
+            suggestion.innerHTML = ''
+        }
     }
 
     const filterFunction = async (inputType) => {
         let searchInput = document.getElementById(inputType);
         const searchQuery = searchInput.value.toLowerCase();
-        const cities = await getCities(searchQuery)
+        let cities = await getCities(searchQuery)
+        if (inputType === 'from' && query.to) {
+            cities = cities.filter(ele => ele._id !== query.to)
+        } else if (inputType === 'to' && query.from) {
+            cities = cities.filter(ele => ele._id !== query.from)
+        }
         const suggestion = document.getElementById(`${inputType}Suggestion`)
         suggestion.innerHTML = ''
         if (!cities.length) {
@@ -24,12 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const city of cities) {
             const div = document.createElement('ul');
             div.innerText = `${city.name}, ${city.state_name}`;
+            suggestion.appendChild(div);
             div.addEventListener('click', (event) => {
                 query[inputType] = city._id;
-                input.value = `${city.name}, ${city.state_name}`;
+                searchInput.value = `${city.name}, ${city.state_name}`;
                 suggestion.innerHTML = '';
             });
-            suggestion.appendChild(div);
         }
     }
 
@@ -50,10 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const from = document.getElementById('from')
     from.addEventListener('input', (event) => { filterFunction('from') })
     from.addEventListener('focus', (event) => { setSuggestionVisible('from', true) })
-    from.addEventListener('blur', (event) => { setSuggestionVisible('from', false) })
+    // from.addEventListener('blur', (event) => { setSuggestionVisible('from', false) })
 
     const to = document.getElementById('to')
     to.addEventListener('input', (event) => { filterFunction('to') })
     to.addEventListener('focus', (event) => { setSuggestionVisible('to', true) })
-    to.addEventListener('blur', (event) => { setSuggestionVisible('to', false) })
+    // to.addEventListener('blur', (event) => { setSuggestionVisible('to', false) })
 })
