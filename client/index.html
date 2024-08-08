@@ -4,31 +4,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="author" content="pixydrops">
-        <meta name="description" content="Remons - Booking Rental HTML Template">
-        <title>Deepak - Booking Rental</title>
-       
-        <link rel="shortcut icon" href="assets/img/favicon.png">
-        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
-        <link rel="stylesheet" href="assets/css/all.min.css">
-        <link rel="stylesheet" href="assets/css/animate.css">
-        <link rel="stylesheet" href="assets/css/magnific-popup.css">
-        <link rel="stylesheet" href="assets/css/meanmenu.css">
-        <link rel="stylesheet" href="assets/css/datepickerboot.css">
-        <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
-        <link rel="stylesheet" href="assets/css/nice-select.css">
-        <link rel="stylesheet" href="assets/css/main.css">
-        <link rel="stylesheet" href="assets/css/style1.css">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="author" content="pixydrops">
+    <meta name="description" content="Remons - Booking Rental HTML Template">
+    <title>Deepak - Booking Rental</title>
+
+    <link rel="shortcut icon" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/animate.css">
+    <link rel="stylesheet" href="assets/css/magnific-popup.css">
+    <link rel="stylesheet" href="assets/css/meanmenu.css">
+    <link rel="stylesheet" href="assets/css/datepickerboot.css">
+    <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+    <link rel="stylesheet" href="assets/css/nice-select.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/style1.css">
 </head>
 
 <body style="background-color: white;height: 100vh;">
-    
+
 
 
     <div id="preloader" class="preloader">
         <div class="animation-preloader">
-            <div class="spinner">                
+            <div class="spinner">
             </div>
             <div class="txt-loading">
                 <span data-text-preloader="D" class="letters-loading">
@@ -89,12 +89,13 @@
                         </div>
                         <div class="offcanvas__close">
                             <button>
-                            <i class="fas fa-times"></i>
+                                <i class="fas fa-times"></i>
                             </button>
                         </div>
                     </div>
                     <p class="text d-none d-xl-block">
-                        Nullam dignissim, ante scelerisque the  is euismod fermentum odio sem semper the is erat, a feugiat leo urna eget eros. Duis Aenean a imperdiet risus.
+                        Nullam dignissim, ante scelerisque the is euismod fermentum odio sem semper the is erat, a
+                        feugiat leo urna eget eros. Duis Aenean a imperdiet risus.
                     </p>
                     <div class="mobile-menu fix mb-3"></div>
                     <div class="offcanvas__contact">
@@ -113,7 +114,8 @@
                                     <i class="fal fa-envelope"></i>
                                 </div>
                                 <div class="offcanvas__contact-text">
-                                    <a href="mailto:info@example.com"><span class="mailto:info@example.com">Deepak@gmail.com</span></a>
+                                    <a href="mailto:info@example.com"><span
+                                            class="mailto:info@example.com">Deepak@gmail.com</span></a>
                                 </div>
                             </li>
                             <li class="d-flex align-items-center">
@@ -167,7 +169,7 @@
                                     <ul>
                                         <li class="has-dropdown active menu-thumb">
                                             <a href="index.html">
-                                            Home 
+                                                Home
                                             </a>
                                         </li>
                                         <li>
@@ -201,7 +203,8 @@
                                 <h6><a href="tel:+9288009850">+91 (8800) - 9850</a></h6>
                             </div>
                         </div>
-                        <a href="#0" class="search-trigger search-icon"><i class="fa-regular fa-magnifying-glass"></i></a>
+                        <a href="#0" class="search-trigger search-icon"><i
+                                class="fa-regular fa-magnifying-glass"></i></a>
                         <div class="header-button">
                             <a href="car-list.html" class="header-btn">
                                 Find a Car
@@ -262,10 +265,10 @@
                 <div style="margin-top: 60px;">
                     <div class="">
                         <div class="pickup-wrapper wow fadeInUp" data-wow-delay=".4s">
-                            <div class="pickup-items">
+                            <!-- <div class="pickup-items">
                                 <label class="field-label">Pick-up Location</label>
                                 <div class="category-oneadjust">
-                                    <select name="cate" class="category">
+                                    <datalist name="cate" class="category">
                                         <option value="1">
                                             Select Location
                                         </option>
@@ -281,9 +284,42 @@
                                         <option value="1">
                                             Other Location
                                         </option>
-                                    </select>
+                                    </datalist>
+                                </div>
+                            </div> -->
+                            <div class="pickup-items" style="position: relative;">
+                                <label class="field-label">From </label>
+                                <input name="from" id="from">
+                                <div style="position: absolute; width: 100%; border:1px solid red; height: 200px;overflow:scroll; display: none;"
+                                    id="fromSuggestion">
+
                                 </div>
                             </div>
+                            <div class="pickup-items" style="position: relative;">
+                                <label class="field-label">From </label>
+                                <input name="to" id="to">
+                                <div style="position: absolute; width: 100%; border:1px solid red; height: 200px;overflow:scroll; display: none;"
+                                    id="toSuggestion">
+                                </div>
+                            </div>
+                            <!-- <input list="cities" name="from" id="from"> -->
+                            <datalist name="cities" class="category">
+                                <option value="1">
+                                    Select Location
+                                </option>
+                                <option value="1">
+                                    Houston
+                                </option>
+                                <option value="1">
+                                    Texas
+                                </option>
+                                <option value="1">
+                                    New York
+                                </option>
+                                <option value="1">
+                                    Other Location
+                                </option>
+                            </datalist>
                             <div class="pickup-items">
                                 <label class="field-label">Pickup Date</label>
                                 <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
@@ -337,12 +373,12 @@
                             </div>
                             <div class="pickup-items">
                                 <label class="field-label style-2">button</label>
-                              <a href="car-list.html"> <button class="pickup-btn" type="submit">
-                                    Find a Car
-                               </button></a>
+                                <a href="car-list.html"> <button class="pickup-btn" type="submit">
+                                        Find a Car
+                                    </button></a>
                             </div>
                         </div>
-                        
+
                     </div>
                 </div>
 
@@ -367,21 +403,21 @@
                 <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".3s">
                     <div class="feature-benefit-items">
                         <div class="icon-box-shape">
-                            <img src="app/src/img/box-icon-bg1.png" alt="shape-img">
+                            <img src="assets/img/box-icon-bg1.png" alt="shape-img">
                         </div>
                         <div class="bg-button-shape">
-                            <img src="app/src/img/bg-button-iconbox.png" alt="shape-img">
+                            <img src="assets/img/bg-button-iconbox.png" alt="shape-img">
                         </div>
                         <div class="feature-content">
                             <h4>
                                 <a href="#">
                                     Easier & <br>
-                                    Faster Bookings 
+                                    Faster Bookings
                                 </a>
                             </h4>
                             <p>Neque porro quisquam est, qui fre dolorem ipsum quia dolor.</p>
                             <div class="icon">
-                                <img src="app/src/img/icon-1.png" alt="icon-img">
+                                <img src="assets/img/icon-1.png" alt="icon-img">
                             </div>
                         </div>
                         <div class="feature-button">
@@ -392,10 +428,10 @@
                 <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".5s">
                     <div class="feature-benefit-items">
                         <div class="icon-box-shape">
-                            <img src="app/src/img/box-icon-bg2.png" alt="shape-img">
+                            <img src="assets/img/box-icon-bg2.png" alt="shape-img">
                         </div>
                         <div class="bg-button-shape">
-                            <img src="app/src/img/bg-button-iconbox.png" alt="shape-img">
+                            <img src="assets/img/bg-button-iconbox.png" alt="shape-img">
                         </div>
                         <div class="feature-content">
                             <h4>
@@ -406,7 +442,7 @@
                             </h4>
                             <p>Neque porro quisquam est, qui fre dolorem ipsum quia dolor.</p>
                             <div class="icon">
-                                <img src="app/src/img/icon-2.png" alt="icon-img">
+                                <img src="assets/img/icon-2.png" alt="icon-img">
                             </div>
                         </div>
                         <div class="feature-button">
@@ -417,10 +453,10 @@
                 <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
                     <div class="feature-benefit-items">
                         <div class="icon-box-shape">
-                            <img src="app/src/img/box-icon-bg3.png" alt="shape-img">
+                            <img src="assets/img/box-icon-bg3.png" alt="shape-img">
                         </div>
                         <div class="bg-button-shape">
-                            <img src="app/src/img/bg-button-iconbox.png" alt="shape-img">
+                            <img src="assets/img/bg-button-iconbox.png" alt="shape-img">
                         </div>
                         <div class="feature-content">
                             <h4>
@@ -431,7 +467,7 @@
                             </h4>
                             <p>Neque porro quisquam est, qui fre dolorem ipsum quia dolor.</p>
                             <div class="icon">
-                                <img src="app/src/img/icon-3.png" alt="icon-img">
+                                <img src="assets/img/icon-3.png" alt="icon-img">
                             </div>
                         </div>
                         <div class="feature-button">
@@ -451,10 +487,10 @@
                     <div class="col-lg-6">
                         <div class="about-image-items">
                             <div class="color-shape">
-                                <img src="app/src/img/secondary-shape-color-full.png" alt="shape-img">
+                                <img src="assets/img/secondary-shape-color-full.png" alt="shape-img">
                             </div>
                             <div class="car-shape wow fadeInUp" data-wow-delay=".7s">
-                                <img src="app/src/img/car-shape.png" alt="shape-img">
+                                <img src="assets/img/car-shape.png" alt="shape-img">
                             </div>
                             <div class="counter-content wow fadeInLeft" data-wow-delay=".4s">
                                 <h2 class="text-white"><span class="count">50</span></h2>
@@ -485,7 +521,8 @@
                                 committed to providing our customers with exceptional service.
                             </h4>
                             <p class="wow fadeInUp" data-wow-delay=".5s">
-                                Lorem ipsum is simply ipun txns mane so dummy text of free available in market the printing and typesetting industry has been the industry's standard dummy text ever.
+                                Lorem ipsum is simply ipun txns mane so dummy text of free available in market the
+                                printing and typesetting industry has been the industry's standard dummy text ever.
                             </p>
                             <div class="about-list-item wow fadeInUp" data-wow-delay=".7s">
                                 <ul>
@@ -505,7 +542,8 @@
                                     </li>
                                 </ul>
                             </div>
-                            <a href="car-list.html" class="theme-btn wow fadeInUp" data-wow-delay=".8s">Discover More</a>
+                            <a href="car-list.html" class="theme-btn wow fadeInUp" data-wow-delay=".8s">Discover
+                                More</a>
                         </div>
                     </div>
                 </div>
@@ -554,26 +592,27 @@
                                 <div class="icon-items">
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/seat.svg" alt="img" class="me-1">
+                                            <img src="assets/img/seat.svg" alt="img" class="me-1">
                                             6 Seats
                                         </li>
                                         <li>
-                                            <img src="app/src/img/door.svg" alt="img" class="me-1">
+                                            <img src="assets/img/door.svg" alt="img" class="me-1">
                                             2 Doors
                                         </li>
                                     </ul>
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/automatic.svg" alt="img" class="me-1">
+                                            <img src="assets/img/automatic.svg" alt="img" class="me-1">
                                             Automatic
                                         </li>
                                         <li>
-                                            <img src="app/src/img/petrol.svg" alt="img" class="me-1">
+                                            <img src="assets/img/petrol.svg" alt="img" class="me-1">
                                             Petrol
                                         </li>
                                     </ul>
                                 </div>
-                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i class="fa-solid fa-arrow-right ps-1"></i></a>
+                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i
+                                        class="fa-solid fa-arrow-right ps-1"></i></a>
                             </div>
                         </div>
                     </div>
@@ -599,26 +638,27 @@
                                 <div class="icon-items">
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/seat.svg" alt="img" class="me-1">
+                                            <img src="assets/img/seat.svg" alt="img" class="me-1">
                                             6 Seats
                                         </li>
                                         <li>
-                                            <img src="app/src/img/door.svg" alt="img" class="me-1">
+                                            <img src="assets/img/door.svg" alt="img" class="me-1">
                                             2 Doors
                                         </li>
                                     </ul>
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/automatic.svg" alt="img" class="me-1">
+                                            <img src="assets/img/automatic.svg" alt="img" class="me-1">
                                             Automatic
                                         </li>
                                         <li>
-                                            <img src="app/src/img/petrol.svg" alt="img" class="me-1">
+                                            <img src="assets/img/petrol.svg" alt="img" class="me-1">
                                             Petrol
                                         </li>
                                     </ul>
                                 </div>
-                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i class="fa-solid fa-arrow-right ps-1"></i></a>
+                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i
+                                        class="fa-solid fa-arrow-right ps-1"></i></a>
                             </div>
                         </div>
                     </div>
@@ -644,26 +684,27 @@
                                 <div class="icon-items">
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/seat.svg" alt="img" class="me-1">
+                                            <img src="assets/img/seat.svg" alt="img" class="me-1">
                                             6 Seats
                                         </li>
                                         <li>
-                                            <img src="app/src/img/door.svg" alt="img" class="me-1">
+                                            <img src="assets/img/door.svg" alt="img" class="me-1">
                                             2 Doors
                                         </li>
                                     </ul>
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/automatic.svg" alt="img" class="me-1">
+                                            <img src="assets/img/automatic.svg" alt="img" class="me-1">
                                             Automatic
                                         </li>
                                         <li>
-                                            <img src="app/src/img/petrol.svg" alt="img" class="me-1">
+                                            <img src="assets/img/petrol.svg" alt="img" class="me-1">
                                             Petrol
                                         </li>
                                     </ul>
                                 </div>
-                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i class="fa-solid fa-arrow-right ps-1"></i></a>
+                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i
+                                        class="fa-solid fa-arrow-right ps-1"></i></a>
                             </div>
                         </div>
                     </div>
@@ -689,26 +730,27 @@
                                 <div class="icon-items">
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/seat.svg" alt="img" class="me-1">
+                                            <img src="assets/img/seat.svg" alt="img" class="me-1">
                                             6 Seats
                                         </li>
                                         <li>
-                                            <img src="app/src/img/door.svg" alt="img" class="me-1">
+                                            <img src="assets/img/door.svg" alt="img" class="me-1">
                                             2 Doors
                                         </li>
                                     </ul>
                                     <ul>
                                         <li>
-                                            <img src="app/src/img/automatic.svg" alt="img" class="me-1">
+                                            <img src="assets/img/automatic.svg" alt="img" class="me-1">
                                             Automatic
                                         </li>
                                         <li>
-                                            <img src="app/src/img/petrol.svg" alt="img" class="me-1">
+                                            <img src="assets/img/petrol.svg" alt="img" class="me-1">
                                             Petrol
                                         </li>
                                     </ul>
                                 </div>
-                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i class="fa-solid fa-arrow-right ps-1"></i></a>
+                                <a href="car-details.html" class="theme-btn bg-color w-100 text-center">book now <i
+                                        class="fa-solid fa-arrow-right ps-1"></i></a>
                             </div>
                         </div>
                     </div>
@@ -722,14 +764,14 @@
         <div class="container">
             <div class="car-service-wrapper">
                 <div class="shape-image">
-                    <img src="app/src/img/shape-column.png" alt="shape-img">
+                    <img src="assets/img/shape-column.png" alt="shape-img">
                 </div>
                 <div class="row align-items-center">
                     <div class="col-lg-6">
                         <div class="service-car-image">
                             <img src="assets/img/decor-image-contact-home.webp" alt="img">
                             <div class="color-shape">
-                                <img src="app/src/img/secondary-shape-color.png" alt="shape-img">
+                                <img src="assets/img/secondary-shape-color.png" alt="shape-img">
                             </div>
                             <div class="booking-content">
                                 <p>Call for booking</p>
@@ -744,9 +786,10 @@
                                 Car Service?
                             </h2>
                             <h3 class="wow fadeInUp" data-wow-delay=".5s">
-                                <span>Starting at</span> 8980<sup>Rs</sup>  <span class="text">/mo</span>
+                                <span>Starting at</span> 8980<sup>Rs</sup> <span class="text">/mo</span>
                             </h3>
-                            <a href="car-list.html" class="theme-btn wow fadeInUp" data-wow-delay=".7s">Discover More</a>
+                            <a href="car-list.html" class="theme-btn wow fadeInUp" data-wow-delay=".7s">Discover
+                                More</a>
                         </div>
                     </div>
                 </div>
@@ -755,7 +798,8 @@
     </section>
 
     <!-- Funfact Section Start -->
-    <section class="funfact-section section-padding bg-cover" style="background-image: url('assets/img/funfact-bg.webp');">
+    <section class="funfact-section section-padding bg-cover"
+        style="background-image: url('assets/img/funfact-bg.webp');">
         <div class="container">
             <div class="funfact-wrapper">
                 <div class="row g-4 align-items-center">
@@ -774,7 +818,7 @@
                         <div class="funfact-counter-area">
                             <div class="funfact-items wow fadeInUp" data-wow-delay=".3s">
                                 <div class="icon">
-                                    <img src="app/src/img/car.png" alt="img">
+                                    <img src="assets/img/car.png" alt="img">
                                 </div>
                                 <h2><span class="count">990</span></h2>
                                 <p>
@@ -784,7 +828,7 @@
                             </div>
                             <div class="funfact-items wow fadeInUp" data-wow-delay=".5s">
                                 <div class="icon">
-                                    <img src="app/src/img/center.png" alt="img">
+                                    <img src="assets/img/center.png" alt="img">
                                 </div>
                                 <h2><span class="count">230</span></h2>
                                 <p>
@@ -794,7 +838,7 @@
                             </div>
                             <div class="funfact-items wow fadeInUp" data-wow-delay=".7s">
                                 <div class="icon">
-                                    <img src="app/src/img/like.png" alt="img">
+                                    <img src="assets/img/like.png" alt="img">
                                 </div>
                                 <h2><span class="count">660</span></h2>
                                 <p>
@@ -898,7 +942,7 @@
     <!-- Testimonial Section Start -->
     <section class="testimonial-section fix section-padding">
         <div class="testimonial-bg-shape">
-            <img src="app/src/img/testimonial-bg.jpg" alt="shape-img">
+            <img src="assets/img/testimonial-bg.jpg" alt="shape-img">
         </div>
         <div class="container">
             <div class="section-title-area">
@@ -924,7 +968,8 @@
                                         <i class="fa-solid fa-quote-left"></i>
                                     </div>
                                     <p>
-                                        I was very impresed by the remons service lorem ipsum is simply free text used by copy typing refreshing. Neque porro est qui dolorem ipsum quia.
+                                        I was very impresed by the remons service lorem ipsum is simply free text used
+                                        by copy typing refreshing. Neque porro est qui dolorem ipsum quia.
                                     </p>
                                     <div class="star">
                                         <i class="fa-solid fa-star"></i>
@@ -936,7 +981,8 @@
                                 </div>
                             </div>
                             <div class="client-info-items d-flex align-items-center gap-3">
-                                <div class="client-img bg-cover" style="background-image: url('assets/img/client-1.webp');"></div>
+                                <div class="client-img bg-cover"
+                                    style="background-image: url('assets/img/client-1.webp');"></div>
                                 <div class="content">
                                     <h5>
                                         Jessica Brown
@@ -954,7 +1000,8 @@
                                         <i class="fa-solid fa-quote-left"></i>
                                     </div>
                                     <p>
-                                        I was very impresed by the remons service lorem ipsum is simply free text used by copy typing refreshing. Neque porro est qui dolorem ipsum quia.
+                                        I was very impresed by the remons service lorem ipsum is simply free text used
+                                        by copy typing refreshing. Neque porro est qui dolorem ipsum quia.
                                     </p>
                                     <div class="star">
                                         <i class="fa-solid fa-star"></i>
@@ -966,7 +1013,8 @@
                                 </div>
                             </div>
                             <div class="client-info-items d-flex align-items-center gap-3">
-                                <div class="client-img bg-cover" style="background-image: url('assets/img/client-2.webp');"></div>
+                                <div class="client-img bg-cover"
+                                    style="background-image: url('assets/img/client-2.webp');"></div>
                                 <div class="content">
                                     <h5>
                                         Kevin Martin
@@ -984,7 +1032,8 @@
                                         <i class="fa-solid fa-quote-left"></i>
                                     </div>
                                     <p>
-                                        I was very impresed by the remons service lorem ipsum is simply free text used by copy typing refreshing. Neque porro est qui dolorem ipsum quia.
+                                        I was very impresed by the remons service lorem ipsum is simply free text used
+                                        by copy typing refreshing. Neque porro est qui dolorem ipsum quia.
                                     </p>
                                     <div class="star">
                                         <i class="fa-solid fa-star"></i>
@@ -996,7 +1045,8 @@
                                 </div>
                             </div>
                             <div class="client-info-items d-flex align-items-center gap-3">
-                                <div class="client-img bg-cover" style="background-image: url('assets/img/client-3.webp');"></div>
+                                <div class="client-img bg-cover"
+                                    style="background-image: url('assets/img/client-3.webp');"></div>
                                 <div class="content">
                                     <h5>
                                         Jessica Brown
@@ -1072,7 +1122,7 @@
                             </div>
                             <ul class="list-items">
                                 <li>
-                                    <a href="#"> 
+                                    <a href="#">
                                         About Us
                                     </a>
                                 </li>
@@ -1208,6 +1258,7 @@
     <script src="assets/js/animation.js"></script>
     <script src="assets/js/wow.min.js"></script>
     <script src="assets/js/main.js"></script>
+    <script src="./script1.js"></script>
 </body>
 
 </html>
