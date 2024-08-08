@@ -28,7 +28,6 @@ const getUserSession = async (userId) => {
 
 const login = async (req, res) => {
     try {
-        console.log('111111111')
         const { body } = req
         const { userName, password } = body
         if (!userName || !password) {
@@ -104,11 +103,9 @@ const verifySession = async (req, res) => {
         const { query } = req
         if (!query?.token)
             return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
-        console.log(105)
         try {
             JWT.verify(query?.token, JWT_SECRET_KEY)
         } catch (error) {
-            console.log(111,error)
             return res.status(401).send({ message: 'Session expired or invalid. Please login again' })
         }
         const token = JWT.decode(query.token)

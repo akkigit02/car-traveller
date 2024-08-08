@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { getTokenFromLocal, setTokenToLocal } from "../services/Authentication.service";
 import { useSelector } from "react-redux";
-import Authentication from './Authetication'
+import UnProtected from './UnProtected'
 import { BrowserRouter, Routes } from "react-router-dom";
 import Protected from "./Protected";
 import store from "../store";
@@ -46,7 +46,7 @@ function Index() {
       {
         isLoading ? <div>Loading.....</div> :
           <BrowserRouter>
-            {userInfo ? <Protected /> : <Authentication />}
+            {userInfo ? <Protected /> : <UnProtected />}
           </BrowserRouter>
       }
     </>

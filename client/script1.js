@@ -3,6 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
         to: '',
         from: ''
     }
+    const submitSuttom = document.getElementById(`submitSuttom`)
+    submitSuttom.addEventListener('click', () => {
+
+        //  error handle 
+        console.log(query)
+        const jsonString = JSON.stringify(query);
+        const encodedString = btoa(jsonString);
+        console.log(encodedString);
+    })
+
+
+
+
+
+
+
+
 
     const setSuggestionVisible = (inputType, isVisible) => {
         const suggestion = document.getElementById(`${inputType}Suggestion`)
