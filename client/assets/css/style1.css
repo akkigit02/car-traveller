@@ -34,7 +34,7 @@
     height: 100vh;
 }
 .bg-banner-car{
-    background-image: url(../img/banner-car.png);
+    background-image: url(../img/banner1.jpg);
 	background-position: 100% 100%;
     background-size: cover;
     background-repeat: no-repeat;
@@ -52,8 +52,11 @@
     color: #1572D3;
 }
 .search-card{
-    bottom:5%;
-    left: 7%; 
+    bottom:15%;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 90%;
     background-color:rgb(255, 255, 255) ;
     border-radius: 8px;
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
@@ -67,11 +70,15 @@
     /* background-color: #1572D3; */
     border: 1px solid rgb(73, 71, 71);
     padding: 10px 100px;  
+	width: 100%;
+    display: flex;
+    justify-content: center;
 }
 .search-card ul li.active{
     background-color: #1572D3;
     border: 0px solid rgb(73, 71, 71);
     padding: 10px 100px;  
+	border-radius: 8px 0 0;
 }
 .search-card ul li a{
     color: black;

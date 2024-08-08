@@ -1238,7 +1238,7 @@ span {
   padding: 40px;
   justify-content: space-between;
   gap: 15px;
-  margin-top: -40px;
+  /* margin-top: -40px; */
   position: relative;
   z-index: 9;
 }
