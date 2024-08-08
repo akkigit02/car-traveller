@@ -18,5 +18,11 @@ router.get('/vehicle/:id',AdminManager.getVehicleById)
 
 router.post('/booking',AdminManager.getBookingInfo)
 
+router.post('/package',AdminManager.savePackage)
+router.get('/package',AdminManager.getPackage)
+router.put('/package',AdminManager.updatePackage)
+router.delete('/package/:id',AdminManager.deletePackage)
+router.get('/package/:id',AdminManager.getPackageById)
+
 
 module.exports = router

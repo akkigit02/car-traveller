@@ -1,6 +1,7 @@
 const PricingModel = require('../models/pricing.model');
 const VehicleModel = require('../models/vehicle.model');
 const RideModel = require('../models/ride.model')
+const PackageModel = require('../models/packages.model')
 
 
 const saveVehiclePrice = async(req, res) => {
@@ -102,6 +103,61 @@ const getBookingInfo = async () => {
     }
 }
 
+/*********************************Package Detail***********************************************************/
+const savePackage = async(req, res) => {
+    try {
+        const package = await PackageModel.create(req.body)
+        res.status(201).send({message: 'Package add successfully!', package})
+    } catch (error) {
+      console.log(error);  
+    }
+}
+
+const getPackage = async(req, res) => {
+    try {
+        const package = await PackageModel.find().lean();
+        res.status(200).send({package})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const updatePackage = async(req, res) => {
+    try {
+        await PackageModel.updateOne({_id: req.body._id}, req.body)
+        res.status(200).send({message: 'Package update successfully!'})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const deletePackage = async(req, res) => {
+    try {
+        await PackageModel.deleteOne({_id: req.params.id})
+        res.status(200).send({message: 'Package delete successfully!'})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getPackageById = async(req, res) => {
+    try {
+       const package = await PackageModel.findOne({_id: req.params.id})
+        res.status(200).send({package})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getPackageInfo = async () => {
+    try {
+        const ride = await RideModel.find({}).populate('passengerId','firstName lastName')
+        res.status(200).send({ride})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 module.exports = {
     saveVehiclePrice,
@@ -116,6 +172,12 @@ module.exports = {
     deleteVehicle,
     getVehicleById,
 
-    getBookingInfo
+    getBookingInfo,
 
+    savePackage,
+    getPackage,
+    updatePackage,
+    deletePackage,
+    getPackageById,
+    getPackageInfo
 }
