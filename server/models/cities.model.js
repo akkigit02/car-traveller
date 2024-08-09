@@ -7,7 +7,8 @@ const CitiesSchema = new Schema({
     country_name: { type: String },
     latitude: { type: String },
     longitude: { type: String },
-    isActive: { type: Boolean }
+    isActive: { type: Boolean },
+    isMetroCity: { type: Boolean }
 });
 CitiesSchema.index({ state_name: 1 });
 CitiesSchema.index({ name: 1 });
