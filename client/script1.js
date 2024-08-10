@@ -5,11 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     const submitSuttom = document.getElementById(`submitSuttom`)
     submitSuttom.addEventListener('click', () => {
-
         //  error handle 
         const jsonString = JSON.stringify(query);
         const encodedString = btoa(jsonString);
         console.log(encodedString);
+        window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
     })
 
 
@@ -52,18 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const div = document.createElement('div');
             div.classList.add('cstm-dropdown-list')
             div.innerText = `${city.name}, ${city.state_name}`;
-            suggestion.appendChild(div);
             div.addEventListener('click', (event) => {
+                console.log(56)
                 query[inputType] = city._id;
                 searchInput.value = `${city.name}, ${city.state_name}`;
                 suggestion.innerHTML = '';
             });
+            suggestion.appendChild(div);
         }
     }
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
+            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                 method: "GET",
             });
             let data = await response.json();
@@ -78,53 +79,61 @@ document.addEventListener('DOMContentLoaded', () => {
     const from = document.getElementById('from')
     from.addEventListener('input', (event) => { filterFunction('from') })
     from.addEventListener('focus', (event) => { setSuggestionVisible('from', true) })
-    from.addEventListener('blur', (event) => { setSuggestionVisible('from', false) })
+    from.addEventListener('blur', (event) => {
+        setTimeout(() => {
+            setSuggestionVisible('from', false)
+        }, 250)
+    })
 
     const to = document.getElementById('to')
     to.addEventListener('input', (event) => { filterFunction('to') })
     to.addEventListener('focus', (event) => { setSuggestionVisible('to', true) })
-    to.addEventListener('blur', (event) => { setSuggestionVisible('to', false) })
+    to.addEventListener('blur', (event) => {
+        setTimeout(() => {
+            setSuggestionVisible('to', false)
+        }, 250)
+    })
 
- const getTimeForDropdown = () => {
-     const timeSelect = document.getElementById('timeSelect');
-     const date = new Date();
-     const endDate = new Date();
-     endDate.setHours(23, 45, 0, 0); // 11:45 PM
-     const optionsInterval = 15; // interval in minutes
+    const getTimeForDropdown = () => {
+        const timeSelect = document.getElementById('timeSelect');
+        const date = new Date();
+        const endDate = new Date();
+        endDate.setHours(23, 45, 0, 0); // 11:45 PM
+        const optionsInterval = 15; // interval in minutes
 
-     const datepickerElement = document.getElementById('datepicker');
-     const inputElement = datepickerElement.querySelector('input');
+        const datepickerElement = document.getElementById('datepicker');
+        const inputElement = datepickerElement.querySelector('input');
 
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
-    const year = date.getFullYear();
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+        const year = date.getFullYear();
 
         const formattedDate = day + '-' + month + '-' + year;
         inputElement.value = formattedDate;
 
-     // Round the current minutes up to the nearest 30-minute interval
-     const now = new Date();
+        // Round the current minutes up to the nearest 30-minute interval
+        const now = new Date();
 
-     while (date <= endDate) {
-         const hours = date.getHours();
-         const minutes = Math.ceil(date.getMinutes()/optionsInterval)*optionsInterval;
-         const ampm = hours >= 12 ? 'PM' : 'AM';
-         const displayHours = hours % 12 === 0 ? 12 : hours % 12;
-         const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
-         const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
-         
-         const isoTime = date.toISOString();
-         
-         const option = document.createElement('option');
-         option.value = isoTime;
-         option.textContent = displayTime;
-         if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
-            option.selected = true;
+        while (date <= endDate) {
+            const hours = date.getHours();
+            const minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+            const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
+            const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
+
+            const isoTime = date.toISOString();
+
+            const option = document.createElement('option');
+            option.value = isoTime;
+            option.textContent = displayTime;
+            if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
+                option.selected = true;
+            }
+            timeSelect.appendChild(option);
+            date.setMinutes(date.getMinutes() + optionsInterval);
         }
-         timeSelect.appendChild(option);
-         date.setMinutes(date.getMinutes() + optionsInterval);
-     }
- }
+    }
 
- getTimeForDropdown()
+    getTimeForDropdown()
 })
