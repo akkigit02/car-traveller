@@ -101,6 +101,9 @@ document.addEventListener('DOMContentLoaded', () => {
         endDate.setHours(23, 45, 0, 0); // 11:45 PM
         const optionsInterval = 15; // interval in minutes
 
+        date.setHours(date.getHours() + 1);
+        date.setMinutes(date.getMinutes() + 30);
+
         const datepickerElement = document.getElementById('datepicker');
         const inputElement = datepickerElement.querySelector('input');
 
@@ -113,10 +116,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Round the current minutes up to the nearest 30-minute interval
         const now = new Date();
-
+        now.setHours(now.getHours() + 1);
+        now.setMinutes(now.getMinutes() + 30);
+    
         while (date <= endDate) {
+          let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
+          if(minutes === 60) {
+            minutes = 0
+            date.setHours(date.getHours() + 1);
+          }
             const hours = date.getHours();
-            const minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
             const ampm = hours >= 12 ? 'PM' : 'AM';
             const displayHours = hours % 12 === 0 ? 12 : hours % 12;
             const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
