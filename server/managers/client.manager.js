@@ -1,5 +1,5 @@
 const CitiesModel = require('../models/cities.model');
-const RideModel = require('../models/ride.model')
+const RideModel = require('../models/booking.model')
 
 const getCities = async (req, res) => {
     try {
