@@ -20,6 +20,10 @@ export const phoneNumberValidation = {
         value: 10,
         message: "Phone number must have 10 digits",
     },
+    maxLength: {
+      value: 10,
+      message: "Phone number must have 10 digits",
+  },
 };
 
 export const phoneNumberShortValidation = {

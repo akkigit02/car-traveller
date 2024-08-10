@@ -2,9 +2,6 @@ import React from 'react'
 import { useForm } from "react-hook-form"
 import { emailPattern } from '../constants/Validation.constant'
 import axios from 'axios';
-
-
-import { useNavigate } from 'react-router-dom';
 import store from '../store';
 import { setTokenToLocal } from '../services/Authentication.service';
 
@@ -13,7 +10,6 @@ function Login() {
 
     const login = async (formData) => {
         try {
-            console.log('111111111',formData)
             const { data } = await axios({
                 url: '/api/auth/login',
                 method: 'POST',
@@ -22,7 +18,6 @@ function Login() {
                     password: formData.password
                 }
             })
-            console.log('2222222')
             setTokenToLocal(data.session.jwtToken)
             store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: data.session } })
         } catch (error) {
@@ -37,7 +32,6 @@ function Login() {
             </div>
             <form onSubmit={handleSubmit(login)}>
                 <h3>Login Here</h3>
-
                 <label >Username</label>
                 <input type="text" placeholder="Email or Phone"
                     {...register("userName", {

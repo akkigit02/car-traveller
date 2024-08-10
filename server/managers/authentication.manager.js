@@ -8,7 +8,6 @@ const getUserSession = async (userId) => {
     const token = JWT.sign({ sessionId: loginSessionId }, JWT_SECRET_KEY, { expiresIn: '24h' });
 
     const user = await UserModel.findOne({ _id: userId }, {
-        status: 1,
         firstName: 1,
         lastName: 1,
         email: 1,
@@ -51,7 +50,7 @@ const login = async (req, res) => {
             await UserModel.updateOne({ _id: user._id }, {
                 $set: {
                     'authentication.twoFactor.otp': otp,
-                    'authentication.twoFactor.expiresOn': new Date(new Date().getTime() + 5),
+                    'authentication.twoFactor.expiresOn': new Date(new Date().getTime() + 300000),
                     'authentication.twoFactor.sessionId': sessionId
                 }
             })
@@ -75,10 +74,11 @@ const verifyOtp = async (req, res) => {
         if (!otp || !sessionId) {
             return res.status(400).send({ message: 'OTP and session ID are required.' });
         }
-        const user = await UserModel.findOne({ 'authentication.twoFactor.sessionId': String(sessionId) }, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1 })
+        const user = await UserModel.findOne({ 'authentication.twoFactor.sessionId': String(sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1 })
         if (!user) {
             return res.status(401).send({ message: 'Session expired or invalid. Please resend OTP and try again.' })
         }
+        console.log(new Date(), user?.authentication?.twoFactor?.expiresOn)
         if (new Date() > user?.authentication?.twoFactor?.expiresOn)
             return res.status(401).send({ message: 'Session expired. Please resend OTP and try again.' })
         if (user?.authentication?.twoFactor?.otp !== String(otp))
@@ -125,8 +125,76 @@ const verifySession = async (req, res) => {
 }
 
 
+const signup = async (req, res) => {
+    try {
+
+        const { body } = req
+        if (!body.phoneNumber)
+            return res.status(500).send({ message: 'Phone Number is required' })
+        if (!body.email)
+            return res.status(500).send({ message: 'Email is required' })
+
+        const user = await UserModel.findOne({ primaryPhone: String(body.phoneNumber) }, { modules: 1 })
+        if (user) {
+            if (user.modules.userType !== 'CLIENT') {
+                return res.status(500).send({ message: 'Phone Number already exist.' })
+            }
+
+        }
+        return res.status(200).send({ message: '' })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: 'Something went wrong. Please try again later.' })
+
+    }
+}
+
+
+const sendOtp = async (req, res) => {
+    try {
+        const { body } = req
+        if (!body.phoneNumber)
+            return res.status(500).send({ message: 'Phone Number is required' })
+        if (!body.email)
+            return res.status(500).send({ message: 'Email is required' })
+        let user = await UserModel.findOne({ primaryPhone: String(body.phoneNumber) }, { modules: 1 })
+        if (user && user.modules.userType !== 'CLIENT')
+            return res.status(500).send({ message: 'Phone Number already exist.' })
+        else {
+            user = await UserModel.create({
+                firstName: body.firstName,
+                lastName: body.lastName,
+                email: body.email,
+                primaryPhone: body.phoneNumber,
+                modules: {
+                    userType: 'CLIENT'
+                }
+            })
+        }
+        const otp = generateOTP()
+        console.log(otp)
+        const sessionId = generateSecureRandomString()
+        await UserModel.updateOne({ _id: user._id }, {
+            $set: {
+                'authentication.twoFactor.otp': otp,
+                'authentication.twoFactor.expiresOn': new Date(new Date().getTime() + 300000),
+                'authentication.twoFactor.sessionId': sessionId
+            }
+        })
+        return res.status(200).send({ sessionId: sessionId, status: 'TWO_STEP_AUTHENTICATION' })
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({ message: 'Something went wrong. Please try again later.' })
+    }
+}
+
+
+
+
 module.exports = {
     login,
     verifyOtp,
-    verifySession
+    verifySession,
+    signup,
+    sendOtp
 }

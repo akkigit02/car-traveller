@@ -7,7 +7,6 @@ const userTypeSchema = new mongoose.Schema(
     email: { type: String, required: true },
     primaryPhone: { type: String, required: true },
     secondaryPhone: { type: String, },
-    status: { type: String, required: true, enum: ['sent', 'verified'] },
     dateOfBirth: {
       date: { type: String },
       month: { type: String },
@@ -40,7 +39,7 @@ const userTypeSchema = new mongoose.Schema(
         resetSessionId: { type: String }
       },
       twoFactor: {
-        enabled: { type: Boolean },
+        enabled: { type: Boolean, default: true },
         otp: { type: String },
         expiresOn: { type: Date },
         sessionId: { type: String }
