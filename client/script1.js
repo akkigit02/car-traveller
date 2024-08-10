@@ -49,7 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return
         }
         for (const city of cities) {
-            const div = document.createElement('ul');
+            const div = document.createElement('div');
+            div.classList.add('cstm-dropdown-list')
             div.innerText = `${city.name}, ${city.state_name}`;
             suggestion.appendChild(div);
             div.addEventListener('click', (event) => {
@@ -62,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
+            let response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
                 method: "GET",
             });
             let data = await response.json();
@@ -77,12 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const from = document.getElementById('from')
     from.addEventListener('input', (event) => { filterFunction('from') })
     from.addEventListener('focus', (event) => { setSuggestionVisible('from', true) })
-    // from.addEventListener('blur', (event) => { setSuggestionVisible('from', false) })
+    from.addEventListener('blur', (event) => { setSuggestionVisible('from', false) })
 
     const to = document.getElementById('to')
     to.addEventListener('input', (event) => { filterFunction('to') })
     to.addEventListener('focus', (event) => { setSuggestionVisible('to', true) })
-    // to.addEventListener('blur', (event) => { setSuggestionVisible('to', false) })
+    to.addEventListener('blur', (event) => { setSuggestionVisible('to', false) })
 
  const getTimeForDropdown = () => {
      const timeSelect = document.getElementById('timeSelect');

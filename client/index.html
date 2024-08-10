@@ -22,23 +22,6 @@
     <link rel="stylesheet" href="assets/css/style1.css">
 </head>
 
-<style>
-    .suggestion-list {
-        position: absolute;
-        width: 100%;
-        border: 1px solid red;
-        height: 200px;
-        overflow: scroll;
-    }
-
-    .suggestion-list ul {
-        width: 100%;
-        height: 30px;
-        border: 1px solid red;
-        text-wrap: nowrap;
-        cursor: pointer;
-    }
-</style>
 
 <body style="background-color: white;height: 100vh;">
 
@@ -190,18 +173,14 @@
                                                 Home
                                             </a>
                                         </li>
-                                        <li>
-                                            <a href="#">About Us</a>
-                                        </li>
+                                        
                                         <li>
                                             <a href="car-list.html">
                                                 Cars
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="#">
-                                                Blog
-                                            </a>
+                                            <a href="#">About Us</a>
                                         </li>
                                         <li>
                                             <a href="#contact">Contact</a>
@@ -223,11 +202,11 @@
                         </div>
                         <a href="#0" class="search-trigger search-icon"><i
                                 class="fa-regular fa-magnifying-glass"></i></a>
-                        <div class="header-button">
+                        <!-- <div class="header-button">
                             <a href="car-list.html" class="header-btn">
                                 Find a Car
                             </a>
-                        </div>
+                        </div> -->
                         <div class="header__hamburger d-xl-none my-auto">
                             <div class="sidebar__toggle">
                                 <i class="fas fa-bars"></i>
@@ -281,81 +260,221 @@
                     <li><a data-toggle="tab" href="#menu3">Airport</a></li>
                 </ul>
                 <div>
-                    <div class="">
-                        <div class="pickup-wrapper wow fadeInUp" data-wow-delay=".4s">
-                            <!-- <div class="pickup-items">
-                                <label class="field-label">Pick-up Location</label>
-                                <div class="category-oneadjust">
-                                    <datalist name="cate" class="category">
-                                        <option value="1">
-                                            Select Location
-                                        </option>
-                                        <option value="1">
-                                            Houston
-                                        </option>
-                                        <option value="1">
-                                            Texas
-                                        </option>
-                                        <option value="1">
-                                            New York
-                                        </option>
-                                        <option value="1">
-                                            Other Location
-                                        </option>
-                                    </datalist>
-                                </div>
-                            </div> -->
-                            <div class="pickup-items" style="position: relative;">
-                                <label class="field-label">From </label>
-                                <input name="from" id="from">
-                                <div id="fromSuggestion" class="suggestion-list"></div>
-                            </div>
-                            <div class="pickup-items" style="position: relative;">
-                                <label class="field-label">From </label>
-                                <input name="to" id="to">
-                                <div id="toSuggestion" class="suggestion-list"></div>
-                            </div>
-                            <!-- <input list="cities" name="from" id="from"> -->
-                            <datalist name="cities" class="category">
-                                <option value="1">
-                                    Select Location
-                                </option>
-                                <option value="1">
-                                    Houston
-                                </option>
-                                <option value="1">
-                                    Texas
-                                </option>
-                                <option value="1">
-                                    New York
-                                </option>
-                                <option value="1">
-                                    Other Location
-                                </option>
-                            </datalist>
-                            <div class="pickup-items">
-                                <label class="field-label">Pickup Date</label>
-                                <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
-                                    <input class="form-control" type="text" placeholder="Check in" readonly>
-                                    <span class="input-group-addon"> <i class="fa-solid fa-calendar-days"></i></span>
-                                </div>
-                            </div>
-                            <div class="pickup-items">
-                                <label class="field-label">Pickup Time</label>
-                                <div class="category-oneadjust">
-                                    <select id="timeSelect">
-                                        <option value="Select Time">Select Time</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="pickup-items">
-                                <label class="field-label style-2">button</label>
-                                 <button class="pickup-btn" type="button" id="submitSuttom">
-                                        Find a Car
-                                    </button>
+                    <div class="pickup-wrapper wow fadeInUp " data-wow-delay=".4s">
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">From </label>
+                            <input name="from" id="from" placeholder="Type city">
+                            <div id="fromSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">To </label>
+                            <input name="to" id="to" placeholder="Type city">
+                            <div id="toSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <!-- <input list="cities" name="from" id="from"> -->
+                        <datalist name="cities" class="category">
+                            <option value="1">
+                                Select Location
+                            </option>
+                            <option value="1">
+                                Houston
+                            </option>
+                            <option value="1">
+                                Texas
+                            </option>
+                            <option value="1">
+                                New York
+                            </option>
+                            <option value="1">
+                                Other Location
+                            </option>
+                        </datalist>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Date</label>
+                            <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
+                                <input class="form-control" type="text" placeholder="DD-MM-YYYY" readonly>
+                                <span class="input-group-addon"> <i class="fa-solid fa-calendar-days"></i></span>
                             </div>
                         </div>
-
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Time</label>
+                            <div class="category-oneadjust">
+                                <select id="timeSelect">
+                                    <option value="Select Time">Select Time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label style-2">button</label>
+                                <button class="pickup-btn" type="button" id="submitSuttom">
+                                    Find a Car
+                                </button>
+                        </div>
+                    </div>
+                    <div class="pickup-wrapper wow fadeInUp d-none" data-wow-delay=".4s">
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">City </label>
+                            <input name="from" id="from" placeholder="Type city">
+                            <div id="fromSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <!-- <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">To </label>
+                            <input name="to" id="to" placeholder="Type city">
+                            <div id="toSuggestion" class="suggestion-list"></div>
+                        </div> -->
+                        <!-- <input list="cities" name="from" id="from"> -->
+                        <datalist name="cities" class="category">
+                            <option value="1">
+                                Select Location
+                            </option>
+                            <option value="1">
+                                Houston
+                            </option>
+                            <option value="1">
+                                Texas
+                            </option>
+                            <option value="1">
+                                New York
+                            </option>
+                            <option value="1">
+                                Other Location
+                            </option>
+                        </datalist>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Date</label>
+                            <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
+                                <input class="form-control" type="text" placeholder="DD-MM-YYYY" readonly>
+                                <span class="input-group-addon"> <i class="fa-solid fa-calendar-days"></i></span>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Time</label>
+                            <div class="category-oneadjust">
+                                <select id="timeSelect">
+                                    <option value="Select Time">Select Time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label style-2">button</label>
+                                <button class="pickup-btn" type="button" id="submitSuttom">
+                                    Find a Car
+                                </button>
+                        </div>
+                    </div>
+                    <div class="pickup-wrapper wow fadeInUp d-none" data-wow-delay=".4s">
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">From </label>
+                            <input name="from" id="from" placeholder="Type city">
+                            <div id="fromSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">To </label>
+                            <input name="to" id="to" placeholder="Type city">
+                            <div id="toSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <!-- <input list="cities" name="from" id="from"> -->
+                        <datalist name="cities" class="category">
+                            <option value="1">
+                                Select Location
+                            </option>
+                            <option value="1">
+                                Houston
+                            </option>
+                            <option value="1">
+                                Texas
+                            </option>
+                            <option value="1">
+                                New York
+                            </option>
+                            <option value="1">
+                                Other Location
+                            </option>
+                        </datalist>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Date</label>
+                            <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
+                                <input class="form-control" type="text" placeholder="DD-MM-YYYY" readonly>
+                                <span class="input-group-addon"> <i class="fa-solid fa-calendar-days"></i></span>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label">Return Date</label>
+                            <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
+                                <input class="form-control" type="text" placeholder="DD-MM-YYYY" readonly>
+                                <span class="input-group-addon"> <i class="fa-solid fa-calendar-days"></i></span>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Time</label>
+                            <div class="category-oneadjust">
+                                <select id="timeSelect">
+                                    <option value="Select Time">Select Time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label style-2">button</label>
+                                <button class="pickup-btn" type="button" id="submitSuttom">
+                                    Find a Car
+                                </button>
+                        </div>
+                    </div>
+                    <div class="pickup-wrapper wow fadeInUp d-none" data-wow-delay=".4s">
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">Trip </label>
+                            <input name="from" id="from" placeholder="Drop to airport">
+                            <div id="fromSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">Pickup Address </label>
+                            <input name="to" id="to" placeholder="Type address">
+                            <div id="toSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <div class="pickup-items" style="position: relative;">
+                            <label class="field-label">Drop Airport </label>
+                            <input name="to" id="to" placeholder="Type airport/city name">
+                            <div id="toSuggestion" class="suggestion-list"></div>
+                        </div>
+                        <!-- <input list="cities" name="from" id="from"> -->
+                        <datalist name="cities" class="category">
+                            <option value="1">
+                                Select Location
+                            </option>
+                            <option value="1">
+                                Houston
+                            </option>
+                            <option value="1">
+                                Texas
+                            </option>
+                            <option value="1">
+                                New York
+                            </option>
+                            <option value="1">
+                                Other Location
+                            </option>
+                        </datalist>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Date</label>
+                            <div id="datepicker" class="input-group date" data-date-format="dd-mm-yyyy">
+                                <input class="form-control" type="text" placeholder="DD-MM-YYYY" readonly>
+                                <span class="input-group-addon"> <i class="fa-solid fa-calendar-days"></i></span>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label">Pickup Time</label>
+                            <div class="category-oneadjust">
+                                <select id="timeSelect">
+                                    <option value="Select Time">Select Time</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="pickup-items">
+                            <label class="field-label style-2">button</label>
+                                <button class="pickup-btn" type="button" id="submitSuttom">
+                                    Find a Car
+                                </button>
+                        </div>
                     </div>
                 </div>
 
@@ -795,7 +914,7 @@
                         <div class="funfact-counter-area">
                             <div class="funfact-items wow fadeInUp" data-wow-delay=".3s">
                                 <div class="icon">
-                                    <img src="assets/img/car.png" alt="img">
+                                    <img src="assets/img/07.png" alt="img">
                                 </div>
                                 <h2><span class="count">990</span></h2>
                                 <p>
