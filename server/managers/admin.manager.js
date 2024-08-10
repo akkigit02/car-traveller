@@ -94,7 +94,7 @@ const getVehicleById = async(req, res) => {
     }
 }
 
-const getBookingInfo = async () => {
+const getBookingInfo = async (req,res) => {
     try {
         const ride = await RideModel.find({}).populate('passengerId','firstName lastName')
         res.status(200).send({ride})
