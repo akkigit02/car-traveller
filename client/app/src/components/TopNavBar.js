@@ -1,7 +1,7 @@
 import React from 'react'
 import style from '../assets/css/style.css'
 
-//  const logo = '../assets/css/img/logo.png';
+ const logo = require('../assets/img/logo.png');
 
 function TopNavBar() {
   return (
@@ -12,7 +12,7 @@ function TopNavBar() {
                 <div className="header-left">
                     <div className="logo">
                         <a href="index.html" className="header-logo">
-                            <img src="../assets/img/logo.png" alt="logo-img"/>
+                            <img src={logo} alt="logo-img"/>
                         </a>
                     </div>
                     <div className="mean__menu-wrapper">

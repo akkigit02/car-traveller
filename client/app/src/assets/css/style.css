@@ -244,3 +244,138 @@ span {
 .car-list-items .car-content p {
     padding-bottom: 25px;
 }
+
+
+/* ********* sign up page css *********** */
+
+/* .section-padding {
+    padding: 120px 0;
+} */
+.number-code{
+    top: 18px;
+    left: 20px;
+}
+.p-60{
+    padding-left: 60px !important;
+}
+.fix {
+    overflow: hidden;
+}
+.car-details-wrapper .car-booking-items {
+    padding: 30px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-top: 30px;
+}
+.car-details-wrapper .car-booking-items .booking-header h3 {
+    font-size: 26px;
+    margin-bottom: 5px;
+}
+.car-details-wrapper .car-booking-items .contact-form-items {
+    padding-top: 30px;
+}
+.car-details-wrapper .car-booking-items .contact-form-items .form-clt .label-text {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--header);
+    text-transform: capitalize;
+    margin-bottom: 10px;
+}
+.car-details-wrapper .car-booking-items .contact-form-items .form-clt input {
+    width: 100%;
+    outline: none;
+    border: none;
+    padding: 18px 24px;
+    border-radius: 10px;
+    color: var(--text);
+    background-color: var(--bg);
+}
+input {
+    color: var(--white);
+}
+
+.theme-btn {
+    background-color: var(--theme);
+    color: var(--white);
+    display: inline-block;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 20px 40px;
+    border-radius: 0;
+    text-transform: capitalize;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+    position: relative;
+    z-index: 1;
+    border: none;
+    line-height: 1.3;
+    border-radius: 10px;
+}
+.theme-btn::before {
+    content: "";
+    background-color: var(--header);
+    width: 0;
+    height: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    -webkit-transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    z-index: -1;
+    border-radius: 10px 10px 0 0;
+}
+.theme-btn::after {
+    content: "";
+    background-color: var(--header);
+    width: 0;
+    height: 50%;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    -webkit-transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    transition: all 0.3s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+    z-index: -1;
+    border-radius: 0 0 10px 10px;
+}
+.car-details-wrapper .car-booking-items .contact-form-items .form-clt .input-group {
+    position: relative;
+}
+.car-details-wrapper .car-booking-items .contact-form-items .form-clt .input-group input {
+    width: 100%;
+    outline: none;
+    border: none;
+    padding: 18px 24px;
+    border-radius: 10px !important;
+    color: var(--text);
+    background-color: var(--bg);
+}
+.car-details-wrapper .car-booking-items .contact-form-items .form-clt .input-group .input-group-addon {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+}
+.car-list-sidebar {
+    background-color: #ecf0f4;
+    border-radius: 10px;
+}
+
+.car-list-sidebar .title {
+    color: var(--white);
+    padding: 30px;
+    background-color: var(--theme2);
+    border-radius: 10px 10px 0 0;
+}
+.car-list-sidebar .contact-form-items {
+    padding: 30px;
+}
+.mt-30{
+    margin-top: 30px;
+}
+.cstm-input{
+    outline: none;
+    border: none;
+    padding: 18px 24px;
+    border-radius: 10px;
+    color: var(--text);
+    background-color: var(--bg);
+}
