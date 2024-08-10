@@ -956,7 +956,7 @@ span {
   color: var(--text);
 }
 .search-booking-wrapper .product-search-area .pickup-items .category-oneadjust .nice-select .list {
-  max-height: 15vh;
+  max-height: 300px;
   background: var(--header);
   width: 100%;
   padding: 5px 8px;
@@ -5194,7 +5194,7 @@ input.main-search-input::placeholder {
 
 .section-title {
   position: relative;
-  z-index: 9;
+  /* z-index: 9; */
   margin-bottom: 30px;
   margin-top: -7px;
 }
