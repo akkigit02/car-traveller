@@ -3,6 +3,21 @@ document.addEventListener('DOMContentLoaded', () => {
         to: '',
         from: ''
     }
+
+    const inputType=['oneWay','local','roundTrip','airport']
+    inputType.map(ele=>document.getElementById(ele).addEventListener('click',()=>{selectInputType(ele) }))
+
+    const selectInputType=(type)=>{
+        inputType.filter(ele=>ele!==type).forEach(ele=>{
+            document.getElementById(`${ele}Input`).style.display='none'
+            document.getElementById(ele).classList.remove('active')
+        })
+        document.getElementById(`${type}Input`).style.display='flex'
+        document.getElementById(type).classList.add('active')
+
+    }
+
+
     const submitSuttom = document.getElementById(`submitSuttom`)
     submitSuttom.addEventListener('click', () => {
         //  error handle 

@@ -733,3 +733,6 @@ h1, h2, h3, h4, h5, h6 {
 .header-1 .header-main .main-menu ul li a{
 	color: black;
 }
+.cstm-d-none{
+	display: none;
+}
