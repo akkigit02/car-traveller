@@ -21,9 +21,7 @@ const getCities = async (req, res) => {
 const getCars = async (req, res) => {
     try {
         const search = req?.query?.search
-        const decodedString = atob(search);
-        const decodedData = JSON.parse(decodedString);
-        console.log(decodedData)
+        console.log(search)
         
         return res.status(200).send({})
     } catch (error) {

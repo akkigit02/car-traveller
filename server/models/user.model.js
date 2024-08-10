@@ -15,7 +15,6 @@ const userTypeSchema = new mongoose.Schema(
     password: { type: String, default: null },
     modules: {
       userType: { type: String, emum: ['DEVELOPER', 'ADMIN', 'DRIVER', 'CLIENT'] },
-      accessibleModule: [{ type: String }]
     },
     currentAddress: {
       addressLine: { type: String, default: "" },

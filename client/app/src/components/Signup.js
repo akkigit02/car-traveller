@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form"
 import { emailPattern, namePattern, phoneNumberValidation } from '../constants/Validation.constant';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 function Signup() {
     const { register, handleSubmit, formState: { errors } } = useForm();
-
-
+    const { query } = useParams();
+    const [bookingDetails, setBookingDetails] = useState()
     const [isOtpSent, setIsOtpSent] = useState(false)
     const [sessionId, setSessionId] = useState()
     const [otp, setOtp] = useState()
@@ -31,7 +32,7 @@ function Signup() {
             const { data } = await axios({
                 url: '/api/auth/send-otp',
                 method: 'POST',
-                data: formData
+                data: { userDetails: formData, bookingDetails }
             })
             if (data.status === 'TWO_STEP_AUTHENTICATION') {
                 setIsOtpSent(true)
@@ -41,6 +42,18 @@ function Signup() {
             console.log(error.response.data)
         }
     }
+
+
+    useEffect(() => {
+        if (query) {
+            // decode query   
+            const decodedString = atob(query);
+            const decodedData = JSON.parse(decodedString);
+            setBookingDetails(decodedData)
+        }
+        else window.location.href = 'http:127.0.0.1:5500'
+    }, [])
+
 
 
 

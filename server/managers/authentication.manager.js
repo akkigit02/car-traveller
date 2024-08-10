@@ -161,6 +161,7 @@ const sendOtp = async (req, res) => {
         if (user && user.modules.userType !== 'CLIENT')
             return res.status(500).send({ message: 'Phone Number already exist.' })
         else {
+
             user = await UserModel.create({
                 firstName: body.firstName,
                 lastName: body.lastName,

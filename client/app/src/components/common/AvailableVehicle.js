@@ -1,19 +1,21 @@
 import axios from "axios";
-import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import TopNavBar from "../TopNavBar";
-import { style } from "../../assets/css/style.css";
 // import { icon } from "../../assets/css/icon.css";
 
 export default function AvailableVehicle() {
   const { query } = useParams();
+  const navigate = useNavigate();
+
+  const [bookingDetails, setBookingDetails] = useState('')
   const carImage = require("../../assets/img/car-list-1.webp");
 
   const getCarList = async () => {
     try {
       const { data } = await axios({
         url: "/api/client/car-list",
-        params: { search: query },
+        params: { search: bookingDetails },
       });
       console.log(data);
     } catch (error) {
@@ -23,9 +25,21 @@ export default function AvailableVehicle() {
 
   useEffect(() => {
     if (query) {
-      getCarList();
+      // decode query   
+      const decodedString = atob(query);
+      const decodedData = JSON.parse(decodedString);
+      setBookingDetails(decodedData)
+      // getCarList();
     }
+    else window.location.href = 'http:127.0.0.1:5500'
   }, []);
+
+
+  const book = () => {
+    navigate(`/signup/${query}`)
+  }
+
+
 
   return (
     <>
@@ -35,18 +49,18 @@ export default function AvailableVehicle() {
           <div className="container">
             <div className="col-lg-12 d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center">
-                  <h6>Pune - Nashik (one way)</h6>
+                <h6>Pune - Nashik (one way)</h6>
               </div>
               <div className="d-flex align-items-center">
-                  <div className="me-3">
-                    <p className="mb-0">Pickup Date</p>
-                    <div className="highlight-data">10-08-2024</div>
-                  </div>
-                  <div className="me-3">
-                    <p className="mb-0">Time</p>
-                    <div className="highlight-data">07:00 PM</div>
-                  </div>
-                  <button className="cstm-btn-red">Modify</button>
+                <div className="me-3">
+                  <p className="mb-0">Pickup Date</p>
+                  <div className="highlight-data">10-08-2024</div>
+                </div>
+                <div className="me-3">
+                  <p className="mb-0">Time</p>
+                  <div className="highlight-data">07:00 PM</div>
+                </div>
+                <button className="cstm-btn-red">Modify</button>
               </div>
             </div>
           </div>
@@ -59,11 +73,11 @@ export default function AvailableVehicle() {
                 <img src={carImage} />
               </div>
               <div className="car-content">
-                <a href="#">
+                <button onClick={() => { book('carId',) }}>
                   <h6 className="price">
                     7000.00 <span>/ Day</span>
                   </h6>
-                </a>
+                </button>
                 <h6>
                   <a href="#">Hyundai Accent Limited</a>
                 </h6>

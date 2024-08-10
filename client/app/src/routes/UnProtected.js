@@ -10,7 +10,7 @@ function UnProtected() {
       <Route path="/" Component={Login} />
       <Route path="/forgot-password" Component={Login} exact />
       <Route path="/car-list/:query" Component={AvailableVehicle} exact />
-      <Route path="/signup" Component={Signup} exact />
+      <Route path="/signup/:query" Component={Signup} exact />
     </Routes>
 
   )
