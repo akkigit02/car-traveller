@@ -94,11 +94,31 @@ const VEHICLE_TYPE = [
       "value": "cng"
     }
   ]
+  ['oneWay','local','roundTrip','airport']
+  const TRIP_TYPE = [
+    {
+      "name": "One Way",
+      "value": "oneWay"
+    },
+    {
+      "name": "Local",
+      "value": "local"
+    },
+    {
+      "value": "roundTrip",
+      "name": "Round Trip"
+    },
+    {
+      "value": "airport",
+      "name": "Airport"
+    }
+  ]
   
 
 
 module.exports = {
     USER_ROUTE,
     VEHICLE_TYPE,
-    FUEL_TYPE
+    FUEL_TYPE,
+    TRIP_TYPE
 }

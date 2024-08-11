@@ -2,6 +2,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import TopNavBar from "../TopNavBar";
+import { TRIP_TYPE } from "../../constants/common.constants";
+import moment from 'moment'
 // import { icon } from "../../assets/css/icon.css";
 
 export default function AvailableVehicle() {
@@ -18,7 +20,7 @@ export default function AvailableVehicle() {
         url: "/api/client/car-list",
         params: { search: query },
       });
-      setBookingDetails(data.bookingDetails)
+      setBookingDetails({...data.bookingDetails, type: TRIP_TYPE.find(ty => ty.value === query.type)?.name, time: query.pickupTime, date: query.pickupDate})
       setCarList(data.cars)
     } catch (error) {
       console.log(error);
@@ -32,6 +34,7 @@ export default function AvailableVehicle() {
       const decodedData = JSON.parse(decodedString);
       setBookingDetails(decodedData)
       // getCarList();
+      console.log(decodedData,"======---------")
       getCarList(decodedData)
     }
     else window.location.href = 'http:127.0.0.1:5500'
@@ -58,11 +61,11 @@ export default function AvailableVehicle() {
               <div className="d-flex align-items-center">
                 <div className="me-3">
                   <p className="mb-0">Pickup Date</p>
-                  <div className="highlight-data">10-08-2024</div>
+                  <div className="highlight-data">{moment(bookingDetails.date).format('DD/MM/YYYY')}</div>
                 </div>
                 <div className="me-3">
                   <p className="mb-0">Time</p>
-                  <div className="highlight-data">07:00 PM</div>
+                  <div className="highlight-data">{bookingDetails.time}</div>
                 </div>
                 <a href="http://127.0.0.1:5500/client/index.html">
                 
@@ -75,7 +78,7 @@ export default function AvailableVehicle() {
 
         <div className="container">
           <div className="col-lg-12">
-            {carList.map((item) => (<div className="car-list-items">
+            {carList.map((item, idx) => (<div className="car-list-items" key={idx}>
             
               <div className="car-image bg-cover">
                 <img src={item.vehicleImageUrl} />
@@ -83,7 +86,7 @@ export default function AvailableVehicle() {
               <div className="car-content">
                 <button onClick={() => { book('carId',) }}>
                   <h6 className="price">
-                    {Math.ceil(item.totalPrice)}
+                    {Math.ceil(item.totalPrice)} <span>Rs</span>
                   </h6>
                 </button>
                 <h6>

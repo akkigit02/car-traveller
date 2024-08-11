@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         from: '',
         pickupDate: '',
         pickupTime: '',
-        type: ''
+        type: 'oneWay'
     }
 
     const inputType=['oneWay','local','roundTrip','airport']
@@ -24,6 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const submitSuttom = document.getElementById(`submitSuttom`)
     submitSuttom.addEventListener('click', () => {
         //  error handle 
+        const timeSelect = document.getElementById('timeSelect');
+        const datepickerElement = document.getElementById('datepicker');
+        const inputElement = datepickerElement.querySelector('input');
+        query.pickupDate = inputElement.value
+        query.pickupTime = timeSelect.value
         const jsonString = JSON.stringify(query);
         const encodedString = btoa(jsonString);
         console.log(encodedString);
@@ -114,6 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getTimeForDropdown = () => {
         const timeSelect = document.getElementById('timeSelect');
+        const datepickerElement = document.getElementById('datepicker');
+        const inputElement = datepickerElement.querySelector('input');
         const date = new Date();
         const endDate = new Date();
         endDate.setHours(23, 45, 0, 0); // 11:45 PM
@@ -121,8 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         date.setHours(date.getHours() + 1);
         date.setMinutes(date.getMinutes() + 30);
         
-        const datepickerElement = document.getElementById('datepicker');
-        const inputElement = datepickerElement.querySelector('input');
         
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
@@ -151,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const isoTime = date.toISOString();
 
             const option = document.createElement('option');
-            option.value = isoTime;
+            option.value = displayTime;
             option.textContent = displayTime;
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
