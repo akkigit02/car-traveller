@@ -1,7 +1,7 @@
 import Axios from "axios";
 
 const { REACT_APP_SERVER_BASE_URL } = process.env
-
+console.log(REACT_APP_SERVER_BASE_URL)
 Axios.defaults.baseURL = REACT_APP_SERVER_BASE_URL;
 Axios.defaults.headers.post['Content-Type'] = 'application/json';
 
