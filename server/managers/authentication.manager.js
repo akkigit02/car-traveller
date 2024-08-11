@@ -127,53 +127,28 @@ const verifySession = async (req, res) => {
 
 const signup = async (req, res) => {
     try {
-
         const { body } = req
-        if (!body.phoneNumber)
+        console.log(body)
+        if (!body.userDetails.phoneNumber)
             return res.status(500).send({ message: 'Phone Number is required' })
-        if (!body.email)
+        if (!body.userDetails.email)
             return res.status(500).send({ message: 'Email is required' })
-
-        const user = await UserModel.findOne({ primaryPhone: String(body.phoneNumber) }, { modules: 1 })
-        if (user) {
-            if (user.modules.userType !== 'CLIENT') {
-                return res.status(500).send({ message: 'Phone Number already exist.' })
-            }
-
-        }
-        return res.status(200).send({ message: '' })
-    } catch (error) {
-        console.log(error)
-        res.status(500).send({ message: 'Something went wrong. Please try again later.' })
-
-    }
-}
-
-
-const sendOtp = async (req, res) => {
-    try {
-        const { body } = req
-        if (!body.phoneNumber)
-            return res.status(500).send({ message: 'Phone Number is required' })
-        if (!body.email)
-            return res.status(500).send({ message: 'Email is required' })
-        let user = await UserModel.findOne({ primaryPhone: String(body.phoneNumber) }, { modules: 1 })
+        let user = await UserModel.findOne({ primaryPhone: String(body.userDetails.phoneNumber) }, { modules: 1 })
         if (user && user.modules.userType !== 'CLIENT')
             return res.status(500).send({ message: 'Phone Number already exist.' })
         else {
 
             user = await UserModel.create({
-                firstName: body.firstName,
-                lastName: body.lastName,
-                email: body.email,
-                primaryPhone: body.phoneNumber,
+                firstName: body.userDetails.firstName,
+                lastName: body.userDetails.lastName,
+                email: body.userDetails.email,
+                primaryPhone: body.userDetails.phoneNumber,
                 modules: {
                     userType: 'CLIENT'
                 }
             })
         }
         const otp = generateOTP()
-        console.log(otp)
         const sessionId = generateSecureRandomString()
         await UserModel.updateOne({ _id: user._id }, {
             $set: {
@@ -197,5 +172,4 @@ module.exports = {
     verifyOtp,
     verifySession,
     signup,
-    sendOtp
 }
