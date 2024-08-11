@@ -44,15 +44,15 @@ function Signup() {
       console.log(error.response.data)
     }
   }
-  useEffect(() => {
-    if (query) {
-      // decode query   
-      const decodedString = atob(query);
-      const decodedData = JSON.parse(decodedString);
-      setBookingDetails(decodedData)
-    }
-    else window.location.href = 'http:127.0.0.1:5500'
-  }, [])
+//   useEffect(() => {
+//     if (query) {
+//       decode query   
+//       const decodedString = atob(query);
+//       const decodedData = JSON.parse(decodedString);
+//       setBookingDetails(decodedData)
+//     }
+//     else window.location.href = 'http:127.0.0.1:5500'
+//   }, [])
 
 
   return (
