@@ -1,5 +1,7 @@
 const CitiesModel = require('../models/cities.model');
-const RideModel = require('../models/booking.model')
+const RideModel = require('../models/booking.model');
+const PricingModel = require('../models/pricing.model');
+const { estimateRouteDistance } = require('../utils/calculation.util');
 
 const getCities = async (req, res) => {
     try {
@@ -21,9 +23,21 @@ const getCities = async (req, res) => {
 const getCars = async (req, res) => {
     try {
         const search = req?.query?.search
-        console.log(search)
-        
-        return res.status(200).send({})
+        const cars = await PricingModel.find({}).lean()
+        const toDetail = await CitiesModel.findOne({_id: search.to}).lean()
+        const fromDetail = await CitiesModel.findOne({_id: search.from}).lean()
+        const distance = estimateRouteDistance(fromDetail.latitude, fromDetail.longitude, toDetail.latitude, toDetail.longitude, 1.25)
+        let carList = []
+        for(let car of cars) {
+            car['totalPrice'] = distance.toFixed(2) * car.costPerKm + car.driverAllowance
+            carList.push(car)
+        }
+        const bookingDetails = {
+            from: fromDetail.name,
+            to: toDetail.name,
+            distance: distance.toFixed(2)
+        }
+        return res.status(200).send({cars: carList, bookingDetails});
     } catch (error) {
         console.log(error)
         return res.status(500).send({ message: 'Something went wrong' })

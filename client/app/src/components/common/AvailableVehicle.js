@@ -9,15 +9,17 @@ export default function AvailableVehicle() {
   const navigate = useNavigate();
 
   const [bookingDetails, setBookingDetails] = useState('')
+  const [carList, setCarList] = useState([])
   const carImage = require("../../assets/img/car-list-1.webp");
 
-  const getCarList = async () => {
+  const getCarList = async (query) => {
     try {
       const { data } = await axios({
         url: "/api/client/car-list",
-        params: { search: bookingDetails },
+        params: { search: query },
       });
-      console.log(data);
+      setBookingDetails(data.bookingDetails)
+      setCarList(data.cars)
     } catch (error) {
       console.log(error);
     }
@@ -30,8 +32,10 @@ export default function AvailableVehicle() {
       const decodedData = JSON.parse(decodedString);
       setBookingDetails(decodedData)
       // getCarList();
+      getCarList(decodedData)
     }
     else window.location.href = 'http:127.0.0.1:5500'
+
   }, []);
 
 
@@ -49,7 +53,7 @@ export default function AvailableVehicle() {
           <div className="container">
             <div className="col-lg-12 d-flex align-items-center justify-content-between">
               <div className="d-flex align-items-center">
-                <h6>Pune - Nashik (one way)</h6>
+                <h6>{bookingDetails.from} - {bookingDetails.to} ({bookingDetails.type || 'One Way'})</h6>
               </div>
               <div className="d-flex align-items-center">
                 <div className="me-3">
@@ -60,7 +64,10 @@ export default function AvailableVehicle() {
                   <p className="mb-0">Time</p>
                   <div className="highlight-data">07:00 PM</div>
                 </div>
-                <button className="cstm-btn-red">Modify</button>
+                <a href="http://127.0.0.1:5500/client/index.html">
+                
+                <button className="cstm-btn-red">Change</button>
+                </a>
               </div>
             </div>
           </div>
@@ -68,18 +75,21 @@ export default function AvailableVehicle() {
 
         <div className="container">
           <div className="col-lg-12">
-            <div className="car-list-items">
+            {carList.map((item) => (<div className="car-list-items">
+            
               <div className="car-image bg-cover">
-                <img src={carImage} />
+                <img src={item.vehicleImageUrl} />
               </div>
               <div className="car-content">
                 <button onClick={() => { book('carId',) }}>
                   <h6 className="price">
-                    7000.00 <span>/ Day</span>
+                    {Math.ceil(item.totalPrice)}
                   </h6>
                 </button>
                 <h6>
-                  <a href="#">Hyundai Accent Limited</a>
+                  <span>
+                    {item.vehicleName}
+                  </span>
                 </h6>
                 <div className="star">
                   <i className="fa-solid fa-star"></i>
@@ -89,8 +99,11 @@ export default function AvailableVehicle() {
                   <i className="fa-solid fa-star"></i>
                   <span>2 Reviews</span>
                 </div>
+                <h6>
+                  Distance: {bookingDetails.distance}
+                </h6>
               </div>
-            </div>
+            </div>))}
           </div>
         </div>
       </div>

@@ -1,6 +1,6 @@
 import Axios from "axios";
 // const { SERVER_BASE_URL } = process.env
-const SERVER_BASE_URL = 'http://127.0.0.1:5001'
+const SERVER_BASE_URL = 'http://127.0.0.1:5000'
 Axios.defaults.baseURL = SERVER_BASE_URL;
 Axios.defaults.headers.post['Content-Type'] = 'application/json';
 

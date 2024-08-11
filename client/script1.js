@@ -1,7 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     const query = {
         to: '',
-        from: ''
+        from: '',
+        pickupDate: '',
+        pickupTime: '',
+        type: ''
     }
 
     const inputType=['oneWay','local','roundTrip','airport']
@@ -115,20 +118,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const endDate = new Date();
         endDate.setHours(23, 45, 0, 0); // 11:45 PM
         const optionsInterval = 15; // interval in minutes
-
         date.setHours(date.getHours() + 1);
         date.setMinutes(date.getMinutes() + 30);
-
+        
         const datepickerElement = document.getElementById('datepicker');
         const inputElement = datepickerElement.querySelector('input');
-
+        
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
         const year = date.getFullYear();
-
+        
         const formattedDate = day + '-' + month + '-' + year;
         inputElement.value = formattedDate;
-
+        
         // Round the current minutes up to the nearest 30-minute interval
         const now = new Date();
         now.setHours(now.getHours() + 1);

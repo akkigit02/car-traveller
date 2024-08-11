@@ -4,7 +4,8 @@ require('../configs/database.config');
 
 const collections = [
     'user',
-    'cities'
+    'cities',
+    'pricing'
 ];
 
 (async () => {
