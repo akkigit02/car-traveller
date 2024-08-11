@@ -4,7 +4,7 @@ import { emailPattern } from '../constants/Validation.constant'
 import axios from 'axios';
 import store from '../store';
 import { setTokenToLocal } from '../services/Authentication.service';
-
+import { toast } from 'react-toastify';
 function Login() {
     const { register, handleSubmit, formState: { errors } } = useForm();
 
@@ -55,7 +55,7 @@ function Login() {
                 {errors?.password?.message && <span>{errors?.password?.message}</span>}
                 <button type='submit'> Log In</button>
                 <div className="social">
-                    <div className="go"><i className="fab fa-google"></i>  Google</div>
+                    <div className="go" onClick={() => { toast.success('hello   ') }}><i className="fab fa-google"></i>  Google</div>
                     <div className="fb"><i className="fab fa-facebook"></i>  Facebook</div>
                 </div>
             </form>

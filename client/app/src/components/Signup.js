@@ -4,6 +4,7 @@ import { emailPattern, namePattern, phoneNumberValidation } from '../constants/V
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import TopNavBar from './TopNavBar';
+import { toast } from 'react-toastify';
 function Signup() {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { query } = useParams();
@@ -22,8 +23,12 @@ function Signup() {
           otp, sessionId
         }
       })
+      if (data.message)
+        toast.error(data.message)
+      
     } catch (error) {
       console.log(error.response.data)
+      toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
     }
   }
 
@@ -41,7 +46,8 @@ function Signup() {
         setSessionId(data.sessionId)
       }
     } catch (error) {
-      console.log(error.response.data)
+      console.log(error)
+      toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
     }
   }
   useEffect(() => {
@@ -50,6 +56,8 @@ function Signup() {
       const decodedString = atob(query);
       const decodedData = JSON.parse(decodedString);
       setBookingDetails(decodedData)
+      console.log(decodedData)
+
     }
     else window.location.href = 'http:127.0.0.1:5500'
   }, [])
