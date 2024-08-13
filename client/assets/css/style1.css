@@ -79,6 +79,7 @@
     border: 0px solid rgb(73, 71, 71);
     padding: 15px 100px;  
 	border-radius: 6px 0 0 6px;
+	color: white;
 }
 .search-card ul li a{
     color: black;
@@ -735,4 +736,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 .cstm-d-none{
 	display: none;
+}
+.btn-signup{
+	background-color: #005cb5;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+	border: 1px solid transparent;
+    line-height: 1.2;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+}
+.btn-signup:hover{
+	border: 1px solid #005cb5;
+	background-color: transparent;
+	color: #005cb5;
+}
+.padding-signin-btn{
+	padding: 15px 30px;
 }

@@ -51,8 +51,14 @@ function TopNavBar() {
                             <h6><a href="tel:+9288009850">+91 (8800) - 9850</a></h6>
                         </div>
                     </div>
-                    <a href="#0" className="search-trigger search-icon"><i
-                            className="fa-regular fa-magnifying-glass"></i></a>
+                    {/* <a href="#0" className="search-trigger search-icon"><i
+                            className="fa-regular fa-magnifying-glass"></i></a> */}
+                     <button class="theme-btn wow fadeInUp padding-signin-btn">
+                        Sign in
+                    </button>
+                    <button class="btn-signup" type="button" id="submitSuttom">
+                        SignUp
+                    </button>
                     
                     <div className="header__hamburger d-xl-none my-auto">
                         <div className="sidebar__toggle">

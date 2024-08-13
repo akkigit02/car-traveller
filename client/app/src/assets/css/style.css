@@ -13,6 +13,7 @@
   --border3: #5262FF;
   --bg: #F3F7FB;
   --bg2: #18185E;
+  --lightBlue:#b0cfff8c;
   --bg3: #ffffff33;
   --box-shadow: 0px 10px 60px 0px rgba(0, 0, 0, 0.1);
 }
@@ -23,7 +24,18 @@
     padding: 0;
     margin: 0;
 }
-
+.font-14{
+    font-size: 14px;
+}
+.font-20{
+    font-size: 20px;
+}
+.text-cut{
+    text-decoration-line: line-through;
+}
+.bg-blue-light{
+    background: var(--lightBlue);
+}
 .cstm-btn-red{
     background-color: var(--theme);
     color: var(--white);
@@ -38,10 +50,17 @@
 .highlight-data{
     border: 1px solid rgb(65, 65, 255);
     border-radius: 8px;
-    padding: 2px 10px;
+    padding: 10px 15px;
 
 }
-
+.height-car-list{
+    height: calc(100vh - 110px);
+}
+.cstm-calHeight{
+    height: calc(100vh - 110px);
+    overflow-y: auto;
+    padding-right: 10px;
+}
 .header-1 {
     position: relative;
     background-color: var(--white);
@@ -194,8 +213,8 @@ a {
 
 
 .car-list-items {
-    display: flex;
-    align-items: center;
+    /* display: flex;
+    align-items: center; */
     border-radius: 10px;
     border: 1px solid var(--border3);
     transition: all 0.4s ease-in-out;
@@ -205,15 +224,20 @@ a {
     box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
 }
 .car-list-items .car-image img {
-    max-width: 100px;
-    height: 100px;
+    max-width: 120px;
+    /* height: 100%; */
     flex-basis: 40%;
     border-radius: 10px 0 0 10px;
     position: relative;
 }
+.car-list-items .car-image {
+ display: flex;
+ align-items: center;
+ background: var(--lightBlue);
+}
 
 .car-list-items .car-content {
-    padding: 10px;
+    padding: 15px;
     position: relative;
     width: 100%;
 }
@@ -388,8 +412,8 @@ input {
 .font-bold{
     font-weight: bold;
 }
-.w-80{
-    width: 80px;
+.w-40{
+    width: 40px;
 }
 .icon-items {
     display: flex;
@@ -413,4 +437,29 @@ input {
 }
 .icon-items .content p {
     text-transform: uppercase;
+}
+.cursor-pointer{
+    cursor: pointer;
+}
+.minHeight_150{
+    min-height: 150px;
+}
+.btn-signup{
+	background-color: #005cb5;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: bold;
+	border: 1px solid transparent;
+    line-height: 1.2;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 10px;
+}
+.btn-signup:hover{
+	border: 1px solid #005cb5;
+	background-color: transparent;
+	color: #005cb5;
+}
+.padding-signin-btn{
+	padding: 15px 30px;
 }
