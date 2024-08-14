@@ -29,7 +29,22 @@ function haversine(lat1, lon1, lat2, lon2) {
     return estimatedRouteDistance;
   }
 
+  const dateDifference = (startDate, endDate) => {
+    // Parse the dates in the format "DD-MM-YYYY"
+    const start = new Date(startDate.split('-').reverse().join('-'));
+    const end = new Date(endDate.split('-').reverse().join('-'));
+  
+    // Calculate the difference in time
+    const timeDiff = end - start;
+  
+    // Convert time difference from milliseconds to days
+    const dayDiff = timeDiff / (1000 * 60 * 60 * 24);
+  
+    return dayDiff;
+  }
+
 
   module.exports = {
-    estimateRouteDistance
+    estimateRouteDistance,
+    dateDifference
   }

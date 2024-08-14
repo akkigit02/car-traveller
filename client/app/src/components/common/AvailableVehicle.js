@@ -40,7 +40,6 @@ export default function AvailableVehicle() {
       const decodedData = JSON.parse(decodedString);
       setBookingDetails(decodedData);
       // getCarList();
-      console.log(decodedData, "======---------");
       getCarList(decodedData);
     } else window.location.href = "http:127.0.0.1:5500";
   }, []);
@@ -106,6 +105,10 @@ export default function AvailableVehicle() {
                             <i className="fa fa-star"></i>
                             <span>2 Reviews</span>
                           </div>
+                          <div>
+                          or Similar to ({item?.similar?.join()})
+
+                          </div>
                         </div>
 
                         <div class="icon-items">
@@ -114,14 +117,14 @@ export default function AvailableVehicle() {
                           </div>
                           <div class="content">
                             <h6>Passengers:</h6>
-                            <p className="mb-0 pb-0">4 + 1 Seats</p>
+                            <p className="mb-0 pb-0">{item?.capacity?.totalNumberOfSeats} + {item?.capacity?.reservedNumberOfSeats} Seats</p>
                           </div>
                         </div>
                         <div className="d-flex justify-content-center align-items-center">
                           <div className=" me-3 d-flex flex-column align-items-center">
                           <p className="mb-0 pb-0">Distance: </p>
                             <p className="mb-0 pb-0 ">
-                              {bookingDetails.distance}KM
+                              {bookingDetails.distance}Km
                             </p>
                           </div>
                           <div>

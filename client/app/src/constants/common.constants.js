@@ -12,7 +12,7 @@ const USER_ROUTE = {
 const VEHICLE_TYPE = [
     {
       "name": "SUV",
-      "value": "suv"
+      "value": "SUV"
     },
     {
       "name": "Luxury Sedan",
@@ -20,7 +20,15 @@ const VEHICLE_TYPE = [
     },
     {
       "name": "Sedan",
-      "value": "sedan"
+      "value": "Sedan"
+    },
+    {
+      "name": "Innova",
+      "value": "Innova"
+    },
+    {
+      "name": "Traveller",
+      "value": "Traveller"
     },
     {
       "name": "Economy",
@@ -31,32 +39,12 @@ const VEHICLE_TYPE = [
       "value": "compact"
     },
     {
-      "name": "Mid-size",
-      "value": "mid_size"
-    },
-    {
-      "name": "Full-size",
-      "value": "full_size"
-    },
-    {
       "name": "Van",
       "value": "van"
     },
     {
-      "name": "Convertible",
-      "value": "convertible"
-    },
-    {
       "name": "Pickup Truck",
       "value": "pickup_truck"
-    },
-    {
-      "name": "Coupe",
-      "value": "coupe"
-    },
-    {
-      "name": "Crossover",
-      "value": "crossover"
     },
     {
       "name": "Minivan",
@@ -74,10 +62,6 @@ const VEHICLE_TYPE = [
       "name": "Luxury SUV",
       "value": "luxury_suv"
     },
-    {
-      "name": "Sports Car",
-      "value": "sports_car"
-    }
   ];
 
   const FUEL_TYPE = [

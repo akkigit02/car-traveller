@@ -2,30 +2,12 @@
     {
     "vehicleType": "Sedan",
     "vehicleName": "Hyundai Xcent",
+    "similar": ["Swift Dzire"],
     "vehicleImageUrl": "https://5.imimg.com/data5/KN/OS/GLADMIN-70698628/hyundai-xcent-car.png",
     "upToKm": 150,
     "upToCostPerKm": 14.25,
     "capacity": {
-      "totalNumberOfSeats": 5,
-      "reservedNumberOfSeats": 1,
-      "description": ""
-    },
-    "acAvailable": true,
-    "baseFare": 0,
-    "costPerKm": 13,
-    "costPerHour": 180,
-    "laguageCarrierCost": 0,
-    "minimumFare": 0,
-    "additionalCharges": 0,
-    "driverAllowance": 300
-},{
-    "vehicleType": "Sedan",
-    "vehicleName": "Swift Dzire",
-    "vehicleImageUrl": "https://5.imimg.com/data5/SELLER/Default/2023/1/QJ/JY/IT/183935270/swift-dzire-car-jpg.jpg",
-    "upToKm": 150,
-    "upToCostPerKm": 14.25,
-    "capacity": {
-      "totalNumberOfSeats": 5,
+      "totalNumberOfSeats": 4,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
@@ -40,30 +22,12 @@
 },{
     "vehicleType": "SUV",
     "vehicleName": "Ertiga",
+    "similar": ["Honda BRV"],
     "vehicleImageUrl": "https://imgd.aeplcdn.com/1056x594/n/c6es93a_1572125.jpg?q=80",
     "upToKm": 150,
     "upToCostPerKm": 15.25,
     "capacity": {
-      "totalNumberOfSeats": 7,
-      "reservedNumberOfSeats": 1,
-      "description": ""
-    },
-    "acAvailable": true,
-    "baseFare": 0,
-    "costPerKm": 16,
-    "costPerHour": 180,
-    "laguageCarrierCost": 0,
-    "minimumFare": 0,
-    "additionalCharges": 0,
-    "driverAllowance": 300
-},{
-    "vehicleType": "SUV",
-    "vehicleName": "Honda BRV",
-    "vehicleImageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRVo52ZGPkVPypLSF0C1gbOO2fVoFltKq20Rg&s",
-    "upToKm": 150,
-    "upToCostPerKm": 15.25,
-    "capacity": {
-      "totalNumberOfSeats": 7,
+      "totalNumberOfSeats": 6,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
@@ -82,7 +46,7 @@
     "upToKm": 150,
     "upToCostPerKm": 20.25,
     "capacity": {
-      "totalNumberOfSeats": 7,
+      "totalNumberOfSeats": 6,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
@@ -101,7 +65,7 @@
     "upToKm": 150,
     "upToCostPerKm": 22.25,
     "capacity": {
-      "totalNumberOfSeats": 8,
+      "totalNumberOfSeats": 7,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
@@ -114,13 +78,13 @@
     "additionalCharges": 0,
     "driverAllowance": 300
 },{
-    "vehicleType": "Tempo",
+    "vehicleType": "Traveller",
     "vehicleName": "Tempo Traveller",
     "vehicleImageUrl": "https://3.imimg.com/data3/QW/BM/MY-11094088/tempo-traveller-1000x1000.jpg",
     "upToKm": 150,
     "upToCostPerKm": 25.25,
     "capacity": {
-      "totalNumberOfSeats": 14,
+      "totalNumberOfSeats": 13,
       "reservedNumberOfSeats": 1,
       "description": ""
     },

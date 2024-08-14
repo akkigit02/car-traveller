@@ -86,5 +86,5 @@ const getDistanceOfTwoCities = async(from, to) => {
 
 
 module.exports = {
-    getDistanceOfTwoCities
+    getDistanceOfTwoCities,
 }

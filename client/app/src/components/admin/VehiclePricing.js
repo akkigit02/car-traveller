@@ -7,7 +7,10 @@ import axios from "axios";
 export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
-  const { register, handleSubmit, reset } = useForm({ mode: "onChange" });
+  const [isEdit, setIsEdit] = useState(false);
+  const { register, handleSubmit, reset, errors } = useForm({
+    mode: "onChange",
+  });
 
   useEffect(() => {
     getVehiclePrice();
@@ -15,18 +18,20 @@ export default function VehiclePricing() {
 
   const saveVehiclePrice = async (data) => {
     try {
-      if(data?._id) {
+      if (data?._id) {
         const res = await axios({
           method: "put",
           url: "/api/admin/vehicle-price",
           data: data,
         });
-        setList(list.map((li) => {
-          if(li._id === data._id) {
-            li = data
-          }
-          return li
-        }));
+        setList(
+          list.map((li) => {
+            if (li._id === data._id) {
+              li = data;
+            }
+            return li;
+          })
+        );
       } else {
         const res = await axios({
           method: "POST",
@@ -34,7 +39,6 @@ export default function VehiclePricing() {
           data: data,
         });
         setList([res.data.price, ...list]);
-
       }
       setIsOpen(false);
     } catch (error) {
@@ -61,25 +65,27 @@ export default function VehiclePricing() {
         method: "get",
         url: `/api/admin/vehicle-price/${id}`,
       });
-      reset(res.data.price)
-      setIsOpen(true)
+      reset(res.data.price);
+      setIsOpen(true);
+      setIsEdit(true);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   };
 
   const closeModal = () => {
-    reset({})
-    setIsOpen(false)
-  }
+    reset({});
+    setIsOpen(false);
+    setIsEdit(false);
+  };
 
   const deleteVehiclePrice = async (id) => {
     try {
-      const confirmation = window.confirm('Do you really want to delete!')
-      if(!confirmation) return
+      const confirmation = window.confirm("Do you really want to delete!");
+      if (!confirmation) return;
       const res = await axios({
         method: "delete",
-        url: "/api/admin/vehicle-price/"+id,
+        url: "/api/admin/vehicle-price/" + id,
       });
       setList(list.filter((li) => li._id !== id));
     } catch (error) {
@@ -94,30 +100,50 @@ export default function VehiclePricing() {
           <h2>Vehicle Price</h2>
         </div>
         <div>
-          <button onClick={() => {reset({});setIsOpen(true)}}>Add Price</button>
+          <button
+            onClick={() => {
+              reset({});
+              setIsOpen(true);
+            }}
+          >
+            Add Price
+          </button>
         </div>
       </div>
       <table>
         <thead>
           <tr>
-            <th>Vehicle Type</th>
-            <th>Minimum Fare</th>
-            <th>Cost per km</th>
-            <th>Cost per hour</th>
-            <th>Laguage Carrier Cost</th>
-            <th>Additional Charges</th>
-            <th>Action</th>
+            <th className="p-2 my-2">Image</th>
+            <th className="p-2 my-2">Type</th>
+            <th className="p-2">Name</th>
+            <th className="p-2 my-2">Similar</th>
+            <th className="p-2 my-2">Minimum Fare</th>
+            <th className="p-2 my-2">Cost per km</th>
+            <th className="p-2 mx-2">Cost per hour</th>
+            <th className="p-2">Laguage Carrier Cost</th>
+            <th className="p-2">Additional Charges</th>
+            <th className="p-2">Action</th>
           </tr>
         </thead>
         <tbody>
           {list?.map((li, index) => (
             <tr key={index}>
               <td>
+                <div className="car-list-items mb-3 car-image bg-cover">
+                  <img
+                    style={{ height: "50px", width: "70px" }}
+                    src={li.vehicleImageUrl}
+                  />
+                </div>
+              </td>
+              <td>
                 {
                   VEHICLE_TYPE.find((item) => item.value === li.vehicleType)
                     ?.name
                 }
               </td>
+              <td>{li.vehicleName}</td>
+              <td>{li.similar.join()}</td>
               <td>{li.minimumFare}</td>
               <td>{li.costPerKm}</td>
               <td>{li.costPerHour}</td>
@@ -126,7 +152,8 @@ export default function VehiclePricing() {
               <td>
                 <ul className="list-inline m-0">
                   <li className="list-inline-item">
-                    <button onClick={() => getVehiclePriceById(li._id)}
+                    <button
+                      onClick={() => getVehiclePriceById(li._id)}
                       className="btn btn-success btn-sm rounded-0"
                       type="button"
                       data-toggle="tooltip"
@@ -137,7 +164,8 @@ export default function VehiclePricing() {
                     </button>
                   </li>
                   <li className="list-inline-item">
-                    <button onClick={() => deleteVehiclePrice(li._id)}
+                    <button
+                      onClick={() => deleteVehiclePrice(li._id)}
                       className="btn btn-danger btn-sm rounded-0"
                       type="button"
                       data-toggle="tooltip"
@@ -159,7 +187,9 @@ export default function VehiclePricing() {
             <div className="form-row">
               <div className="form-group col-md-4">
                 <label htmlFor="inputState">Vehicle Type</label>
-                <select {...register("vehicleType")} className="form-control">
+                <select {...register("vehicleType",{
+                    required: 'Vehicle Type is Required'
+                  })} className="form-control">
                   <option value={""}>Choose Type</option>
                   {VEHICLE_TYPE.map((vehicle, index) => (
                     <option key={index} value={vehicle.value}>
@@ -167,6 +197,54 @@ export default function VehiclePricing() {
                     </option>
                   ))}
                 </select>
+                {errors?.vehicleType && (
+                  <span className="text-danger">
+                    {errors.vehicleType.message}
+                  </span>
+                )}
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputPassword4">Vehicle Name</label>
+                <input
+                  type="text"
+                  {...register("vehicleName",{
+                    required: 'Vehicle Name is Required'
+                  })}
+                  className="form-control"
+                  placeholder="Enter minimum fare"
+                />
+                {errors?.vehicleName && (
+                  <span className="text-danger">
+                    {errors.vehicleName.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-group col-md-6">
+                <label htmlFor="inputPassword4">Similar</label>
+                <input
+                  type="text"
+                  {...register("similar",{
+                    required: 'Vehicle Name is Required'
+                  })}
+                  className="form-control"
+                  placeholder="Enter minimum fare"
+                />
+                {errors?.vehicleName && (
+                  <span className="text-danger">
+                    {errors.vehicleName.message}
+                  </span>
+                )}
+              </div>
+
+              <div className="form-group col-md-6">
+                <label htmlFor="inputPassword4">Image Url</label>
+                <input
+                  type="text"
+                  {...register("vehicleImageUrl")}
+                  className="form-control"
+                  placeholder="Enter minimum fare"
+                />
               </div>
               <div className="form-group col-md-6">
                 <label htmlFor="inputPassword4">Minimum Fare</label>
@@ -182,21 +260,35 @@ export default function VehiclePricing() {
               <label htmlFor="inputAddress">Cost per km</label>
               <input
                 type="number"
-                {...register("costPerKm")}
+                {...register("costPerKm",{
+                  required: 'Cost Per Km is Required'
+                })}
                 className="form-control"
                 id="inputAddress"
                 placeholder="Enter Cost per km"
               />
+              {errors?.costPerKm && (
+                  <span className="text-danger">
+                    {errors.costPerKm.message}
+                  </span>
+                )}
             </div>
             <div className="form-group">
               <label htmlFor="inputAddress2">Cost per hour</label>
               <input
                 type="number"
-                {...register("costPerHour")}
+                {...register("costPerHour",{
+                  required: 'Vehicle Name is Required'
+                })}
                 className="form-control"
                 id="inputAddress2"
                 placeholder="Enter Cost per hour"
               />
+              {errors?.costPerHour && (
+                  <span className="text-danger">
+                    {errors.costPerHour.message}
+                  </span>
+                )}
             </div>
             <div className="form-row">
               <div className="form-group col-md-6">
@@ -222,7 +314,7 @@ export default function VehiclePricing() {
             </div>
           </div>
           <button type="submit" className="btn btn-primary">
-            Add
+            {isEdit ? "Update" : "Save"}
           </button>
         </form>
       </Modal>
