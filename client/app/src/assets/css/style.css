@@ -53,8 +53,14 @@
     padding: 10px 15px;
 
 }
+.h-100vh{
+    height: 100vh;
+}
 .height-car-list{
     height: calc(100vh - 110px);
+}
+.side-nav-h{
+    height: calc(100vh - 160px);
 }
 .cstm-calHeight{
     height: calc(100vh - 110px);
