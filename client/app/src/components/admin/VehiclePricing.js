@@ -8,7 +8,7 @@ export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const { register, handleSubmit, reset, control, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset,setValue , control, formState: { errors } } = useForm({
     mode: "onChange",
   });
 
@@ -76,6 +76,7 @@ export default function VehiclePricing() {
         url: `/api/admin/vehicle-price/${id}`,
       });
       reset(res.data.price);
+      setValue('similar', res.data.price.similar.map(value => ({ value })));
       setIsOpen(true);
       setIsEdit(true);
     } catch (error) {
