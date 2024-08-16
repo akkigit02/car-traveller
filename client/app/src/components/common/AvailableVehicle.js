@@ -12,6 +12,7 @@ export default function AvailableVehicle() {
 
   const [bookingDetails, setBookingDetails] = useState("");
   const [carList, setCarList] = useState([]);
+  const [isChangeTrip, setIsChangeTrip] = useState(false);
   const taxImage = require("../../assets/img/tax.png");
   const doorImage = require("../../assets/img/download");
 
@@ -21,11 +22,15 @@ export default function AvailableVehicle() {
         url: "/api/client/car-list",
         params: { search: query },
       });
+
+
+      console.log(data,"====--------")
       setBookingDetails({
         ...data.bookingDetails,
-        type: TRIP_TYPE.find((ty) => ty.value === query.type)?.name,
+        type: TRIP_TYPE.find((ty) => ty.value === query.tripType)?.name,
         time: query.pickupTime,
         date: query.pickupDate,
+        returnDate: query.returnDate
       });
       setCarList(data.cars);
     } catch (error) {
@@ -38,8 +43,7 @@ export default function AvailableVehicle() {
       // decode query
       const decodedString = atob(query);
       const decodedData = JSON.parse(decodedString);
-      setBookingDetails(decodedData);
-      // getCarList();
+      // setBookingDetails(decodedData);
       getCarList(decodedData);
     } else window.location.href = "http:127.0.0.1:5500";
   }, []);
@@ -57,7 +61,9 @@ export default function AvailableVehicle() {
             <div className="height-car-list mt-3 car-list-items">
                 <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
                   <h5>
-                    {bookingDetails.from} - {bookingDetails.to} (
+                    {bookingDetails.from} {bookingDetails?.to?.map(city => (
+                      <span> - {city}</span>
+                    ))} (
                     {bookingDetails.type || "One Way"})
                   </h5>
                 </div>
@@ -65,15 +71,20 @@ export default function AvailableVehicle() {
                   <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Pickup Date</p>
                     <div className="highlight-data">
-                      {moment(bookingDetails.date).format("DD/MM/YYYY")}
+                      {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}
+                    </div>
+                  </div>
+                  <div className="me-3 col-12 mb-3">
+                    <p className="mb-0">Return Date</p>
+                    <div className="highlight-data">
+                      {moment(bookingDetails.returnDate).format("DD/MM/YYYY")}
                     </div>
                   </div>
                   <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Time</p>
-                    <div className="highlight-data">{bookingDetails.time}</div>
+                    <div className="highlight-data">{bookingDetails.pickUpTime}</div>
                   </div>
-                  
-                
+  
                 <div className="d-flex justify-content-end">
                   <a href="http://127.0.0.1:5500/client/index.html">
                       <button className="cstm-btn-red">Change</button>
@@ -146,7 +157,7 @@ export default function AvailableVehicle() {
                         <div className="d-flex align-items-center">
                           <img className="w-40" src={taxImage} />
                           <p className="mb-0 font-14">
-                            Includes Toll, State Tax & GST
+                            Excluded Toll, State Tax & GST
                           </p>
                         </div>
                         <div className="pe-3">

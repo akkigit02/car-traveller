@@ -30,9 +30,9 @@ function haversine(lat1, lon1, lat2, lon2) {
   }
 
   const dateDifference = (startDate, endDate) => {
-    // Parse the dates in the format "DD-MM-YYYY"
-    const start = new Date(startDate.split('-').reverse().join('-'));
-    const end = new Date(endDate.split('-').reverse().join('-'));
+    // Parse the dates in the format "YYYY-MM-DD"
+    const start = new Date(startDate);
+    const end = new Date(endDate);
   
     // Calculate the difference in time
     const timeDiff = end - start;
