@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
+            let response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
                 method: "GET",
             });
             let data = await response.json();
