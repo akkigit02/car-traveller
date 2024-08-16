@@ -180,32 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const encodedString = btoa(jsonString);
             window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
         })
-        document.getElementById(`${type}Input`).style.display='flex'
-        document.getElementById(type).classList.add('active')
-
-    }
-
-
-    const submitSuttom = document.getElementById(`submitSuttom`)
-    submitSuttom.addEventListener('click', () => {
-        //  error handle 
-        const timeSelect = document.getElementById('timeSelect');
-        const datepickerElement = document.getElementById('datepicker');
-        const inputElement = datepickerElement.querySelector('input');
-        query.pickupDate = inputElement.value
-        query.pickupTime = timeSelect.value
-        const jsonString = JSON.stringify(query);
-        const encodedString = btoa(jsonString);
-        console.log(encodedString);
-        window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
-    })
-
-
-
-
-
-
-
 
     };
 
