@@ -10,9 +10,9 @@ export default function SideNavBar() {
     store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: null } })
   }
   return (
-    <nav id="sidebarMenu" className="sidebar bg-white" style={{width:220}}>
+    <nav id="sidebarMenu" className="sidebar bg-white">
       <div className="position-sticky">
-        <div className="list-group list-group-flush mx-3 mt-4">
+        <div className="list-group list-group-flush">
           <Link
             to={`/dashboard`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/dashboard` ? 'active' : ''}`}
@@ -48,7 +48,7 @@ export default function SideNavBar() {
             <i className="fas fa-lock fa-fw me-3"></i>
             <span>Demo</span>
           </Link>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
+          {/* <a href="#" className="list-group-item list-group-item-action py-2 ripple">
             <i className="fas fa-chart-pie fa-fw me-3"></i>
             <span>SEO</span>
           </a>
@@ -71,7 +71,7 @@ export default function SideNavBar() {
           <a href="#" className="list-group-item list-group-item-action py-2 ripple">
             <i className="fas fa-users fa-fw me-3"></i>
             <span>Users</span>
-          </a>
+          </a> */}
           <div onClick={handleLogout} className="list-group-item list-group-item-action py-2 ripple">
             <i className="fas fa-money-bill fa-fw me-3"></i>
             <span>Logout</span>

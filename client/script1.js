@@ -1,19 +1,184 @@
 document.addEventListener('DOMContentLoaded', () => {
     const query = {
-        to: '',
-        from: '',
-        pickupDate: '',
-        pickupTime: '',
-        type: 'oneWay'
-    }
 
-    const inputType=['oneWay','local','roundTrip','airport']
-    inputType.map(ele=>document.getElementById(ele).addEventListener('click',()=>{selectInputType(ele) }))
+    };
+    const tabConfig = {
+        oneWay: [
+            { label: 'From', name: 'from', placeholder: 'Type city' },
+            { label: 'To', name: 'to', placeholder: 'Type city' },
+            { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
+            { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
+        ],
+        local: [
+            { label: 'City', name: 'from', placeholder: 'Type city' },
+            { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
+            { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
+        ],
+        roundTrip: [
+            { label: 'From', name: 'from', placeholder: 'Type city' },
+            { label: 'To', name: 'to', placeholder: 'Type city', isMultiple: true },
+            { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
+            { label: 'Return Date', name: 'returnDate', type: 'date' },
+            { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
+        ],
+        airport: [
+            { label: 'Trip', name: 'from', placeholder: 'Drop to airport' },
+            { label: 'Pickup Address', name: 'pickupAddress', placeholder: 'Type address' },
+            { label: 'Drop Airport', name: 'dropAirport', placeholder: 'Type airport/city name' },
+            { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
+            { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
+        ]
+    };
 
-    const selectInputType=(type)=>{
-        inputType.filter(ele=>ele!==type).forEach(ele=>{
-            document.getElementById(`${ele}Input`).style.display='none'
-            document.getElementById(ele).classList.remove('active')
+    const inputType = Object.keys(tabConfig);
+    inputType.forEach(type => {
+        document.getElementById(type).addEventListener('click', () => selectInputType(type));
+    });
+
+    const selectInputType = (type) => {
+        inputType.forEach(ele => {
+            document.getElementById(`${ele}`).classList.toggle('active', ele === type);
+        });
+        renderForm(type);
+    };
+
+    const renderForm = (type) => {
+        const formContainer = document.getElementById('formContainer');
+        formContainer.innerHTML = '';
+        const parentContainer = document.createElement('div');
+        parentContainer.classList.add('pickup-wrapper', 'wow', 'fadeInUp')
+        const formFields = tabConfig[type];
+        formFields.forEach(field => {
+            const wrapper = document.createElement('div');
+            let multipleDiv
+            wrapper.classList.add('pickup-items');
+            if (field.type === 'date') {
+                wrapper.innerHTML = `
+                    <label class="field-label">${field.label}</label>
+                    <input type="date" id="pickupDate" />
+                    `;
+            } else if (field.type === 'time') {
+                wrapper.innerHTML = `
+                    <label class="field-label">${field.label}</label>
+                    <div class="category-oneadjust">
+                        <select id="timeSelect">
+                            <option value="Select Time">Select Time</option>
+                        </select>
+                    </div>`;
+            } else {
+                wrapper.classList.add('position-relative')
+                if (!field?.isMultiple) {
+                    wrapper.innerHTML = `
+                    <label class="field-label">${field.label}</label>
+                    <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}">
+                    <div id="${field.name}Suggestion" class="suggestion-list"></div>
+                    `;
+                } else {
+                    wrapper.innerHTML = `
+                    <div id="toContainer">
+                    <div>
+                    <label class="field-label">${field.label}</label>
+                    <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}">
+                    <div id="${field.name}Suggestion" class="suggestion-list"></div>
+                    </div>
+                    </div>
+                    <button id="toContainerAdd">+</button>
+                    `;
+                }
+            }
+
+            parentContainer.appendChild(wrapper);
+        });
+        const buttonWrapper = document.createElement('div');
+        buttonWrapper.classList.add('pickup-items');
+        buttonWrapper.innerHTML = `
+        <label class="field-label style-2">button</label>
+        <button class="pickup-btn" type="button" id="submitButtom">Find a Car</button>`;
+        parentContainer.appendChild(buttonWrapper);
+        formContainer.appendChild(parentContainer);
+        getTimeForDropdown(); // Call the function to populate time dropdown
+        bindSuggestionEvents(type); // Bind events to the new input elements
+    };
+
+    const bindSuggestionEvents = (type) => {
+        const from = document.getElementById('from');
+        if (from) {
+            from.addEventListener('input', () => filterFunction('from'));
+            from.addEventListener('focus', () => setSuggestionVisible('from', true));
+            from.addEventListener('blur', () => {
+                setTimeout(() => {
+                    setSuggestionVisible('from', false);
+                }, 250);
+            });
+        }
+        if (type === 'roundTrip') {
+            const toContainerButton = document.getElementById('toContainerAdd')
+            toContainerButton.addEventListener('click', (event) => {
+                const toContainer = document.getElementById('toContainer')
+                let conatinerId = toContainer.children.length + 1
+                const toChildContainer = document.createElement('div');
+                toChildContainer.setAttribute('id', `${conatinerId}ToContainer`)
+                toChildContainer.innerHTML = `
+                        <label class="field-label">To</label>
+                        <input name="to" id="${conatinerId}To" placeholder="Type City">
+                        <div id="${conatinerId}ToDelete">Delete</div>
+                        <div id="${conatinerId}ToSuggestion" class="suggestion-list"></div>
+                    `
+                toContainer.appendChild(toChildContainer)
+                document.getElementById(`${conatinerId}ToDelete`).addEventListener('click', (event) => {
+                    delete query[`${conatinerId}To`]
+                    toChildContainer.remove()
+
+                })
+                const suggestion = document.getElementById(`${conatinerId}To`)
+                suggestion.addEventListener('input', () => filterFunction(`${conatinerId}To`));
+                suggestion.addEventListener('focus', () => setSuggestionVisible(`${conatinerId}To`, true));
+                suggestion.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible(`${conatinerId}To`, false);
+                    }, 250);
+                });
+
+            })
+            const to = document.getElementById('to');
+            if (to) {
+                to.addEventListener('input', () => filterFunction('to'));
+                to.addEventListener('focus', () => setSuggestionVisible('to', true));
+                to.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible('to', false);
+                    }, 250);
+                });
+            }
+
+        } else {
+            const to = document.getElementById('to');
+            if (to) {
+                to.addEventListener('input', () => filterFunction('to'));
+                to.addEventListener('focus', () => setSuggestionVisible('to', true));
+                to.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible('to', false);
+                    }, 250);
+                });
+            }
+        }
+        const submitButtom = document.getElementById('submitButtom')
+        submitButtom.addEventListener('click', () => {
+            console.log(query)
+            const formData = {
+                ...query
+            }
+            const timeSelect = document.getElementById('timeSelect');
+            if (timeSelect)
+                formData['pickUpTime'] = timeSelect.value
+
+            const pickupDate = document.getElementById('pickupDate');
+            if (pickupDate)
+                formData['pickUpDate'] = pickupDate.value
+            const jsonString = JSON.stringify(query);
+            const encodedString = btoa(jsonString);
+            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
         })
         document.getElementById(`${type}Input`).style.display='flex'
         document.getElementById(type).classList.add('active')
@@ -42,48 +207,49 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+    };
 
     const setSuggestionVisible = (inputType, isVisible) => {
-        const suggestion = document.getElementById(`${inputType}Suggestion`)
-        suggestion.style.display = isVisible ? 'block' : 'none'
-        if (isVisible)
-            filterFunction(inputType)
-        else {
-            const suggestion = document.getElementById(`${inputType}Suggestion`)
-            suggestion.innerHTML = ''
-        }
-    }
+        const suggestion = document.getElementById(`${inputType}Suggestion`);
+        suggestion.style.display = isVisible ? 'block' : 'none';
+        if (isVisible) filterFunction(inputType);
+        else suggestion.innerHTML = '';
+    };
 
     const filterFunction = async (inputType) => {
         let searchInput = document.getElementById(inputType);
         const searchQuery = searchInput.value.toLowerCase();
-        let cities = await getCities(searchQuery)
-        if (inputType === 'from' && query.to) {
-            cities = cities.filter(ele => ele._id !== query.to)
-        } else if (inputType === 'to' && query.from) {
-            cities = cities.filter(ele => ele._id !== query.from)
-        }
-        const suggestion = document.getElementById(`${inputType}Suggestion`)
-        suggestion.innerHTML = ''
+        let cities = await getCities(searchQuery);
+        const queryKey = Object.keys(query)
+        console.log(inputType, query, queryKey)
+        if (queryKey.length)
+            queryKey.map(ele => {
+                if (ele !== inputType) {
+                    const cityId = query[ele]
+                    cities = cities.filter(ele => ele._id !== cityId);
+                }
+
+            })
+        const suggestion = document.getElementById(`${inputType}Suggestion`);
+        suggestion.innerHTML = '';
         if (!cities.length) {
             const div = document.createElement('ul');
             div.innerText = 'No Match Found';
             suggestion.appendChild(div);
-            return
+            return;
         }
         for (const city of cities) {
             const div = document.createElement('div');
-            div.classList.add('cstm-dropdown-list')
+            div.classList.add('cstm-dropdown-list');
             div.innerText = `${city.name}, ${city.state_name}`;
-            div.addEventListener('click', (event) => {
-                console.log(56)
-                query[inputType] = city._id;
+            div.addEventListener('click', () => {
+                query[inputType] = city._id
                 searchInput.value = `${city.name}, ${city.state_name}`;
                 suggestion.innerHTML = '';
             });
             suggestion.appendChild(div);
         }
-    }
+    };
 
     const getCities = async (search) => {
         try {
@@ -98,73 +264,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-
-    const from = document.getElementById('from')
-    from.addEventListener('input', (event) => { filterFunction('from') })
-    from.addEventListener('focus', (event) => { setSuggestionVisible('from', true) })
-    from.addEventListener('blur', (event) => {
-        setTimeout(() => {
-            setSuggestionVisible('from', false)
-        }, 250)
-    })
-
-    const to = document.getElementById('to')
-    to.addEventListener('input', (event) => { filterFunction('to') })
-    to.addEventListener('focus', (event) => { setSuggestionVisible('to', true) })
-    to.addEventListener('blur', (event) => {
-        setTimeout(() => {
-            setSuggestionVisible('to', false)
-        }, 250)
-    })
-
     const getTimeForDropdown = () => {
         const timeSelect = document.getElementById('timeSelect');
-        const datepickerElement = document.getElementById('datepicker');
-        const inputElement = datepickerElement.querySelector('input');
+        if (!timeSelect) return;
         const date = new Date();
         const endDate = new Date();
-        endDate.setHours(23, 45, 0, 0); // 11:45 PM
-        const optionsInterval = 15; // interval in minutes
+        endDate.setHours(23, 45, 0, 0);
+        const optionsInterval = 15;
+
         date.setHours(date.getHours() + 1);
         date.setMinutes(date.getMinutes() + 30);
-        
-        
+
+        const inputElement = document.getElementById('pickupDate');
+
         const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+        const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        
-        const formattedDate = day + '-' + month + '-' + year;
-        inputElement.value = formattedDate;
-        
-        // Round the current minutes up to the nearest 30-minute interval
+        inputElement.value = `${day}-${month}-${year}`;
+
         const now = new Date();
         now.setHours(now.getHours() + 1);
         now.setMinutes(now.getMinutes() + 30);
-    
+
         while (date <= endDate) {
-          let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
-          if(minutes === 60) {
-            minutes = 0
-            date.setHours(date.getHours() + 1);
-          }
+            let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
+            if (minutes === 60) {
+                minutes = 0;
+                date.setHours(date.getHours() + 1);
+            }
             const hours = date.getHours();
             const ampm = hours >= 12 ? 'PM' : 'AM';
             const displayHours = hours % 12 === 0 ? 12 : hours % 12;
             const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
             const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
-
-            const isoTime = date.toISOString();
-
             const option = document.createElement('option');
             option.value = displayTime;
             option.textContent = displayTime;
+
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
             }
             timeSelect.appendChild(option);
             date.setMinutes(date.getMinutes() + optionsInterval);
         }
-    }
+    };
 
-    getTimeForDropdown()
-})
+    // Initially render the form for the first active tab
+    selectInputType('roundTrip');
+});
+

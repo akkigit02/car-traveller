@@ -12,7 +12,7 @@ export default function Demo() {
   return (
     <div>
       <h2>Demo</h2>
-      <div ref={mapRef} style={{ width: '100%', height: '500px' }}>
+      <div ref={mapRef} style={{ width: '100%' }}>
 
       </div>
     </div>

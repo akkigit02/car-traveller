@@ -135,6 +135,7 @@ export default function VehiclePricing() {
             <th className="p-2">Action</th>
           </tr>
         </thead>
+        {list.length &&
         <tbody>
           {list?.map((li, index) => (
             <tr key={index}>
@@ -153,7 +154,7 @@ export default function VehiclePricing() {
                 }
               </td>
               <td>{li.vehicleName}</td>
-              <td>{li.similar.join()}</td>
+              <td>{li?.similar?.join()}</td>
               <td>{li.minimumFare}</td>
               <td>{li.costPerKm}</td>
               <td>{li.costPerHour}</td>
@@ -189,7 +190,7 @@ export default function VehiclePricing() {
               </td>
             </tr>
           ))}
-        </tbody>
+        </tbody>}
       </table>
       <Modal isOpen={isOpen} onClose={closeModal}>
         <form onSubmit={handleSubmit(saveVehiclePrice)}>

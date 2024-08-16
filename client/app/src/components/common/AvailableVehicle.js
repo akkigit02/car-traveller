@@ -53,7 +53,7 @@ export default function AvailableVehicle() {
       <div>
         <TopNavBar />
         <div className="row m-0">
-          <div className="col-lg-3 col-md-3 col-12">
+          <div className="col-lg-3 col-md-3 col-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
                 <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
                   <h5>
