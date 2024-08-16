@@ -272,6 +272,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         now.setHours(now.getHours() + 1);
         now.setMinutes(now.getMinutes() + 30);
+        let nowMinutes = Math.ceil(now.getMinutes() / optionsInterval) * optionsInterval;
+        if (nowMinutes === 60) {
+            nowMinutes = 0;
+            now.setHours(date.getHours() + 1);
+        }
 
         while (date <= endDate) {
             let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
