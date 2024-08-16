@@ -1,7 +1,10 @@
 const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/booking.model");
 const PricingModel = require("../models/pricing.model");
-const { estimateRouteDistance, dateDifference } = require("../utils/calculation.util");
+const {
+  estimateRouteDistance,
+  dateDifference,
+} = require("../utils/calculation.util");
 
 const getCities = async (req, res) => {
   try {
@@ -26,40 +29,61 @@ const getCities = async (req, res) => {
 const getCars = async (req, res) => {
   try {
     let search = req?.query?.search;
+    console.log(search);
     const cars = await PricingModel.find({}).lean();
     let distance = null;
-    let toDetail = ''
-    let fromDetail = ''
+    let toDetail = [];
+    let fromDetail = "";
     let carList = [];
-    if (search?.type === "oneWay") {
-    toDetail = await CitiesModel.findOne({ _id: search.to }).lean();
-    fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
+    let hourlyCarDetails = []
+    if (search?.tripType === "oneWay") {
+      let toCity = await CitiesModel.findOne({ _id: search.to }).lean();
+      fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
       distance = estimateRouteDistance(
         fromDetail.latitude,
         fromDetail.longitude,
-        toDetail.latitude,
-        toDetail.longitude,
+        toCity.latitude,
+        toCity.longitude,
         1.25
       );
+      toDetail.push(toCity)
       for (let car of cars) {
         car["totalPrice"] =
-          distance.toFixed(2) * car.costPerKm + car.driverAllowance;
+          distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
         carList.push(car);
+        hourlyCarDetails = [...car.hourly,...hourlyCarDetails]
       }
-    } else if (search?.type === "roundTrip") {
-      // pickupDate returnDate
-      const startDate = "13-08-2024";
-      const endDate = "15-08-2024";
-      let cityIds = ['66ba27fc0aaff6553ce77114','66ba27fc0aaff6553ce77167','66ba27fc0aaff6553ce7712f','66ba27fc0aaff6553ce77114']
-    //   const cityIds = [search.from, search.to1, search.to2, search.from]; //[Mumbai, Pune, Nashik, Mumbai]
+    } else if (search?.tripType === "roundTrip") {
+      // Initialize an array to hold all "to" values
+      let consolidatedToArray = [];
+
+      // Loop through the object properties
+      for (let key in search) {
+        if (search.hasOwnProperty(key)) {
+          // Check if the key is 'to' or matches the pattern of additional 'to' fields like '2To', '3To', etc.
+          if (key === "to" || key.match(/^\d+To$/)) {
+            consolidatedToArray.push(search[key]);
+            delete search[key];
+          }
+        }
+      }
+
+      search.to = consolidatedToArray;
+      let cityIds = consolidatedToArray;
+      cityIds.unshift(search.from);
+      cityIds.push(search.from);
       let totalDistance = 0;
 
       for (let i = 0; i < cityIds.length - 1; i++) {
         const fromCity = await CitiesModel.findOne({ _id: cityIds[i] }).lean();
+        if(i == 0) {
+          fromDetail = fromCity
+        }
         const toCity = await CitiesModel.findOne({
           _id: cityIds[i + 1],
         }).lean();
-
+        // if(i+1 < cityIds.length - 1)
+        toDetail.push(toCity)
         const dist = estimateRouteDistance(
           fromCity.latitude,
           fromCity.longitude,
@@ -69,22 +93,52 @@ const getCars = async (req, res) => {
         );
 
         totalDistance += dist;
-    }
-    distance = totalDistance
-    let numberOfDay = dateDifference(startDate, endDate)
-    for (let car of cars) {
-        if(distance <= numberOfDay*300) {
-            car["totalPrice"] = numberOfDay*300 * car.costPerKm + numberOfDay*car.driverAllowance;
-          } else {
-            car["totalPrice"] = distance * car.costPerKm + numberOfDay*car.driverAllowance;
-          }
+      }
+      distance = totalDistance;
+      let numberOfDay = dateDifference(search.pickUpDate, search.returnDate);
+      if(numberOfDay == 0) numberOfDay = 1
+
+      for (let car of cars) {
+        if (distance <= numberOfDay * 300) {
+          car["totalPrice"] =
+            numberOfDay * 300 * car.costPerKm +
+            numberOfDay * car.driverAllowance;
+        } else {
+          car["totalPrice"] =
+            distance * car.costPerKm + numberOfDay * car.driverAllowance;
+        }
         carList.push(car);
       }
+    } else if(search?.tripType === "hourly") {
+      fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
+        for (let car of cars) {
+          let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
+          if(hourlyData) {
+            car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
+            carList.push(car);
+          }
+          // hourlyCarDetails
+        }
+
     }
+    let hourlyDetails = []
+    let hourlyTypes = []
+    hourlyCarDetails.map(detail => {
+      if(!hourlyTypes.includes(detail.type)) {
+        delete detail?.basePrice
+        hourlyDetails.push(detail)
+      }
+      hourlyTypes.push(detail.type)
+    })
+
     const bookingDetails = {
       from: fromDetail.name,
-      to: toDetail.name,
+      to: toDetail.map(city => city.name),
       distance: distance.toFixed(2),
+      pickUpDate: search.pickUpDate,
+      returnDate: search.returnDate,
+      pickUpTime: search.pickUpTime,
+      hourlyDetails: hourlyDetails
     };
     return res.status(200).send({ cars: carList, bookingDetails });
   } catch (error) {
@@ -142,12 +196,10 @@ const cancelBooking = async (req, res) => {
     const timeDifference = (pickupDateTime - currentTime) / (1000 * 60);
 
     if (timeDifference < 90) {
-      return res
-        .status(400)
-        .send({
-          message:
-            "Ride can only be cancelled before 90 minutes of the pickup time",
-        });
+      return res.status(400).send({
+        message:
+          "Ride can only be cancelled before 90 minutes of the pickup time",
+      });
     }
 
     await RideModel.findOneAndUpdate({ _id: rideId }, { status: "cancelled" });

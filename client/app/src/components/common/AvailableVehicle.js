@@ -12,6 +12,7 @@ export default function AvailableVehicle() {
 
   const [bookingDetails, setBookingDetails] = useState("");
   const [carList, setCarList] = useState([]);
+  const [hourlyType, setHourlyType] = useState("");
   const taxImage = require("../../assets/img/tax.png");
   const doorImage = require("../../assets/img/download");
 
@@ -21,11 +22,15 @@ export default function AvailableVehicle() {
         url: "/api/client/car-list",
         params: { search: query },
       });
+
+
+      console.log(data,"====--------")
       setBookingDetails({
         ...data.bookingDetails,
-        type: TRIP_TYPE.find((ty) => ty.value === query.type)?.name,
+        type: TRIP_TYPE.find((ty) => ty.value === query.tripType)?.name,
         time: query.pickupTime,
         date: query.pickupDate,
+        returnDate: query.returnDate
       });
       setCarList(data.cars);
     } catch (error) {
@@ -35,14 +40,11 @@ export default function AvailableVehicle() {
 
   useEffect(() => {
     if (query) {
-      // decode query
       const decodedString = atob(query);
       const decodedData = JSON.parse(decodedString);
-      setBookingDetails(decodedData);
-      // getCarList();
       getCarList(decodedData);
     } else window.location.href = "http:127.0.0.1:5500";
-  }, []);
+  }, [hourlyType]);
 
   const book = () => {
     navigate(`/signup/${query}`);
@@ -57,7 +59,9 @@ export default function AvailableVehicle() {
             <div className="height-car-list mt-3 car-list-items">
                 <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
                   <h5>
-                    {bookingDetails.from} - {bookingDetails.to} (
+                    {bookingDetails.from} {bookingDetails?.to?.map(city => (
+                      <span> - {city}</span>
+                    ))} (
                     {bookingDetails.type || "One Way"})
                   </h5>
                 </div>
@@ -65,15 +69,20 @@ export default function AvailableVehicle() {
                   <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Pickup Date</p>
                     <div className="highlight-data">
-                      {moment(bookingDetails.date).format("DD/MM/YYYY")}
+                      {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}
+                    </div>
+                  </div>
+                  <div className="me-3 col-12 mb-3">
+                    <p className="mb-0">Return Date</p>
+                    <div className="highlight-data">
+                      {moment(bookingDetails.returnDate).format("DD/MM/YYYY")}
                     </div>
                   </div>
                   <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Time</p>
-                    <div className="highlight-data">{bookingDetails.time}</div>
+                    <div className="highlight-data">{bookingDetails.pickUpTime}</div>
                   </div>
-                  
-                
+  
                 <div className="d-flex justify-content-end">
                   <a href="http://127.0.0.1:5500/client/index.html">
                       <button className="cstm-btn-red">Change</button>
@@ -84,6 +93,14 @@ export default function AvailableVehicle() {
           </div>
 
           <div className="col-lg-9 col-md-9 col-12 mt-3">
+            <div className="d-flex justify-content-between">
+              {bookingDetails?.hourlyDetails?.map(list => (
+              <div onClick={() => setHourlyType(list.type)}>
+                {list.hour} Hours| {list.distance} Km 
+              </div>
+              ))}
+
+            </div>
             <div className="col-lg-12 cstm-calHeight">
               {carList.map((item, idx) => (
                 <div className="car-list-items mb-3" key={idx}>
@@ -103,12 +120,11 @@ export default function AvailableVehicle() {
                             <i className="fa fa-star"></i>
                             <i className="fa fa-star"></i>
                             <i className="fa fa-star"></i>
-                            <span>2 Reviews</span>
+                            {/* <span>2 Reviews</span> */}
                           </div>
-                          <div>
+                          {item?.similar?.length > 0 && <div>
                           or Similar to ({item?.similar?.join()})
-
-                          </div>
+                          </div>}
                         </div>
 
                         <div class="icon-items">
@@ -128,7 +144,7 @@ export default function AvailableVehicle() {
                             </p>
                           </div>
                           <div>
-                            <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">&#8377; 3400</p>
+                            <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">&#8377; {Math.ceil(item.totalPrice)}</p>
                           </div>
                           <button
                             className="border-0 bg-unset"
@@ -146,7 +162,7 @@ export default function AvailableVehicle() {
                         <div className="d-flex align-items-center">
                           <img className="w-40" src={taxImage} />
                           <p className="mb-0 font-14">
-                            Includes Toll, State Tax & GST
+                            Excluded Toll, State Tax & GST
                           </p>
                         </div>
                         <div className="pe-3">

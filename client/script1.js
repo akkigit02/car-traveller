@@ -4,27 +4,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const tabConfig = {
         oneWay: [
-            { label: 'From', name: 'from', placeholder: 'Type city' },
-            { label: 'To', name: 'to', placeholder: 'Type city' },
+            { label: 'From', name: 'from', placeholder: 'Enter pickup city' },
+            { label: 'To', name: 'to', placeholder: 'Enter pickup city' },
             { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
             { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
         ],
-        local: [
-            { label: 'City', name: 'from', placeholder: 'Type city' },
+        hourly: [
+            { label: 'City', name: 'from', placeholder: 'Enter pickup city' },
             { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
             { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
         ],
         roundTrip: [
-            { label: 'From', name: 'from', placeholder: 'Type city' },
-            { label: 'To', name: 'to', placeholder: 'Type city', isMultiple: true },
+            { label: 'From', name: 'from', placeholder: 'Enter pickup city' },
+            { label: 'To', name: 'to', placeholder: 'Enter city', isMultiple: true },
             { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
             { label: 'Return Date', name: 'returnDate', type: 'date' },
             { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
         ],
-        airport: [
-            { label: 'Trip', name: 'from', placeholder: 'Drop to airport' },
-            { label: 'Pickup Address', name: 'pickupAddress', placeholder: 'Type address' },
-            { label: 'Drop Airport', name: 'dropAirport', placeholder: 'Type airport/city name' },
+        cityCab: [
+            { label: 'Pickup Address', name: 'pickupCityCab', placeholder: 'Enter pickup address' },
+            { label: 'Drop Address', name: 'dropCityCab', placeholder: 'Enter drop address' },
             { label: 'Pickup Date', name: 'pickupDate', type: 'date' },
             { label: 'Pickup Time', name: 'pickupTime', type: 'time' }
         ]
@@ -39,6 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
         inputType.forEach(ele => {
             document.getElementById(`${ele}`).classList.toggle('active', ele === type);
         });
+        query['tripType'] = type
         renderForm(type);
     };
 
@@ -50,12 +50,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const formFields = tabConfig[type];
         formFields.forEach(field => {
             const wrapper = document.createElement('div');
-            let multipleDiv
             wrapper.classList.add('pickup-items');
             if (field.type === 'date') {
                 wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
-                    <input type="date" id="pickupDate" />
+                    <input type="date" id="${field.name}"/>
                     `;
             } else if (field.type === 'time') {
                 wrapper.innerHTML = `
@@ -70,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!field?.isMultiple) {
                     wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
-                    <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}">
+                    <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}" autocomplete="off">
                     <div id="${field.name}Suggestion" class="suggestion-list"></div>
                     `;
                 } else {
@@ -78,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div id="toContainer">
                     <div>
                     <label class="field-label">${field.label}</label>
-                    <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}">
+                    <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}" autocomplete="off">
                     <div id="${field.name}Suggestion" class="suggestion-list"></div>
                     </div>
                     </div>
@@ -120,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toChildContainer.setAttribute('id', `${conatinerId}ToContainer`)
                 toChildContainer.innerHTML = `
                         <label class="field-label">To</label>
-                        <input name="to" id="${conatinerId}To" placeholder="Type City">
+                        <input name="to" id="${conatinerId}To" placeholder="Type City" autocomplete="off">
                         <div id="${conatinerId}ToDelete">Delete</div>
                         <div id="${conatinerId}ToSuggestion" class="suggestion-list"></div>
                     `
@@ -176,9 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const pickupDate = document.getElementById('pickupDate');
             if (pickupDate)
                 formData['pickUpDate'] = pickupDate.value
-            const jsonString = JSON.stringify(query);
+            if(query?.tripType === 'roundTrip') {
+                const returnDate = document.getElementById('returnDate')
+
+                formData['returnDate'] = returnDate.value
+            }
+
+            const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
         })
 
     };
@@ -227,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
+            let response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
                 method: "GET",
             });
             let data = await response.json();
@@ -254,11 +259,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        inputElement.value = `${day}-${month}-${year}`;
+        inputElement.value = `${year}-${month}-${day}`;
+        if(query?.tripType === 'roundTrip') {
+            const returnDate = document.getElementById('returnDate');
+
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        returnDate.value = `${year}-${month}-${day}`;
+        }
 
         const now = new Date();
         now.setHours(now.getHours() + 1);
         now.setMinutes(now.getMinutes() + 30);
+        let nowMinutes = Math.ceil(now.getMinutes() / optionsInterval) * optionsInterval;
+        if (nowMinutes === 60) {
+            nowMinutes = 0;
+            now.setHours(date.getHours() + 1);
+        }
 
         while (date <= endDate) {
             let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
@@ -284,6 +302,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Initially render the form for the first active tab
-    selectInputType('roundTrip');
+    selectInputType('cityCab');
 });
 
