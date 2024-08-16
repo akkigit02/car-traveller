@@ -5,7 +5,8 @@
     "similar": ["Swift Dzire"],
     "vehicleImageUrl": "https://5.imimg.com/data5/KN/OS/GLADMIN-70698628/hyundai-xcent-car.png",
     "upToKm": 150,
-    "upToCostPerKm": 14.25,
+    "upToCostPerKm": 12,
+    "upToCostPerHour": 120,
     "capacity": {
       "totalNumberOfSeats": 4,
       "reservedNumberOfSeats": 1,
@@ -18,14 +19,33 @@
     "laguageCarrierCost": 0,
     "minimumFare": 0,
     "additionalCharges": 0,
-    "driverAllowance": 300
+    "driverAllowance": 300,
+    "hourly": [{
+      "type": "8hr80km",
+      "hour": 8,
+      "distance": 80,
+      "basePrice": 2399,
+      "costPerKm": 12,
+      "costPerHour": 120
+    },{
+      "type": "10hr100km",
+      "hour": 10,
+      "distance": 100,
+      "basePrice": 2870
+    },{
+      "type": "12hr120km",
+      "hour": 12,
+      "distance": 120,
+      "basePrice": 3199
+    }]
 },{
     "vehicleType": "SUV",
     "vehicleName": "Ertiga",
     "similar": ["Honda BRV"],
     "vehicleImageUrl": "https://imgd.aeplcdn.com/1056x594/n/c6es93a_1572125.jpg?q=80",
     "upToKm": 150,
-    "upToCostPerKm": 15.25,
+    "upToCostPerKm": 15,
+    "upToCostPerHour": 150,
     "capacity": {
       "totalNumberOfSeats": 6,
       "reservedNumberOfSeats": 1,
@@ -38,13 +58,30 @@
     "laguageCarrierCost": 0,
     "minimumFare": 0,
     "additionalCharges": 0,
-    "driverAllowance": 300
+    "driverAllowance": 300,
+    "hourly": [{
+      "type": "8hr80km",
+      "hour": 8,
+      "distance": 80,
+      "basePrice": 2999
+    },{
+      "type": "10hr100km",
+      "hour": 10,
+      "distance": 100,
+      "basePrice": 3599
+    },{
+      "type": "12hr120km",
+      "hour": 12,
+      "distance": 120,
+      "basePrice": 4099
+    }]
 },{
     "vehicleType": "Innova",
     "vehicleName": "Innova",
     "vehicleImageUrl": "https://vidhantravels.com/img/cars/innova-big.jpg",
     "upToKm": 150,
-    "upToCostPerKm": 20.25,
+    "upToCostPerKm": 18,
+    "upToCostPerHour": 180,
     "capacity": {
       "totalNumberOfSeats": 6,
       "reservedNumberOfSeats": 1,
@@ -57,13 +94,30 @@
     "laguageCarrierCost": 0,
     "minimumFare": 0,
     "additionalCharges": 0,
-    "driverAllowance": 300
+    "driverAllowance": 300,
+    "hourly": [{
+      "type": "8hr80km",
+      "hour": 8,
+      "distance": 80,
+      "basePrice": 3899
+    },{
+      "type": "10hr100km",
+      "hour": 10,
+      "distance": 100,
+      "basePrice": 4619
+    },{
+      "type": "12hr120km",
+      "hour": 12,
+      "distance": 120,
+      "basePrice": 5339
+    }]
 },{
     "vehicleType": "Innova",
     "vehicleName": "Innova Crysta",
     "vehicleImageUrl": "https://imgd.aeplcdn.com/664x374/n/cw/ec/140809/innova-crysta-exterior-left-front-three-quarter.jpeg?isig=0&q=80",
     "upToKm": 150,
-    "upToCostPerKm": 22.25,
+    "upToCostPerKm": 20,
+    "upToCostPerHour": 200,
     "capacity": {
       "totalNumberOfSeats": 7,
       "reservedNumberOfSeats": 1,
@@ -76,13 +130,30 @@
     "laguageCarrierCost": 0,
     "minimumFare": 0,
     "additionalCharges": 0,
-    "driverAllowance": 300
+    "driverAllowance": 300,
+    "hourly": [{
+      "type": "8hr80km",
+      "hour": 8,
+      "distance": 80,
+      "basePrice": 4199
+    },{
+      "type": "10hr100km",
+      "hour": 10,
+      "distance": 100,
+      "basePrice": 4999
+    },{
+      "type": "12hr120km",
+      "hour": 12,
+      "distance": 120,
+      "basePrice": 5799
+    }]
 },{
     "vehicleType": "Traveller",
     "vehicleName": "Tempo Traveller",
     "vehicleImageUrl": "https://3.imimg.com/data3/QW/BM/MY-11094088/tempo-traveller-1000x1000.jpg",
     "upToKm": 150,
-    "upToCostPerKm": 25.25,
+    "upToCostPerKm": 24,
+    "upToCostPerHour": 480,
     "capacity": {
       "totalNumberOfSeats": 13,
       "reservedNumberOfSeats": 1,
@@ -95,6 +166,14 @@
     "laguageCarrierCost": 0,
     "minimumFare": 0,
     "additionalCharges": 0,
-    "driverAllowance": 500
+    "driverAllowance": 500,
+    "hourly": [{
+      "type": "8hr80km",
+      "hour": 8,
+      "distance": 80,
+      "basePrice": 7099
+    }
+    
+  ]
 }
 ]

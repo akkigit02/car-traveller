@@ -85,16 +85,16 @@ const VEHICLE_TYPE = [
       "value": "oneWay"
     },
     {
-      "name": "Local",
-      "value": "local"
+      "name": "Hourly",
+      "value": "hourly"
     },
     {
       "value": "roundTrip",
       "name": "Round Trip"
     },
     {
-      "value": "airport",
-      "name": "Airport"
+      "value": "cityCab",
+      "name": "City Cab"
     }
   ]
   

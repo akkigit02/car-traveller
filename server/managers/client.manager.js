@@ -35,6 +35,7 @@ const getCars = async (req, res) => {
     let toDetail = [];
     let fromDetail = "";
     let carList = [];
+    let hourlyCarDetails = []
     if (search?.tripType === "oneWay") {
       let toCity = await CitiesModel.findOne({ _id: search.to }).lean();
       fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
@@ -50,6 +51,7 @@ const getCars = async (req, res) => {
         car["totalPrice"] =
           distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
         carList.push(car);
+        hourlyCarDetails = [...car.hourly,...hourlyCarDetails]
       }
     } else if (search?.tripType === "roundTrip") {
       // Initialize an array to hold all "to" values
@@ -107,7 +109,27 @@ const getCars = async (req, res) => {
         }
         carList.push(car);
       }
+    } else if(search?.tripType === "hourly") {
+      fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
+        for (let car of cars) {
+          let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
+          if(hourlyData) {
+            car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
+            carList.push(car);
+          }
+          // hourlyCarDetails
+        }
+
     }
+    let hourlyDetails = []
+    let hourlyTypes = []
+    hourlyCarDetails.map(detail => {
+      if(!hourlyTypes.includes(detail.type)) {
+        delete detail?.basePrice
+        hourlyDetails.push(detail)
+      }
+      hourlyTypes.push(detail.type)
+    })
 
     const bookingDetails = {
       from: fromDetail.name,
@@ -115,7 +137,8 @@ const getCars = async (req, res) => {
       distance: distance.toFixed(2),
       pickUpDate: search.pickUpDate,
       returnDate: search.returnDate,
-      pickUpTime: search.pickUpTime
+      pickUpTime: search.pickUpTime,
+      hourlyDetails: hourlyDetails
     };
     return res.status(200).send({ cars: carList, bookingDetails });
   } catch (error) {

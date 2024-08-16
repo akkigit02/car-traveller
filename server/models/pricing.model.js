@@ -21,7 +21,13 @@ const PricingSchema = new Schema({
   minimumFare: { type: Number },
   additionalCharges: {type: Number},
   driverAllowance: {type: Number},
-  similar: [{type: String}]
+  similar: [{type: String}],
+  hourly: [{
+    type: {type: String},
+    hour: { type: Number },
+    distance: {type: Number},
+    basePrice: { type: Number},
+  }]
 });
 
 // Create a model based on the schema

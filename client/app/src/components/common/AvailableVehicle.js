@@ -12,7 +12,7 @@ export default function AvailableVehicle() {
 
   const [bookingDetails, setBookingDetails] = useState("");
   const [carList, setCarList] = useState([]);
-  const [isChangeTrip, setIsChangeTrip] = useState(false);
+  const [hourlyType, setHourlyType] = useState("");
   const taxImage = require("../../assets/img/tax.png");
   const doorImage = require("../../assets/img/download");
 
@@ -40,13 +40,11 @@ export default function AvailableVehicle() {
 
   useEffect(() => {
     if (query) {
-      // decode query
       const decodedString = atob(query);
       const decodedData = JSON.parse(decodedString);
-      // setBookingDetails(decodedData);
       getCarList(decodedData);
     } else window.location.href = "http:127.0.0.1:5500";
-  }, []);
+  }, [hourlyType]);
 
   const book = () => {
     navigate(`/signup/${query}`);
@@ -95,6 +93,14 @@ export default function AvailableVehicle() {
           </div>
 
           <div className="col-lg-9 col-md-9 col-12 mt-3">
+            <div className="d-flex justify-content-between">
+              {bookingDetails?.hourlyDetails?.map(list => (
+              <div onClick={() => setHourlyType(list.type)}>
+                {list.hour} Hours| {list.distance} Km 
+              </div>
+              ))}
+
+            </div>
             <div className="col-lg-12 cstm-calHeight">
               {carList.map((item, idx) => (
                 <div className="car-list-items mb-3" key={idx}>
@@ -114,12 +120,11 @@ export default function AvailableVehicle() {
                             <i className="fa fa-star"></i>
                             <i className="fa fa-star"></i>
                             <i className="fa fa-star"></i>
-                            <span>2 Reviews</span>
+                            {/* <span>2 Reviews</span> */}
                           </div>
-                          <div>
+                          {item?.similar?.length > 0 && <div>
                           or Similar to ({item?.similar?.join()})
-
-                          </div>
+                          </div>}
                         </div>
 
                         <div class="icon-items">
@@ -139,7 +144,7 @@ export default function AvailableVehicle() {
                             </p>
                           </div>
                           <div>
-                            <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">&#8377; 3400</p>
+                            <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">&#8377; {Math.ceil(item.totalPrice)}</p>
                           </div>
                           <button
                             className="border-0 bg-unset"
