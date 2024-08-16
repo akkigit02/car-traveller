@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { VEHICLE_TYPE } from "../../constants/common.constants";
 import axios from "axios";
 
@@ -8,8 +8,13 @@ export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const { register, handleSubmit, reset, errors } = useForm({
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm({
     mode: "onChange",
+  });
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "similar"
   });
 
   useEffect(() => {
@@ -18,6 +23,11 @@ export default function VehiclePricing() {
 
   const saveVehiclePrice = async (data) => {
     try {
+      // Convert the 'similar' array from an array of objects to an array of strings
+      if (Array.isArray(data.similar)) {
+        data.similar = data.similar.map(item => item.value);
+      }
+  
       if (data?._id) {
         const res = await axios({
           method: "put",
@@ -44,7 +54,7 @@ export default function VehiclePricing() {
     } catch (error) {
       console.error(error);
     }
-  };
+  };  
 
   const getVehiclePrice = async () => {
     try {
@@ -211,7 +221,7 @@ export default function VehiclePricing() {
                     required: 'Vehicle Name is Required'
                   })}
                   className="form-control"
-                  placeholder="Enter minimum fare"
+                  placeholder="Enter vehicle name"
                 />
                 {errors?.vehicleName && (
                   <span className="text-danger">
@@ -220,21 +230,35 @@ export default function VehiclePricing() {
                 )}
               </div>
 
-              <div className="form-group col-md-6">
-                <label htmlFor="inputPassword4">Similar</label>
-                <input
-                  type="text"
-                  {...register("similar",{
-                    required: 'Vehicle Name is Required'
-                  })}
-                  className="form-control"
-                  placeholder="Enter minimum fare"
-                />
-                {errors?.vehicleName && (
-                  <span className="text-danger">
-                    {errors.vehicleName.message}
-                  </span>
-                )}
+              {/* Similar Field Array */}
+              <div className="form-group col-md-12">
+                <label>Similar</label>
+                {fields.map((item, index) => (
+                  <div key={item.id} className="d-flex align-items-center mb-2">
+                    <input
+                      type="text"
+                      {...register(`similar.${index}.value`, {
+                        required: 'This field is required'
+                      })}
+                      className="form-control"
+                      placeholder="Enter similar option"
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-danger ml-2"
+                      onClick={() => remove(index)}
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => append({ value: "" })}
+                >
+                  +
+                </button>
               </div>
 
               <div className="form-group col-md-6">
@@ -243,7 +267,7 @@ export default function VehiclePricing() {
                   type="text"
                   {...register("vehicleImageUrl")}
                   className="form-control"
-                  placeholder="Enter minimum fare"
+                  placeholder="Enter image URL"
                 />
               </div>
               <div className="form-group col-md-6">
@@ -265,7 +289,7 @@ export default function VehiclePricing() {
                 })}
                 className="form-control"
                 id="inputAddress"
-                placeholder="Enter Cost per km"
+                placeholder="Enter cost per km"
               />
               {errors?.costPerKm && (
                   <span className="text-danger">
@@ -278,11 +302,11 @@ export default function VehiclePricing() {
               <input
                 type="number"
                 {...register("costPerHour",{
-                  required: 'Vehicle Name is Required'
+                  required: 'Cost Per Hour is Required'
                 })}
                 className="form-control"
                 id="inputAddress2"
-                placeholder="Enter Cost per hour"
+                placeholder="Enter cost per hour"
               />
               {errors?.costPerHour && (
                   <span className="text-danger">
@@ -297,7 +321,7 @@ export default function VehiclePricing() {
                   type="number"
                   {...register("laguageCarrierCost")}
                   className="form-control"
-                  placeholder="Carrier laguage cost"
+                  placeholder="Carrier luggage cost"
                 />
               </div>
             </div>

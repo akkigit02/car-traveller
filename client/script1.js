@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const jsonString = JSON.stringify(query);
         const encodedString = btoa(jsonString);
         console.log(encodedString);
-        window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
+        window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
     })
 
 
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
+            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                 method: "GET",
             });
             let data = await response.json();
