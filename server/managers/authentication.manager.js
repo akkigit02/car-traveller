@@ -2,6 +2,7 @@ const UserModel = require('../models/user.model');
 const { comparePassword, generateSecureRandomString, generateOTP } = require('../utils/common.utils');
 const { JWT_SECRET_KEY } = process.env
 const JWT = require("jsonwebtoken");
+const RideModel = require("../models/ride.model");
 
 const getUserSession = async (userId) => {
     const loginSessionId = generateSecureRandomString(10)
@@ -137,7 +138,6 @@ const signup = async (req, res) => {
         if (user && user.modules.userType !== 'CLIENT')
             return res.status(500).send({ message: 'Phone Number already exist.' })
         else {
-
             user = await UserModel.create({
                 firstName: body.userDetails.firstName,
                 lastName: body.userDetails.lastName,
@@ -147,6 +147,8 @@ const signup = async (req, res) => {
                     userType: 'CLIENT'
                 }
             })
+
+
         }
         const otp = generateOTP()
         const sessionId = generateSecureRandomString()
@@ -157,7 +159,23 @@ const signup = async (req, res) => {
                 'authentication.twoFactor.sessionId': sessionId
             }
         })
-        return res.status(200).send({ sessionId: sessionId, status: 'TWO_STEP_AUTHENTICATION' })
+        const bokkingData = {
+            vehicleId: body.vehicleId,
+            passengerId: user._id,
+            pickupCity: body.from._id,
+            dropCity: body.to.map(ele => { ele => ele._id }),
+            pickupLocation: '',
+            dropoffLocation: '',
+            pickupDate: body.pickUpDate,
+            pickupTime: body.pickUpTime,
+            dropDate: body?.dropDate,
+            totalPrice: body.totalPrice,
+            totalDistance: body.distance,
+            bokkingStatus: 'pending'
+        }
+        const ride = await RideModel.create(bokkingData)
+        // send notification to admin 
+        return res.status(200).send({ sessionId: sessionId, bokking_id: ride._id, status: 'TWO_STEP_AUTHENTICATION' })
     } catch (error) {
         console.log(error)
         res.status(500).send({ message: 'Something went wrong. Please try again later.' })

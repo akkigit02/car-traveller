@@ -22,13 +22,10 @@ export default function AvailableVehicle() {
         url: "/api/client/car-list",
         params: { search: decodedQuery },
       });
-
+      console.log(data.bookingDetails)
       setBookingDetails({
         ...data.bookingDetails,
         type: TRIP_TYPE.find((ty) => ty.value === decodedQuery.tripType)?.name,
-        time: query.pickupTime,
-        date: query.pickupDate,
-        returnDate: query.returnDate
       });
       setCarList(data.cars);
     } catch (error) {
@@ -40,7 +37,7 @@ export default function AvailableVehicle() {
     if (query) {
       const decodedString = atob(query);
       let decodedData = JSON.parse(decodedString);
-      if(decodedData?.tripType === 'hourly') {
+      if (decodedData?.tripType === 'hourly') {
         decodedData['hourlyType'] = '8hr80km'
       }
       setDecodedQuery(decodedData)
@@ -48,12 +45,16 @@ export default function AvailableVehicle() {
   }, []);
 
   useEffect(() => {
-    if(decodedQuery)
+    if (decodedQuery)
       getCarList();
   }, [decodedQuery]);
 
-  const book = () => {
-    navigate(`/signup/${query}`);
+  const book = (car) => {
+    if (!bookingDetails)
+      return
+    const jsonString = JSON.stringify({ vehicleId: car._id, totalPrice: car.totalPrice, ...bookingDetails });
+    const encodedString = btoa(jsonString);
+    navigate(`/signup/${encodedString}`);
   };
 
   const toggleDetails = (index) => {
@@ -69,50 +70,50 @@ export default function AvailableVehicle() {
         <div className="row m-0">
           <div className="col-lg-3 col-md-3 col-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
-                <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
-                  <h5>
-                    {bookingDetails.from} {bookingDetails?.to?.map(city => (
-                      <span> - {city}</span>
-                    ))} (
-                    {bookingDetails.type || "One Way"})
-                  </h5>
+              <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
+                <h5>
+                  {bookingDetails?.from?.name} {bookingDetails?.to?.map(city => (
+                    <span> - {city.name}</span>
+                  ))} (
+                  {bookingDetails.type || "One Way"})
+                </h5>
+              </div>
+              <div className="p-3">
+                <div className="me-3 col-12 mb-3">
+                  <p className="mb-0">Pickup Date</p>
+                  <div className="highlight-data">
+                    {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}
+                  </div>
                 </div>
-                <div className="p-3">
-                  <div className="me-3 col-12 mb-3">
-                    <p className="mb-0">Pickup Date</p>
-                    <div className="highlight-data">
-                      {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}
-                    </div>
+                {bookingDetails.type === 'roundTrip' && <div className="me-3 col-12 mb-3">
+                  <p className="mb-0">Return Date</p>
+                  <div className="highlight-data">
+                    {moment(bookingDetails.returnDate).format("DD/MM/YYYY")}
                   </div>
-                  {bookingDetails.type === 'roundTrip' && <div className="me-3 col-12 mb-3">
-                    <p className="mb-0">Return Date</p>
-                    <div className="highlight-data">
-                      {moment(bookingDetails.returnDate).format("DD/MM/YYYY")}
-                    </div>
-                  </div>}
-                  <div className="me-3 col-12 mb-3">
-                    <p className="mb-0">Time</p>
-                    <div className="highlight-data">{bookingDetails.pickUpTime}</div>
-                  </div>
-  
+                </div>}
+                <div className="me-3 col-12 mb-3">
+                  <p className="mb-0">Time</p>
+                  <div className="highlight-data">{bookingDetails.pickUpTime}</div>
+                </div>
+
                 <div className="d-flex justify-content-end">
                   <a href="http://127.0.0.1:5500/client/index.html">
-                      <button className="cstm-btn-red">Change</button>
-                    </a>
-                  </div>
-                  </div>
+                    <button className="cstm-btn-red">Change</button>
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="col-lg-9 col-md-9 col-12 mt-3">
             <div className="d-flex justify-content-between">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
-              <div key={'key_'+idx} onClick={() => setDecodedQuery({
-                ...decodedQuery,
-                hourlyType: list.type
-              })}>
-                {list.hour} Hours| {list.distance} Km
-              </div>
+                <div key={'key_' + idx} onClick={() => setDecodedQuery({
+                  ...decodedQuery,
+                  hourlyType: list.type
+                })}>
+                  {list.hour} Hours| {list.distance} Km
+                </div>
               ))}
             </div>
             <div className="col-lg-12 cstm-calHeight">
@@ -137,7 +138,7 @@ export default function AvailableVehicle() {
                             {/* <span>2 Reviews</span> */}
                           </div>
                           {item?.similar?.length > 0 && <div>
-                          or Similar to ({item?.similar?.join()})
+                            or Similar to ({item?.similar?.join()})
                           </div>}
                         </div>
 
@@ -152,7 +153,7 @@ export default function AvailableVehicle() {
                         </div>
                         <div className="d-flex justify-content-center align-items-center">
                           <div className=" me-3 d-flex flex-column align-items-center">
-                          <p className="mb-0 pb-0">Distance: </p>
+                            <p className="mb-0 pb-0">Distance: </p>
                             <p className="mb-0 pb-0 ">
                               {bookingDetails.distance}Km
                             </p>
@@ -163,7 +164,7 @@ export default function AvailableVehicle() {
                           <button
                             className="border-0 bg-unset"
                             onClick={() => {
-                              book("carId");
+                              book(item);
                             }}
                           >
                             <h6 className="price mb-0">
@@ -187,21 +188,21 @@ export default function AvailableVehicle() {
                           <div>
                             Excluded
                             <div className="d-flex align-items-center">
-                          <img className="w-40" src={taxImage} />
-                          <p className="mb-0 font-14">
-                            Toll, State Tax & GST, Parking
-                          </p>
-                        </div>
-                        <div className="d-flex align-items-center">
-                          <p className="mb-0 font-14">
-                          ₹{item?.upToCostPerKm} per km after the first {bookingDetails.distance} km
-                          </p>
-                        </div>
-                        {decodedQuery?.hourlyType && <div className="d-flex align-items-center">
-                          <p className="mb-0 font-14">
-                          ₹{item?.upToCostPerHour} per hour after the {item.hour} hour
-                          </p>
-                        </div>}
+                              <img className="w-40" src={taxImage} />
+                              <p className="mb-0 font-14">
+                                Toll, State Tax & GST, Parking
+                              </p>
+                            </div>
+                            <div className="d-flex align-items-center">
+                              <p className="mb-0 font-14">
+                                ₹{item?.upToCostPerKm} per km after the first {bookingDetails.distance} km
+                              </p>
+                            </div>
+                            {decodedQuery?.hourlyType && <div className="d-flex align-items-center">
+                              <p className="mb-0 font-14">
+                                ₹{item?.upToCostPerHour} per hour after the {item.hour} hour
+                              </p>
+                            </div>}
                           </div>
                         </div>}
                       </div>

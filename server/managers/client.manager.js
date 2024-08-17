@@ -1,5 +1,5 @@
 const CitiesModel = require("../models/cities.model");
-const RideModel = require("../models/booking.model");
+const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
 const {
   estimateRouteDistance,
@@ -122,24 +122,24 @@ const getCars = async (req, res) => {
         }
         carList.push(car);
       }
-    } else if(search?.tripType === "hourly") {
+    } else if (search?.tripType === "hourly") {
       fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
-        for (let car of cars) {
-          let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
-          if(hourlyData) {
-            car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
-            car["hour"] = hourlyData.hour
-            distance = hourlyData?.distance
-            carList.push(car);
-          }
-          hourlyCarDetails = [...car.hourly,...hourlyCarDetails]
+      for (let car of cars) {
+        let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
+        if (hourlyData) {
+          car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
+          car["hour"] = hourlyData.hour
+          distance = hourlyData?.distance
+          carList.push(car);
         }
+        hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
+      }
 
     }
     let hourlyDetails = []
     let hourlyTypes = []
     hourlyCarDetails.map(detail => {
-      if(!hourlyTypes.includes(detail.type)) {
+      if (!hourlyTypes.includes(detail.type)) {
         delete detail?.basePrice
         hourlyDetails.push(detail)
       }
@@ -147,9 +147,9 @@ const getCars = async (req, res) => {
     })
 
     const bookingDetails = {
-      from: fromDetail.name,
-      to: toDetail.map(city => city.name),
-      distance:  distance.toFixed(2),
+      from: { name: fromDetail.name, _id: fromDetail._id },
+      to: toDetail.map(city => ({ name: city.name, _id: city._id })),
+      distance: distance.toFixed(2),
       pickUpDate: search.pickUpDate,
       returnDate: search.returnDate,
       pickUpTime: search.pickUpTime,

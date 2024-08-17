@@ -6,7 +6,9 @@ const Schema = mongoose.Schema;
 const rideSchema = new Schema({
   driverId: { type: Schema.Types.ObjectId, ref: "user" },
   vehicleId: { type: Schema.Types.ObjectId, ref: "vehicle" },
-  passengerId: {type: Schema.Types.ObjectId, ref: "user"},
+  passengerId: { type: Schema.Types.ObjectId, ref: "user" },
+  pickUpCity: { type: Schema.Types.ObjectId, ref: "cities" },
+  dropCity: [{ type: Schema.Types.ObjectId, ref: "cities" }],
   pickupLocation: {
     type: String,
     required: true,
@@ -29,11 +31,12 @@ const rideSchema = new Schema({
     month: { type: String },
     year: { type: String },
   },
-  totalPrice: {type: String },
-  advancePayment: {type: String},
-  totalDistance: {type: Number},
-  isLaguageCarrier: {type: Boolean}, 
-  status: {
+  totalPrice: { type: String },
+  advancePayment: { type: String },
+  totalDistance: { type: Number },
+  isLaguageCarrier: { type: Boolean },
+  bokkingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
+  rideStatus: {
     type: String,
     enum: ["scheduled", "inProgress", "completed", "cancelled"],
     default: null,
