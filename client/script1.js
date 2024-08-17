@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (field.type === 'date') {
                 wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
-                    <input type="date" id="${field.name}"/>
+                    <input type="date" id="${field.name}" change="${handleDateChange}"/>
                     `;
             } else if (field.type === 'time') {
                 wrapper.innerHTML = `
@@ -85,8 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
             }
-
             parentContainer.appendChild(wrapper);
+            
         });
         const buttonWrapper = document.createElement('div');
         buttonWrapper.classList.add('pickup-items');
@@ -96,7 +96,8 @@ document.addEventListener('DOMContentLoaded', () => {
         parentContainer.appendChild(buttonWrapper);
         formContainer.appendChild(parentContainer);
         getTimeForDropdown(); // Call the function to populate time dropdown
-        bindSuggestionEvents(type); // Bind events to the new input elements
+        bindSuggestionEvents(type); // Bind events to the new input element
+   
     };
 
     const bindSuggestionEvents = (type) => {
@@ -164,7 +165,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const submitButtom = document.getElementById('submitButtom')
         submitButtom.addEventListener('click', () => {
-            console.log(query)
             const formData = {
                 ...query
             }
@@ -200,7 +200,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchQuery = searchInput.value.toLowerCase();
         let cities = await getCities(searchQuery);
         const queryKey = Object.keys(query)
-        console.log(inputType, query, queryKey)
         if (queryKey.length)
             queryKey.map(ele => {
                 if (ele !== inputType) {
@@ -243,6 +242,52 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const handleDateChange = (e) => {
+        let date = new Date(e.target.value)
+        date.setHours(0,0,0,0)
+        let endDate = new Date(e.target.value)
+        endDate.setHours(23,45,0,0)
+
+        const optionsInterval = 15;
+        const timeSelect = document.getElementById('timeSelect');
+        if (!timeSelect) return;
+        timeSelect.innerHTML = '';
+        timeSelect.value = ''
+        if(date.getDate() == new Date().getDate() && date.getMonth() == new Date().getMonth() && date.getFullYear() == new Date().getFullYear()) {
+            date = new Date()
+            endDate = new Date()
+            endDate.setHours(23,45,0,0)
+            date.setHours(date.getHours() + 1);
+            date.setMinutes(date.getMinutes() + 30);
+        }
+
+        if(query?.tripType === 'roundTrip') {
+            const returnDate = document.getElementById('returnDate');
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            returnDate.value = `${year}-${month}-${day}`;
+            returnDate.setAttribute('min',returnDate.value)
+        }
+        while (date <= endDate) {
+            let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
+            if (minutes === 60) {
+                minutes = 0;
+                date.setHours(date.getHours() + 1);
+            }
+            const hours = date.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+            const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
+            const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
+            const option = document.createElement('option');
+            option.value = displayTime;
+            option.textContent = displayTime;
+            timeSelect.appendChild(option);
+            date.setMinutes(date.getMinutes() + optionsInterval);
+        }
+    }
+
     const getTimeForDropdown = () => {
         const timeSelect = document.getElementById('timeSelect');
         if (!timeSelect) return;
@@ -250,16 +295,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const endDate = new Date();
         endDate.setHours(23, 45, 0, 0);
         const optionsInterval = 15;
-
         date.setHours(date.getHours() + 1);
         date.setMinutes(date.getMinutes() + 30);
+        if(date > endDate) {
+            date.setDate(date.getDate() + 1)
+            date.setHours(0, 30, 0, 0)
+        }
 
         const inputElement = document.getElementById('pickupDate');
-
+        inputElement.addEventListener('change',handleDateChange)
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         inputElement.value = `${year}-${month}-${day}`;
+        inputElement.setAttribute('min',inputElement.value)
         if(query?.tripType === 'roundTrip') {
             const returnDate = document.getElementById('returnDate');
 
@@ -267,6 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         returnDate.value = `${year}-${month}-${day}`;
+        returnDate.setAttribute('min',returnDate.value)
         }
 
         const now = new Date();
