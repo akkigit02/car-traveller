@@ -170,11 +170,11 @@ export default function VehiclePricing() {
           ))}
         </tbody>
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'add vehicle'}>
         <form onSubmit={handleSubmit(saveVehicle)}>
           <div className="h-100 scroll-body">
-            <div className="form-row">
-              <div className="form-group col-md-4">
+            <div className="row m-0">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputState">Vehicle Type</label>
                 <select {...register("type")} className="form-control">
                   <option value={""}>Choose Type</option>
@@ -185,7 +185,7 @@ export default function VehiclePricing() {
                   ))}
                 </select>
               </div>
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputPassword4">Model Name</label>
                 <input
                   type="number"
@@ -194,8 +194,7 @@ export default function VehiclePricing() {
                   placeholder="Enter minimum fare"
                 />
               </div>
-            </div>
-            <div className="form-group">
+            <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputAddress">Registration Number</label>
               <input
                 type="number"
@@ -205,7 +204,7 @@ export default function VehiclePricing() {
                 placeholder="Enter Cost per km"
               />
             </div>
-            <div className="form-group col-md-4">
+            <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputState">Fuel Type</label>
               <select {...register("fuelType")} className="form-control">
                 <option value={""}>Choose Type</option>
@@ -216,8 +215,7 @@ export default function VehiclePricing() {
                 ))}
               </select>
             </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Mileage</label>
                 <input
                   type="number"
@@ -226,9 +224,7 @@ export default function VehiclePricing() {
                   placeholder="Carrier laguage cost"
                 />
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Number of seat</label>
                 <input
                   type="number"
@@ -238,8 +234,8 @@ export default function VehiclePricing() {
                 />
               </div>
             </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+            
+              <div className="form-group col-lg-12 col-md-12 col-12">
                 <label htmlFor="inputCity">Language Carrier</label>
                 <div className="form-check">
                   <input
@@ -266,10 +262,9 @@ export default function VehiclePricing() {
                   </label>
                 </div>
               </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group col-md-6">
+            <div className="row m-0">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Registration Date</label>
                 <input
                   type="date"
@@ -278,9 +273,8 @@ export default function VehiclePricing() {
                   placeholder="Enter additional cost"
                 />
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+            
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Policy Number</label>
                 <input
                   type="date"
@@ -289,9 +283,7 @@ export default function VehiclePricing() {
                   placeholder="Enter additional cost"
                 />
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Insurance Expiration</label>
                 <input
                   type="date"
@@ -302,9 +294,11 @@ export default function VehiclePricing() {
               </div>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary">
+          <div className="d-flex justify-content-end border-top mt-3 pt-2">
+            <button type="submit" className="btn btn-primary">
             Add
           </button>
+          </div>
         </form>
       </Modal>
     </div>
