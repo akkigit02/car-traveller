@@ -67,6 +67,24 @@
     overflow-y: auto;
     padding-right: 10px;
 }
+.cstm-title{
+    font-size: 22px;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+.notch_content{
+    background: var(--lightBlue);
+    padding: 10px;
+    border-radius: 6px 0 0 6px;
+}
+.notch-point{
+    display: block;
+    border-color: #ffffff #ffffff #ffffff var(--lightBlue);
+    border-style: solid;
+    border-width: 20px;
+    width: 0px;
+    height: 0px;
+}
 .header-1 {
     position: relative;
     background-color: var(--white);

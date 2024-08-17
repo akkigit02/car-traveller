@@ -22,7 +22,7 @@ export default function VehiclePricing() {
           data: data,
         });
         setList(
-          list.map((li) => {
+          list?.map((li) => {
             if (li._id === data._id) {
               li = data;
             }
@@ -90,22 +90,23 @@ export default function VehiclePricing() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between pb-2">
         <div>
-          <h2>Vehicle Detail</h2>
+          <p className="cstm-title">Vehicle Detail</p>
         </div>
         <div>
           <button
+          className="cstm-btn"
             onClick={() => {
               reset({});
               setIsOpen(true);
             }}
           >
-            Add Vehicle
+            <i className="fa fa-plus"></i>
           </button>
         </div>
       </div>
-      <table>
+      <table className="cstm-table">
         <thead>
           <tr>
             <th>Vehicle Type</th>
@@ -125,12 +126,12 @@ export default function VehiclePricing() {
           {list?.map((li, index) => (
             <tr key={index}>
               <td>
-                {VEHICLE_TYPE.find((item) => item.value === li.type)?.name}
+                {VEHICLE_TYPE?.find((item) => item.value === li.type)?.name}
               </td>
               <td>{li.modelName}</td>
               <td>{li.registrationNumber}</td>
               <td>
-                {FUEL_TYPE.find((item) => item.value === li.fuelType)?.name}
+                {FUEL_TYPE?.find((item) => item.value === li.fuelType)?.name}
               </td>
               <td>{li.mileage}</td>
               <td>{li.capacity.numberOfSeat}</td>
@@ -178,7 +179,7 @@ export default function VehiclePricing() {
                 <label htmlFor="inputState">Vehicle Type</label>
                 <select {...register("type")} className="form-control">
                   <option value={""}>Choose Type</option>
-                  {VEHICLE_TYPE.map((vehicle, index) => (
+                  {VEHICLE_TYPE?.map((vehicle, index) => (
                     <option key={index} value={vehicle.value}>
                       {vehicle.name}
                     </option>
@@ -208,7 +209,7 @@ export default function VehiclePricing() {
               <label htmlFor="inputState">Fuel Type</label>
               <select {...register("fuelType")} className="form-control">
                 <option value={""}>Choose Type</option>
-                {FUEL_TYPE.map((vehicle, index) => (
+                {FUEL_TYPE?.map((vehicle, index) => (
                   <option key={index} value={vehicle.value}>
                     {vehicle.name}
                   </option>

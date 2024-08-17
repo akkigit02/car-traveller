@@ -17,28 +17,28 @@ export default function SideNavBar() {
             to={`/dashboard`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/dashboard` ? 'active' : ''}`}
           >
-            <i className="fas fa-tachometer-alt fa-fw me-3"></i>
+            <i className="fas fa-th-large fa-fw me-3"></i>
             <span>Dashboard</span>
           </Link>
           <Link
             to={`/vehicle`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/vehicle` ? 'active' : ''}`}
           >
-            <i className="fas fa-chart-area fa-fw me-3"></i>
+            <i className="fas fa-car fa-fw me-3"></i>
             <span>Vehicle</span>
           </Link>
           <Link
             to={`/vehicle-pricing`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/vehicle-pricing` ? 'active' : ''}`}
           >
-            <i className="fas fa-lock fa-fw me-3"></i>
+            <i className="fas fa-money-bill fa-fw me-3"></i>
             <span>Pricing</span>
           </Link>
           <Link
             to={`/booking`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/booking` ? 'active' : ''}`}
           >
-            <i className="fas fa-lock fa-fw me-3"></i>
+            <i className="fas fa-taxi fa-fw me-3"></i>
             <span>Booking Info</span>
           </Link>
           <Link
@@ -73,7 +73,7 @@ export default function SideNavBar() {
             <span>Users</span>
           </a> */}
           <div onClick={handleLogout} className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-money-bill fa-fw me-3"></i>
+            <i className="fas fa-sign-out fa-fw me-3"></i>
             <span>Logout</span>
           </div>
         </div>

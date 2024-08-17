@@ -20,7 +20,7 @@ function AdminRoute() {
             </div>
           </div>
           <div className="col-lg-10 col-md-10 col-12">
-            <div className="border rounded shadow p-3">
+            <div className="border rounded shadow p-3 h-100">
               <Routes>
                 <Route path={`/`} Component={AdminDashboard} exact />
                 <Route path={`/dashboard`} Component={AdminDashboard} exact />

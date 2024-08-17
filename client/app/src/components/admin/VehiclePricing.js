@@ -106,34 +106,36 @@ export default function VehiclePricing() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between pb-2">
         <div>
-          <h2>Vehicle Price</h2>
+          <p className="cstm-title">Vehicle Price</p>
         </div>
         <div>
           <button
+          className="cstm-btn"
             onClick={() => {
               reset({});
               setIsOpen(true);
             }}
           >
-            Add Price
+            {/* Add Price */}
+            <i className="fa fa-plus"></i>
           </button>
         </div>
       </div>
-      <table>
+      <table className="cstm-table">
         <thead>
           <tr>
-            <th className="p-2 my-2">Image</th>
-            <th className="p-2 my-2">Type</th>
-            <th className="p-2">Name</th>
-            <th className="p-2 my-2">Similar</th>
-            <th className="p-2 my-2">Minimum Fare</th>
-            <th className="p-2 my-2">Cost per km</th>
-            <th className="p-2 mx-2">Cost per hour</th>
-            <th className="p-2">Laguage Carrier Cost</th>
-            <th className="p-2">Additional Charges</th>
-            <th className="p-2">Action</th>
+            <th className="">Image</th>
+            <th className="">Type</th>
+            <th className="">Name</th>
+            <th className="">Similar</th>
+            <th className="">Minimum Fare</th>
+            <th className="">Cost per km</th>
+            <th className="">Cost per hour</th>
+            <th className="">Laguage Carrier Cost</th>
+            <th className="">Additional Charges</th>
+            <th className="">Action</th>
           </tr>
         </thead>
         {list.length &&
@@ -141,7 +143,7 @@ export default function VehiclePricing() {
           {list?.map((li, index) => (
             <tr key={index}>
               <td>
-                <div className="car-list-items mb-3 car-image bg-cover">
+                <div className="">
                   <img
                     style={{ height: "50px", width: "70px" }}
                     src={li.vehicleImageUrl}
@@ -161,12 +163,10 @@ export default function VehiclePricing() {
               <td>{li.costPerHour}</td>
               <td>{li.laguageCarrierCost}</td>
               <td>{li.additionalCharges}</td>
-              <td>
-                <ul className="list-inline m-0">
-                  <li className="list-inline-item">
+              <td className="d-flex align-items-center"> 
                     <button
                       onClick={() => getVehiclePriceById(li._id)}
-                      className="btn btn-success btn-sm rounded-0"
+                      className="icon-btn me-2"
                       type="button"
                       data-toggle="tooltip"
                       data-placement="top"
@@ -174,11 +174,10 @@ export default function VehiclePricing() {
                     >
                       <i className="fa fa-edit"></i>
                     </button>
-                  </li>
-                  <li className="list-inline-item">
+                 
                     <button
                       onClick={() => deleteVehiclePrice(li._id)}
-                      className="btn btn-danger btn-sm rounded-0"
+                      className="icon-btn"
                       type="button"
                       data-toggle="tooltip"
                       data-placement="top"
@@ -186,14 +185,12 @@ export default function VehiclePricing() {
                     >
                       <i className="fa fa-trash"></i>
                     </button>
-                  </li>
-                </ul>
               </td>
             </tr>
           ))}
         </tbody>}
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'Add Price'}>
         <form onSubmit={handleSubmit(saveVehiclePrice)}>
           <div className="h-100 scroll-body">
             <div className="form-row">
