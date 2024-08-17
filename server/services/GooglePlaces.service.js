@@ -7,11 +7,12 @@ const getAutoSearchPlaces = async (input, city = '', type = '') => {
         const data = {
             input: city ? `${city} ${input}` : input,
             key: GOOGLE_PLACE_API_KEY,
+            components:'country:in'
         }
         if (type)
             data['type'] = type
         const res = await client.placeAutocomplete({
-            params: data
+            params: data,
         })
         return res.data.predictions
     } catch (error) {

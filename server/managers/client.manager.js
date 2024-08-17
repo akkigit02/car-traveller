@@ -5,6 +5,7 @@ const {
   estimateRouteDistance,
   dateDifference,
 } = require("../utils/calculation.util");
+const { getAutoSearchPlaces } = require("../services/GooglePlaces.service");
 
 const getCities = async (req, res) => {
   try {
@@ -24,6 +25,20 @@ const getCities = async (req, res) => {
     return res.status(500).send({ message: "Something went wrong" });
   }
 };
+const getAddressSuggestion = async (req, res) => {
+  try {
+    console.log(req.query)
+    const { search, cityId } = req?.query;
+    const city = await CitiesModel.findById(cityId)
+    let address = await getAutoSearchPlaces(search, city?.name)
+    address = address.map(ele => ele.description)
+    return res.status(200).send({ address });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Something went wrong" });
+  }
+};
+
 // mumbai pune nashik mumbai
 
 const getCars = async (req, res) => {
@@ -74,7 +89,7 @@ const getCars = async (req, res) => {
 
       for (let i = 0; i < cityIds.length - 1; i++) {
         const fromCity = await CitiesModel.findOne({ _id: cityIds[i] }).lean();
-        if(i == 0) {
+        if (i == 0) {
           fromDetail = fromCity
         }
         const toCity = await CitiesModel.findOne({
@@ -94,7 +109,7 @@ const getCars = async (req, res) => {
       }
       distance = totalDistance;
       let numberOfDay = dateDifference(search.pickUpDate, search.returnDate);
-      if(numberOfDay == 0) numberOfDay = 1
+      if (numberOfDay == 0) numberOfDay = 1
 
       for (let car of cars) {
         if (distance <= numberOfDay * 300) {
@@ -194,4 +209,5 @@ module.exports = {
   getBooking,
   getBookingByPasssengerId,
   cancelBooking,
+  getAddressSuggestion
 };

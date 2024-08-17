@@ -6,12 +6,17 @@ import { useParams } from 'react-router-dom';
 import TopNavBar from './TopNavBar';
 import { toast } from 'react-toastify';
 function Signup() {
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const { query } = useParams();
   const [bookingDetails, setBookingDetails] = useState()
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [sessionId, setSessionId] = useState()
   const [otp, setOtp] = useState()
+  const [addressSuggestion, setAdressSugeestion] = useState({
+    isOpen: false,
+    type: '',
+    address: []
+  })
 
 
   const verifyOtp = async () => {
@@ -62,6 +67,25 @@ function Signup() {
     else window.location.href = 'http:127.0.0.1:5500'
   }, [])
 
+  const getAddressSuggestion = async (search, type) => {
+
+    try {
+      const cityId = type === 'pickupAddress' ? bookingDetails?.from : bookingDetails?.to
+      const { data } = await axios({
+        url: '/api/client/address-suggestion',
+        params: {
+          search, cityId
+        }
+      })
+      setAdressSugeestion({
+        isOpen: true,
+        type,
+        address: data.address
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <>
@@ -187,9 +211,18 @@ function Signup() {
                                 {...register("pickupAddress", {
                                   required: "Pick up address is required",
                                 })}
+                                onFocus={(ele) => getAddressSuggestion(ele.target.value, 'pickupAddress')}
+                                onChange={(ele) => getAddressSuggestion(ele.target.value, 'pickupAddress')}
+                                onBlur={() => setTimeout(() => {
+                                  setAdressSugeestion({ isOpen: false, type: '', address: [] })
+                                }, 250)}
                                 disabled={isOtpSent}
                                 placeholder="Address"
                               />
+                              {addressSuggestion.isOpen && addressSuggestion.type === 'pickupAddress' &&
+                                <ul>
+                                  {addressSuggestion.address.map(ele => (<li onClick={() => setValue('pickupAddress', ele)}>{ele}</li>))}
+                                </ul>}
                               {errors?.pickupAddress?.message && (
                                 <span>{errors?.pickupAddress?.message}</span>
                               )}
@@ -205,9 +238,18 @@ function Signup() {
                                 {...register("dropAddress", {
                                   required: "Drop address is required",
                                 })}
+                                onFocus={(ele) => getAddressSuggestion(ele.target.value, 'dropAddress')}
+                                onChange={(ele) => getAddressSuggestion(ele.target.value, 'dropAddress')}
+                                onBlur={() => setTimeout(() => {
+                                  setAdressSugeestion({ isOpen: false, type: '', address: [] })
+                                }, 250)}
                                 disabled={isOtpSent}
                                 placeholder="Address"
                               />
+                              {addressSuggestion.isOpen && addressSuggestion.type === 'dropAddress' &&
+                                <ul>
+                                  {addressSuggestion.address.map(ele => (<li onClick={() => setValue('dropAddress', ele)}>{ele}</li>))}
+                                </ul>}
                               {errors?.dropAddress?.message && (
                                 <span>{errors?.dropAddress?.message}</span>
                               )}
@@ -235,9 +277,9 @@ function Signup() {
                 </div>
               </div>
             </div>
-          </section>
-        </div>
-      </div>
+          </section >
+        </div >
+      </div >
     </>
   );
 }
