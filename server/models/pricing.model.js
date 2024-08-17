@@ -8,6 +8,7 @@ const PricingSchema = new Schema({
   vehicleImageUrl: {type: String},
   upToKm: {type: Number},
   upToCostPerKm: {type: Number},
+  upToCostPerHour: {type: Number},
   capacity: {
     totalNumberOfSeats: {type: Number}, // 4+1
     reservedNumberOfSeats: {type: Number},

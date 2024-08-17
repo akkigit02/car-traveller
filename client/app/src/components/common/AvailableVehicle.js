@@ -12,42 +12,54 @@ export default function AvailableVehicle() {
 
   const [bookingDetails, setBookingDetails] = useState("");
   const [carList, setCarList] = useState([]);
-  const [hourlyType, setHourlyType] = useState("");
+  const [decodedQuery, setDecodedQuery] = useState(null)
   const taxImage = require("../../assets/img/tax.png");
   const doorImage = require("../../assets/img/download");
 
-  const getCarList = async (query) => {
+  const getCarList = async () => {
     try {
       const { data } = await axios({
         url: "/api/client/car-list",
-        params: { search: query },
+        params: { search: decodedQuery },
       });
 
-
-      console.log(data,"====--------")
       setBookingDetails({
         ...data.bookingDetails,
-        type: TRIP_TYPE.find((ty) => ty.value === query.tripType)?.name,
+        type: TRIP_TYPE.find((ty) => ty.value === decodedQuery.tripType)?.name,
         time: query.pickupTime,
         date: query.pickupDate,
         returnDate: query.returnDate
       });
       setCarList(data.cars);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
 
   useEffect(() => {
     if (query) {
       const decodedString = atob(query);
-      const decodedData = JSON.parse(decodedString);
-      getCarList(decodedData);
+      let decodedData = JSON.parse(decodedString);
+      if(decodedData?.tripType === 'hourly') {
+        decodedData['hourlyType'] = '8hr80km'
+      }
+      setDecodedQuery(decodedData)
     } else window.location.href = "http:127.0.0.1:5500";
-  }, [hourlyType]);
+  }, []);
+
+  useEffect(() => {
+    if(decodedQuery)
+      getCarList();
+  }, [decodedQuery]);
 
   const book = () => {
     navigate(`/signup/${query}`);
+  };
+
+  const toggleDetails = (index) => {
+    const updatedItems = [...carList];
+    updatedItems[index].isShowDetail = !updatedItems[index].isShowDetail;
+    setCarList(updatedItems);
   };
 
   return (
@@ -72,12 +84,12 @@ export default function AvailableVehicle() {
                       {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}
                     </div>
                   </div>
-                  <div className="me-3 col-12 mb-3">
+                  {bookingDetails.type === 'roundTrip' && <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Return Date</p>
                     <div className="highlight-data">
                       {moment(bookingDetails.returnDate).format("DD/MM/YYYY")}
                     </div>
-                  </div>
+                  </div>}
                   <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Time</p>
                     <div className="highlight-data">{bookingDetails.pickUpTime}</div>
@@ -94,12 +106,14 @@ export default function AvailableVehicle() {
 
           <div className="col-lg-9 col-md-9 col-12 mt-3">
             <div className="d-flex justify-content-between">
-              {bookingDetails?.hourlyDetails?.map(list => (
-              <div onClick={() => setHourlyType(list.type)}>
-                {list.hour} Hours| {list.distance} Km 
+              {bookingDetails?.hourlyDetails?.map((list, idx) => (
+              <div key={'key_'+idx} onClick={() => setDecodedQuery({
+                ...decodedQuery,
+                hourlyType: list.type
+              })}>
+                {list.hour} Hours| {list.distance} Km
               </div>
               ))}
-
             </div>
             <div className="col-lg-12 cstm-calHeight">
               {carList.map((item, idx) => (
@@ -127,11 +141,11 @@ export default function AvailableVehicle() {
                           </div>}
                         </div>
 
-                        <div class="icon-items">
-                          <div class="icon">
+                        <div className="icon-items">
+                          <div className="icon">
                             <img src={doorImage} alt="img" />
                           </div>
-                          <div class="content">
+                          <div className="content">
                             <h6>Passengers:</h6>
                             <p className="mb-0 pb-0">{item?.capacity?.totalNumberOfSeats} + {item?.capacity?.reservedNumberOfSeats} Seats</p>
                           </div>
@@ -158,16 +172,38 @@ export default function AvailableVehicle() {
                           </button>
                         </div>
                       </div>
-                      <div className="p-1 d-flex justify-content-between align-items-center">
-                        <div className="d-flex align-items-center">
+                      <div className="p-1 d-flex flex-column align-items-center">
+                        {/* <div className="d-flex align-items-center">
                           <img className="w-40" src={taxImage} />
                           <p className="mb-0 font-14">
                             Excluded Toll, State Tax & GST
                           </p>
-                        </div>
-                        <div className="pe-3">
+                        </div> */}
+                        <div className="pe-3" onClick={() => toggleDetails(idx)}>
+                          Details
                           <i className="fa fa-angle-down cursor-pointer"></i>
                         </div>
+                        {item?.isShowDetail && <div className="d-flex">
+                          <div>
+                            Excluded
+                            <div className="d-flex align-items-center">
+                          <img className="w-40" src={taxImage} />
+                          <p className="mb-0 font-14">
+                            Toll, State Tax & GST, Parking
+                          </p>
+                        </div>
+                        <div className="d-flex align-items-center">
+                          <p className="mb-0 font-14">
+                          ₹{item?.upToCostPerKm} per km after the first {bookingDetails.distance} km
+                          </p>
+                        </div>
+                        {decodedQuery?.hourlyType && <div className="d-flex align-items-center">
+                          <p className="mb-0 font-14">
+                          ₹{item?.upToCostPerHour} per hour after the {item.hour} hour
+                          </p>
+                        </div>}
+                          </div>
+                        </div>}
                       </div>
                     </div>
                   </div>
