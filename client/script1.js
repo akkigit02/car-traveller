@@ -97,7 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         formContainer.appendChild(parentContainer);
         getTimeForDropdown(); // Call the function to populate time dropdown
         bindSuggestionEvents(type); // Bind events to the new input element
-   
     };
 
     const bindSuggestionEvents = (type) => {
@@ -151,7 +150,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-        } else {
+        } else if (type === 'cityCab') {
+            const pickupCityCab = document.getElementById('pickupCityCab') 
+            const dropCityCab = document.getElementById('dropCityCab') 
+            if(pickupCityCab) {
+                pickupCityCab.addEventListener('input',() => filterFunction('pickupCityCab'))
+                pickupCityCab.addEventListener('focus', () => setSuggestionVisible('pickupCityCab', true));
+                pickupCityCab.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible('pickupCityCab', false);
+                    }, 250);
+                });
+            }
+            if(dropCityCab) {
+                dropCityCab.addEventListener('input',() => filterFunction('dropCityCab'))
+                dropCityCab.addEventListener('focus', () => setSuggestionVisible('dropCityCab', true));
+                dropCityCab.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible('dropCityCab', false);
+                    }, 250);
+                });
+            }
+
+        }else {
             const to = document.getElementById('to');
             if (to) {
                 to.addEventListener('input', () => filterFunction('to'));
@@ -216,26 +237,53 @@ document.addEventListener('DOMContentLoaded', () => {
             suggestion.appendChild(div);
             return;
         }
-        for (const city of cities) {
-            const div = document.createElement('div');
-            div.classList.add('cstm-dropdown-list');
-            div.innerText = `${city.name}, ${city.state_name}`;
-            div.addEventListener('click', () => {
-                query[inputType] = city._id
-                searchInput.value = `${city.name}, ${city.state_name}`;
-                suggestion.innerHTML = '';
-            });
-            suggestion.appendChild(div);
+        if(query?.tripType === 'cityCab') {
+            for (const city of cities) {
+                const div = document.createElement('div');
+                div.classList.add('cstm-dropdown-list');
+                div.innerText = `${city.address}`;
+                div.addEventListener('click', () => {
+                    query[inputType] = city.placeId
+                    searchInput.value = `${city.address}`;
+                    suggestion.innerHTML = '';
+                });
+                suggestion.appendChild(div);
+            }
+        } else {
+            for (const city of cities) {
+                const div = document.createElement('div');
+                div.classList.add('cstm-dropdown-list');
+                div.innerText = `${city.name}, ${city.state_name}`;
+                div.addEventListener('click', () => {
+                    query[inputType] = city._id
+                    searchInput.value = `${city.name}, ${city.state_name}`;
+                    suggestion.innerHTML = '';
+                });
+                suggestion.appendChild(div);
+            }
         }
     };
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
-                method: "GET",
-            });
-            let data = await response.json();
-            return data.cities;
+            let response
+            let suggestions = []
+            if(query?.tripType === 'cityCab') {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
+                    method: "GET",
+                });
+
+                let data = await response.json();
+                console.log(data)
+                suggestions = data.address
+            } else {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
+                    method: "GET",
+                });
+                let data = await response.json();
+                suggestions = data.cities
+            }
+            return suggestions;
         } catch (error) {
             console.error('Error fetching cities:', error);
             return [];
@@ -292,14 +340,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeSelect = document.getElementById('timeSelect');
         if (!timeSelect) return;
         const date = new Date();
-        const endDate = new Date();
+        let endDate = new Date();
         endDate.setHours(23, 45, 0, 0);
         const optionsInterval = 15;
         date.setHours(date.getHours() + 1);
         date.setMinutes(date.getMinutes() + 30);
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        now.setMinutes(now.getMinutes() + 30);
         if(date > endDate) {
-            date.setDate(date.getDate() + 1)
+            now.setHours(0, 30, 0, 0)
+        }
+        if(date > endDate) {
             date.setHours(0, 30, 0, 0)
+            endDate.setDate(endDate.getDate() + 1);
+            endDate.setHours(23, 45, 0, 0)
         }
 
         const inputElement = document.getElementById('pickupDate');
@@ -319,9 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         returnDate.setAttribute('min',returnDate.value)
         }
 
-        const now = new Date();
-        now.setHours(now.getHours() + 1);
-        now.setMinutes(now.getMinutes() + 30);
         let nowMinutes = Math.ceil(now.getMinutes() / optionsInterval) * optionsInterval;
         if (nowMinutes === 60) {
             nowMinutes = 0;
@@ -342,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const option = document.createElement('option');
             option.value = displayTime;
             option.textContent = displayTime;
-
+            console.log(option.value,"=======------------------")
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
             }

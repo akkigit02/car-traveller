@@ -5,7 +5,7 @@ const {
   estimateRouteDistance,
   dateDifference,
 } = require("../utils/calculation.util");
-const { getAutoSearchPlaces } = require("../services/GooglePlaces.service");
+const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 
 const getCities = async (req, res) => {
   try {
@@ -27,7 +27,6 @@ const getCities = async (req, res) => {
 };
 const getAddressSuggestion = async (req, res) => {
   try {
-    console.log(req.query)
     const { search, cityId } = req?.query;
     const city = await CitiesModel.findById(cityId)
     let address = await getAutoSearchPlaces(search, city?.name)
@@ -39,11 +38,23 @@ const getAddressSuggestion = async (req, res) => {
   }
 };
 
-// mumbai pune nashik mumbai
+const getAddressSuggestionOnLandingPage = async (req, res) => {
+  try {
+    const { search, cityId } = req?.query;
+    const city = await CitiesModel.findById(cityId)
+    let address = await getAutoSearchPlaces(search, city?.name)
+    address = address.map(ele => ({address: ele.description,placeId: ele.place_id}))
+    return res.status(200).send({ address });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Something went wrong" });
+  }
+};
 
 const getCars = async (req, res) => {
   try {
     let search = req?.query?.search;
+    console.log(search)
     const cars = await PricingModel.find({}).lean();
     let distance = null;
     let toDetail = [];
@@ -135,6 +146,16 @@ const getCars = async (req, res) => {
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
       }
 
+    } else if (search?.tripType === 'cityCab') {
+      const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
+      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
+      fromDetail = {name: data.from}
+      toDetail = [{name: data.to}]
+      for (let car of cars) {
+        car["totalPrice"] =
+          distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
+        carList.push(car);
+      }
     }
     let hourlyDetails = []
     let hourlyTypes = []
@@ -232,5 +253,6 @@ module.exports = {
   getBooking,
   getBookingByPasssengerId,
   cancelBooking,
-  getAddressSuggestion
+  getAddressSuggestion,
+  getAddressSuggestionOnLandingPage
 };
