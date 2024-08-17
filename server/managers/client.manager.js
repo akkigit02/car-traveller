@@ -44,12 +44,12 @@ const getAddressSuggestion = async (req, res) => {
 const getCars = async (req, res) => {
   try {
     let search = req?.query?.search;
-    console.log(search);
     const cars = await PricingModel.find({}).lean();
     let distance = null;
     let toDetail = [];
     let fromDetail = "";
     let carList = [];
+    let hourlyCarDetails = []
     if (search?.tripType === "oneWay") {
       let toCity = await CitiesModel.findOne({ _id: search.to }).lean();
       fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
@@ -122,19 +122,42 @@ const getCars = async (req, res) => {
         }
         carList.push(car);
       }
+    } else if(search?.tripType === "hourly") {
+      fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
+        for (let car of cars) {
+          let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
+          if(hourlyData) {
+            car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
+            car["hour"] = hourlyData.hour
+            distance = hourlyData?.distance
+            carList.push(car);
+          }
+          hourlyCarDetails = [...car.hourly,...hourlyCarDetails]
+        }
+
     }
+    let hourlyDetails = []
+    let hourlyTypes = []
+    hourlyCarDetails.map(detail => {
+      if(!hourlyTypes.includes(detail.type)) {
+        delete detail?.basePrice
+        hourlyDetails.push(detail)
+      }
+      hourlyTypes.push(detail.type)
+    })
 
     const bookingDetails = {
       from: fromDetail.name,
       to: toDetail.map(city => city.name),
-      distance: distance.toFixed(2),
+      distance:  distance.toFixed(2),
       pickUpDate: search.pickUpDate,
       returnDate: search.returnDate,
-      pickUpTime: search.pickUpTime
+      pickUpTime: search.pickUpTime,
+      hourlyDetails: hourlyDetails
     };
     return res.status(200).send({ cars: carList, bookingDetails });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).send({ message: "Something went wrong" });
   }
 };
@@ -145,7 +168,7 @@ const addBooking = async (req, res) => {
     const booking = await RideModel.create(bookingDetails);
     return res.status(200).send({ booking, message: "Ride has been Booked" });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res.status(500).send({ message: "Something went wrong" });
   }
 };
@@ -154,7 +177,7 @@ const getBooking = async (req, res) => {
     const booking = await RideModel.find().lean();
     res.status(200).send({ booking });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 const getBookingByPasssengerId = async (req, res) => {
@@ -163,7 +186,7 @@ const getBookingByPasssengerId = async (req, res) => {
     const booking = await RideModel.find({ passengerId }).lean();
     res.status(200).send({ booking });
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 const cancelBooking = async (req, res) => {

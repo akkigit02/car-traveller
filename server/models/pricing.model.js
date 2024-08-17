@@ -8,6 +8,7 @@ const PricingSchema = new Schema({
   vehicleImageUrl: {type: String},
   upToKm: {type: Number},
   upToCostPerKm: {type: Number},
+  upToCostPerHour: {type: Number},
   capacity: {
     totalNumberOfSeats: {type: Number}, // 4+1
     reservedNumberOfSeats: {type: Number},
@@ -21,7 +22,13 @@ const PricingSchema = new Schema({
   minimumFare: { type: Number },
   additionalCharges: {type: Number},
   driverAllowance: {type: Number},
-  similar: [{type: String}]
+  similar: [{type: String}],
+  hourly: [{
+    type: {type: String},
+    hour: { type: Number },
+    distance: {type: Number},
+    basePrice: { type: Number},
+  }]
 });
 
 // Create a model based on the schema
