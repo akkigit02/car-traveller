@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const query = {
 
     };
+    let isValidateGlobal = true;
     const tabConfig = {
         oneWay: [
             { label: 'From', name: 'from', placeholder: 'Enter pickup city' },
@@ -55,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
                     <input type="date" id="${field.name}" change="${handleDateChange}"/>
+                    <p class="error" id="error${field.name}">Please fill this field.</p>
                     `;
             } else if (field.type === 'time') {
                 wrapper.innerHTML = `
@@ -63,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <select id="timeSelect" class="category-oneadjust border-0">
                             <option value="Select Time">Select Time</option>
                         </select>
+                        <p class="error" id="errortimeSelect">Please fill this field.</p>
                     </div>`;
             } else {
                 wrapper.classList.add('position-relative')
@@ -70,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
                     <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}" autocomplete="off">
+                    <p class="error" id="error${field.name}">Please fill this field.</p>
                     <div id="${field.name}Suggestion" class="suggestion-list"></div>
                     `;
                 } else {
@@ -78,6 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div>
                     <label class="field-label">${field.label}</label>
                     <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}" autocomplete="off">
+                    <p class="error" id="error${field.name}">Please fill this field.</p>
                     <div id="${field.name}Suggestion" class="suggestion-list"></div>
                     </div>
                     </div>
@@ -107,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
             from.addEventListener('blur', () => {
                 setTimeout(() => {
                     setSuggestionVisible('from', false);
+                    handleValidationOnBlur('from')
                 }, 250);
             });
         }
@@ -120,6 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 toChildContainer.innerHTML = `
                         <label class="field-label">To</label>
                         <input name="to" id="${conatinerId}To" placeholder="Type City" autocomplete="off">
+                        <p class="error" id="error${conatinerId}To">Please fill this field.</p>
                         <div id="${conatinerId}ToDelete">Delete</div>
                         <div id="${conatinerId}ToSuggestion" class="suggestion-list"></div>
                     `
@@ -135,6 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 suggestion.addEventListener('blur', () => {
                     setTimeout(() => {
                         setSuggestionVisible(`${conatinerId}To`, false);
+                        handleValidationOnBlur(`${conatinerId}To`)
                     }, 250);
                 });
 
@@ -146,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 to.addEventListener('blur', () => {
                     setTimeout(() => {
                         setSuggestionVisible('to', false);
+                        handleValidationOnBlur('to')
                     }, 250);
                 });
             }
@@ -159,6 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 pickupCityCab.addEventListener('blur', () => {
                     setTimeout(() => {
                         setSuggestionVisible('pickupCityCab', false);
+                        handleValidationOnBlur('pickupCityCab')
                     }, 250);
                 });
             }
@@ -168,6 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 dropCityCab.addEventListener('blur', () => {
                     setTimeout(() => {
                         setSuggestionVisible('dropCityCab', false);
+                        handleValidationOnBlur('dropCityCab')
                     }, 250);
                 });
             }
@@ -180,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 to.addEventListener('blur', () => {
                     setTimeout(() => {
                         setSuggestionVisible('to', false);
+                        handleValidationOnBlur('to')
                     }, 250);
                 });
             }
@@ -189,24 +201,71 @@ document.addEventListener('DOMContentLoaded', () => {
             const formData = {
                 ...query
             }
+            let isValidePickupDate = true
+            let isValidePickupTime = true
+            let isValideDropDate = true
+            let isPickupValid = true
+            let isDropValid = true
             const timeSelect = document.getElementById('timeSelect');
-            if (timeSelect)
+            if (timeSelect){ 
                 formData['pickUpTime'] = timeSelect.value
-
-            const pickupDate = document.getElementById('pickupDate');
-            if (pickupDate)
-                formData['pickUpDate'] = pickupDate.value
-            if(query?.tripType === 'roundTrip') {
-                const returnDate = document.getElementById('returnDate')
-
-                formData['returnDate'] = returnDate.value
+                if(!timeSelect.value) {
+                    isValidePickupDate = false
+                    document.getElementById(`errortimeSelect`).style.display = 'block';
+                } else {
+                    isValidePickupDate = true
+                    document.getElementById(`errortimeSelect`).style.display = 'none';
+                }
             }
 
+            const pickupDate = document.getElementById('pickupDate');
+            if (pickupDate) {
+                formData['pickUpDate'] = pickupDate.value
+                if(!pickupDate.value) {
+                    isValidePickupDate = false
+                    document.getElementById(`errorpickupDate`).style.display = 'block';
+                } else {
+                    isValidePickupDate = true
+                    document.getElementById(`errorpickupDate`).style.display = 'none';
+                }
+            }
+            if(query?.tripType === 'roundTrip') {
+                const returnDate = document.getElementById('returnDate')
+                formData['returnDate'] = returnDate.value
+                if(!returnDate.value) {
+                    isValideDropDate = false
+                    document.getElementById(`errorreturnDate`).style.display = 'block';
+                } else {
+                    isValideDropDate = true
+                    document.getElementById(`errorreturnDate`).style.display = 'none';
+                }
+            } 
+            if(query?.tripType === 'cityCab') {
+
+                isPickupValid = validateField('pickupCityCab', 'errorpickupCityCab');
+                isDropValid = validateField('dropCityCab', 'errordropCityCab');
+            
+                if (!isPickupValid || !isDropValid) return;
+            } else {
+                isPickupValid = validateField('from', 'errorfrom');
+                isDropValid = validateField('to', 'errorto');
+            }
+            
+            if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
             window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
         })
 
+    };
+
+    const validateField = (field, errorElementId) => {
+        if (!query?.[field]?.trim()) {
+            document.getElementById(errorElementId).style.display = 'block';
+            return false;
+        }
+        document.getElementById(errorElementId).style.display = 'none';
+        return true;
     };
 
     const setSuggestionVisible = (inputType, isVisible) => {
@@ -215,6 +274,19 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isVisible) filterFunction(inputType);
         else suggestion.innerHTML = '';
     };
+
+
+    const handleValidationOnBlur = (inputType) => {
+        let searchInput = document.getElementById(inputType);
+        if(!searchInput.value.trim()) {
+            isValidateGlobal = false
+            query[inputType] = ''
+            document.getElementById(`error${inputType}`).style.display = 'block';
+        } else {
+            isValidateGlobal = true
+            document.getElementById(`error${inputType}`).style.display = 'none';
+        }
+    }
 
     const filterFunction = async (inputType) => {
         let searchInput = document.getElementById(inputType);
@@ -315,6 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
             returnDate.value = `${year}-${month}-${day}`;
+            returnDate.textContent = `${day}/${month}/${year}`
             returnDate.setAttribute('min',returnDate.value)
         }
         while (date <= endDate) {
@@ -363,6 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         inputElement.value = `${year}-${month}-${day}`;
+        inputElement.textContent = `${day}/${month}/${year}`
         inputElement.setAttribute('min',inputElement.value)
         if(query?.tripType === 'roundTrip') {
             const returnDate = document.getElementById('returnDate');
@@ -371,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         returnDate.value = `${year}-${month}-${day}`;
+        returnDate.textContent = `${day}/${month}/${year}`
         returnDate.setAttribute('min',returnDate.value)
         }
 
@@ -394,7 +469,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const option = document.createElement('option');
             option.value = displayTime;
             option.textContent = displayTime;
-            console.log(option.value,"=======------------------")
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
             }
