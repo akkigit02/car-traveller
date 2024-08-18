@@ -11,6 +11,12 @@
 .flex-1{
     flex: 1;
 }
+.font-20{
+	font-size: 20px;
+}
+.text-blue{
+	color: var(--theme2);
+}
 .heading-btn{
     padding: 10px 32px;
     background-color: #E8F1FB;
@@ -41,6 +47,18 @@
     width: 100%;
     height: 70vh;
 }
+.bg-package{
+	background-image: url(../img/bg-12.jpg);
+    background-position: 100% -40%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+	background-size: cover;
+    width: 100%;
+    height: 50vh;
+}
+.h-300{
+	height: 300px;
+}
 .pickup-wrapper{
 	box-shadow: none !important;
 }
@@ -67,18 +85,24 @@
 
 }
 .search-card ul li{
-    /* background-color: #1572D3; */
     border-right: 1px solid rgb(73, 71, 71);
     padding: 15px 100px;  
 	width: 100%;
+	cursor: pointer;
     display: flex;
     justify-content: center;
 }
+.search-card ul li:first-child{
+   border-radius: 6px 0 0 6px;
+}
+.search-card ul li:last-child{
+	border-radius: 0px 6px 6px 0px;
+ }
 .search-card ul li.active{
     background-color: #1572D3;
     border: 0px solid rgb(73, 71, 71);
     padding: 15px 100px;  
-	border-radius: 6px 0 0 6px;
+	/* border-radius: 6px 0 0 6px; */
 	color: white;
 }
 .search-card ul li a{
