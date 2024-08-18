@@ -94,13 +94,35 @@ function Signup() {
         <div className="col-lg-4 col-md-4 col-12 pe-0 mb-5">
           <div className="car-list-sidebar mt-30 h-100">
             <h4 className="title">Booking Form</h4>
+            <div className='p-3'>
+            <div className='d-flex align-items-center justify-content-between mb-4'>
+              <p className='mb-0 desti-details'>Pune sjlsd</p>
+              <p className='mb-0 border-bottom'>(One Way)</p>
+              <p className='mb-0 desti-details'>Mumbai</p>
+            </div>
+            <div className='row m-0 pb-5'>
+              <div className='col-lg-6 col-md-6 col-12 ps-0'>
+              <label>Date</label>
+              <p className='mb-0 desti-details-2'>18-08-24</p>
+              </div>
+              <div className='col-lg-6 col-md-6 col-12 pe-0'>
+              <label>Time</label>
+              <p className='mb-0 desti-details-2'>06:00PM</p>
+              </div>
+            </div>
+            <div>
+              <p><strong>Car type:</strong> Wagon R</p>
+              <p><strong>KMs Included:</strong> 240KM</p>
+              <p><strong>Total Fare:</strong> 3434Rs</p>
+            </div>
+            <ul>
+            <li>Your trip comes with a kilometer limit. If you go over this limit, you'll incur additional charges for the extra distance traveled.</li>
+            <li>If your trip involves hill climbs, the cab's air conditioning may be turned off during those sections.</li>
+            <li>Your trip covers one pickup in the Pick-up City and one drop-off at the Destination City. It does not include any travel within the city.</li>
 
-            <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
 
-
-              Where does it come from?
-              Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from </p>
-
+            </ul>
+            </div>
           </div>
         </div>
 
@@ -202,7 +224,7 @@ function Signup() {
                             </div>
                           </div>
                           <div className="col-lg-6">
-                            <div className="form-clt">
+                            <div className="form-clt position-relative">
                               <label className="label-text">
                                 Pick up Address
                               </label>
@@ -220,8 +242,8 @@ function Signup() {
                                 placeholder="Address"
                               />
                               {addressSuggestion.isOpen && addressSuggestion.type === 'pickupAddress' &&
-                                <ul>
-                                  {addressSuggestion.address.map(ele => (<li onClick={() => setValue('pickupAddress', ele)}>{ele}</li>))}
+                                <ul className='suggestion-list'>
+                                  {addressSuggestion.address.map(ele => (<li onClick={() => setValue('pickupAddress', ele)}><p className='mb-0'>{ele}</p></li>))}
                                 </ul>}
                               {errors?.pickupAddress?.message && (
                                 <span>{errors?.pickupAddress?.message}</span>
@@ -229,7 +251,7 @@ function Signup() {
                             </div>
                           </div>
                           <div className="col-lg-6">
-                            <div className="form-clt">
+                            <div className="form-clt position-relative">
                               <label className="label-text">
                                 Drop Address
                               </label>
@@ -247,8 +269,8 @@ function Signup() {
                                 placeholder="Address"
                               />
                               {addressSuggestion.isOpen && addressSuggestion.type === 'dropAddress' &&
-                                <ul>
-                                  {addressSuggestion.address.map(ele => (<li onClick={() => setValue('dropAddress', ele)}>{ele}</li>))}
+                                <ul className='suggestion-list'>
+                                  {addressSuggestion.address.map(ele => (<li onClick={() => setValue('dropAddress', ele)}><p className='mb-0'>{ele}</p></li>))}
                                 </ul>}
                               {errors?.dropAddress?.message && (
                                 <span>{errors?.dropAddress?.message}</span>
@@ -256,7 +278,7 @@ function Signup() {
                             </div>
                           </div>
                           <div className="col-lg-12 d-flex justify-content-end">
-                            <button className="theme-btn" type="submit">
+                            <button className="theme-btn-2" type="submit">
                               Send Request
                             </button>
                           </div>

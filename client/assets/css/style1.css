@@ -700,9 +700,9 @@ h1, h2, h3, h4, h5, h6 {
 	border: 1px solid #2d344a;
 	height: 300px;
 	overflow: auto;
-	background: var(--header);;
+	background: #dae6f9;
 	border-radius: 8px;
-	display: none;
+	display: none;	
 	z-index: 99;
 }
 .cstm-dropdown-list{
@@ -711,10 +711,11 @@ h1, h2, h3, h4, h5, h6 {
 	border-bottom: 1px solid #2d344a;
 	cursor: pointer;
 	transition: 0.3s;
-	color: white;
+	color: var(--theme2);
 }
 .cstm-dropdown-list:hover{
 	background: var(--theme2);
+	color: var(--white);
 	
 }
 .pickup-wrapper .pickup-items .category-oneadjust .nice-select .list{

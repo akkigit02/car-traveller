@@ -177,7 +177,7 @@ export default function VehiclePricing() {
             <div className="row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputState">Vehicle Type</label>
-                <select {...register("type")} className="form-control">
+                <select {...register("type")} className="cstm-select-input">
                   <option value={""}>Choose Type</option>
                   {VEHICLE_TYPE?.map((vehicle, index) => (
                     <option key={index} value={vehicle.value}>
@@ -191,7 +191,7 @@ export default function VehiclePricing() {
                 <input
                   type="number"
                   {...register("modelName")}
-                  className="form-control"
+                  className="cstm-select-input"
                   placeholder="Enter minimum fare"
                 />
               </div>
@@ -200,14 +200,14 @@ export default function VehiclePricing() {
               <input
                 type="number"
                 {...register("registrationNumber")}
-                className="form-control"
+                className="cstm-select-input"
                 id="inputAddress"
                 placeholder="Enter Cost per km"
               />
             </div>
             <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputState">Fuel Type</label>
-              <select {...register("fuelType")} className="form-control">
+              <select {...register("fuelType")} className="cstm-select-input">
                 <option value={""}>Choose Type</option>
                 {FUEL_TYPE?.map((vehicle, index) => (
                   <option key={index} value={vehicle.value}>
@@ -221,7 +221,7 @@ export default function VehiclePricing() {
                 <input
                   type="number"
                   {...register("mileage")}
-                  className="form-control"
+                  className="cstm-select-input"
                   placeholder="Carrier laguage cost"
                 />
               </div>
@@ -230,7 +230,7 @@ export default function VehiclePricing() {
                 <input
                   type="number"
                   {...register("capacity.numberOfSeat")}
-                  className="form-control"
+                  className="cstm-select-input"
                   placeholder="Enter additional cost"
                 />
               </div>
@@ -270,7 +270,7 @@ export default function VehiclePricing() {
                 <input
                   type="date"
                   {...register("registrationDate")}
-                  className="form-control"
+                  className="cstm-select-input"
                   placeholder="Enter additional cost"
                 />
               </div>
@@ -280,7 +280,7 @@ export default function VehiclePricing() {
                 <input
                   type="date"
                   {...register("insurance.policyNumber")}
-                  className="form-control"
+                  className="cstm-select-input"
                   placeholder="Enter additional cost"
                 />
               </div>
@@ -289,7 +289,7 @@ export default function VehiclePricing() {
                 <input
                   type="date"
                   {...register("insurance.expiryDate")}
-                  className="form-control"
+                  className="cstm-select-input"
                   placeholder="Enter additional cost"
                 />
               </div>

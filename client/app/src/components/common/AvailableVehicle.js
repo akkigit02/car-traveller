@@ -104,7 +104,7 @@ export default function AvailableVehicle() {
                 </div>
 
                 <div className="d-flex justify-content-end">
-                  <a href="http://127.0.0.1:5500/client/index.html">
+                  <a href="http://127.0.0.1:5501/client/index.html">
                     <button className="cstm-btn-red">Change</button>
                   </a>
                 </div>
@@ -113,9 +113,10 @@ export default function AvailableVehicle() {
           </div>
 
           <div className="col-lg-9 col-md-9 col-12 mt-3">
-            <div className="d-flex justify-content-between">
+            <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
                 <div
+                  className="text-center w-100"
                   key={"key_" + idx}
                   onClick={() =>
                     setDecodedQuery({
@@ -191,20 +192,27 @@ export default function AvailableVehicle() {
                         </div>
                       </div>
                       <div className="p-1 d-flex flex-column ">
-                          <div
-                            className="d-flex justify-content-end pe-3 py-2 cursor-pointer align-items-center"
-                            onClick={() => toggleDetails(idx)}
-                          >
-                            <p className="mb-0">Details</p>
-                            <i className={item?.isShowDetail ? "fa fa-angle-up ms-2":"fa fa-angle-down ms-2"}></i>
-                          
+                        <div
+                          className="d-flex justify-content-end pe-3 py-2 cursor-pointer align-items-center"
+                          onClick={() => toggleDetails(idx)}
+                        >
+                          <p className="mb-0">Details</p>
+                          <i
+                            className={
+                              item?.isShowDetail
+                                ? "fa fa-angle-up ms-2"
+                                : "fa fa-angle-down ms-2"
+                            }
+                          ></i>
                         </div>
                         {item?.isShowDetail && (
                           <div className="d-flex ps-2">
                             <div className="d-flex ">
                               <div className="d-flex align-items-center">
-                              <p className="mb-0 h6 ps-2 notch_content">Excluded</p>
-                              <div className="notch-point"></div>
+                                <p className="mb-0 h6 ps-2 notch_content">
+                                  Excluded
+                                </p>
+                                <div className="notch-point"></div>
                               </div>
                               <div className="d-flex align-items-center pe-4">
                                 <img className="w-40" src={taxImage} />

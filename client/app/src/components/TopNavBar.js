@@ -54,11 +54,11 @@ function TopNavBar() {
                     {/* <a href="#0" className="search-trigger search-icon"><i
                             className="fa-regular fa-magnifying-glass"></i></a> */}
                      <button class="theme-btn wow fadeInUp padding-signin-btn">
-                        Sign in
+                        Login
                     </button>
-                    <button class="btn-signup" type="button" id="submitSuttom">
-                        SignUp
-                    </button>
+                    {/* <button class="btn-signup" type="button" id="submitSuttom">
+                        Login
+                    </button> */}
                     
                     <div className="header__hamburger d-xl-none my-auto">
                         <div className="sidebar__toggle">
