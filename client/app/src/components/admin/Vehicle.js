@@ -22,7 +22,7 @@ export default function VehiclePricing() {
           data: data,
         });
         setList(
-          list.map((li) => {
+          list?.map((li) => {
             if (li._id === data._id) {
               li = data;
             }
@@ -90,22 +90,23 @@ export default function VehiclePricing() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between pb-2">
         <div>
-          <h2>Vehicle Detail</h2>
+          <p className="cstm-title">Vehicle Detail</p>
         </div>
         <div>
           <button
+          className="cstm-btn"
             onClick={() => {
               reset({});
               setIsOpen(true);
             }}
           >
-            Add Vehicle
+            <i className="fa fa-plus"></i>
           </button>
         </div>
       </div>
-      <table>
+      <table className="cstm-table">
         <thead>
           <tr>
             <th>Vehicle Type</th>
@@ -125,12 +126,12 @@ export default function VehiclePricing() {
           {list?.map((li, index) => (
             <tr key={index}>
               <td>
-                {VEHICLE_TYPE.find((item) => item.value === li.type)?.name}
+                {VEHICLE_TYPE?.find((item) => item.value === li.type)?.name}
               </td>
               <td>{li.modelName}</td>
               <td>{li.registrationNumber}</td>
               <td>
-                {FUEL_TYPE.find((item) => item.value === li.fuelType)?.name}
+                {FUEL_TYPE?.find((item) => item.value === li.fuelType)?.name}
               </td>
               <td>{li.mileage}</td>
               <td>{li.capacity.numberOfSeat}</td>
@@ -170,22 +171,22 @@ export default function VehiclePricing() {
           ))}
         </tbody>
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal}>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'add vehicle'}>
         <form onSubmit={handleSubmit(saveVehicle)}>
           <div className="h-100 scroll-body">
-            <div className="form-row">
-              <div className="form-group col-md-4">
+            <div className="row m-0">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputState">Vehicle Type</label>
                 <select {...register("type")} className="form-control">
                   <option value={""}>Choose Type</option>
-                  {VEHICLE_TYPE.map((vehicle, index) => (
+                  {VEHICLE_TYPE?.map((vehicle, index) => (
                     <option key={index} value={vehicle.value}>
                       {vehicle.name}
                     </option>
                   ))}
                 </select>
               </div>
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputPassword4">Model Name</label>
                 <input
                   type="number"
@@ -194,8 +195,7 @@ export default function VehiclePricing() {
                   placeholder="Enter minimum fare"
                 />
               </div>
-            </div>
-            <div className="form-group">
+            <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputAddress">Registration Number</label>
               <input
                 type="number"
@@ -205,19 +205,18 @@ export default function VehiclePricing() {
                 placeholder="Enter Cost per km"
               />
             </div>
-            <div className="form-group col-md-4">
+            <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputState">Fuel Type</label>
               <select {...register("fuelType")} className="form-control">
                 <option value={""}>Choose Type</option>
-                {FUEL_TYPE.map((vehicle, index) => (
+                {FUEL_TYPE?.map((vehicle, index) => (
                   <option key={index} value={vehicle.value}>
                     {vehicle.name}
                   </option>
                 ))}
               </select>
             </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Mileage</label>
                 <input
                   type="number"
@@ -226,9 +225,7 @@ export default function VehiclePricing() {
                   placeholder="Carrier laguage cost"
                 />
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Number of seat</label>
                 <input
                   type="number"
@@ -238,8 +235,8 @@ export default function VehiclePricing() {
                 />
               </div>
             </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+            
+              <div className="form-group col-lg-12 col-md-12 col-12">
                 <label htmlFor="inputCity">Language Carrier</label>
                 <div className="form-check">
                   <input
@@ -266,10 +263,9 @@ export default function VehiclePricing() {
                   </label>
                 </div>
               </div>
-            </div>
 
-            <div className="form-row">
-              <div className="form-group col-md-6">
+            <div className="row m-0">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Registration Date</label>
                 <input
                   type="date"
@@ -278,9 +274,8 @@ export default function VehiclePricing() {
                   placeholder="Enter additional cost"
                 />
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+            
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Policy Number</label>
                 <input
                   type="date"
@@ -289,9 +284,7 @@ export default function VehiclePricing() {
                   placeholder="Enter additional cost"
                 />
               </div>
-            </div>
-            <div className="form-row">
-              <div className="form-group col-md-6">
+              <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Insurance Expiration</label>
                 <input
                   type="date"
@@ -302,9 +295,11 @@ export default function VehiclePricing() {
               </div>
             </div>
           </div>
-          <button type="submit" className="btn btn-primary">
+          <div className="d-flex justify-content-end border-top mt-3 pt-2">
+            <button type="submit" className="btn btn-primary">
             Add
           </button>
+          </div>
         </form>
       </Modal>
     </div>

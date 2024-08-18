@@ -1,11 +1,11 @@
 const CitiesModel = require("../models/cities.model");
-const RideModel = require("../models/booking.model");
+const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
 const {
   estimateRouteDistance,
   dateDifference,
 } = require("../utils/calculation.util");
-const { getAutoSearchPlaces } = require("../services/GooglePlaces.service");
+const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 
 const getCities = async (req, res) => {
   try {
@@ -27,7 +27,6 @@ const getCities = async (req, res) => {
 };
 const getAddressSuggestion = async (req, res) => {
   try {
-    console.log(req.query)
     const { search, cityId } = req?.query;
     const city = await CitiesModel.findById(cityId)
     let address = await getAutoSearchPlaces(search, city?.name)
@@ -39,11 +38,23 @@ const getAddressSuggestion = async (req, res) => {
   }
 };
 
-// mumbai pune nashik mumbai
+const getAddressSuggestionOnLandingPage = async (req, res) => {
+  try {
+    const { search, cityId } = req?.query;
+    const city = await CitiesModel.findById(cityId)
+    let address = await getAutoSearchPlaces(search, city?.name)
+    address = address.map(ele => ({address: ele.description,placeId: ele.place_id}))
+    return res.status(200).send({ address });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Something went wrong" });
+  }
+};
 
 const getCars = async (req, res) => {
   try {
     let search = req?.query?.search;
+    console.log(search)
     const cars = await PricingModel.find({}).lean();
     let distance = null;
     let toDetail = [];
@@ -122,24 +133,34 @@ const getCars = async (req, res) => {
         }
         carList.push(car);
       }
-    } else if(search?.tripType === "hourly") {
+    } else if (search?.tripType === "hourly") {
       fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
-        for (let car of cars) {
-          let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
-          if(hourlyData) {
-            car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
-            car["hour"] = hourlyData.hour
-            distance = hourlyData?.distance
-            carList.push(car);
-          }
-          hourlyCarDetails = [...car.hourly,...hourlyCarDetails]
+      for (let car of cars) {
+        let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
+        if (hourlyData) {
+          car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
+          car["hour"] = hourlyData.hour
+          distance = hourlyData?.distance
+          carList.push(car);
         }
+        hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
+      }
 
+    } else if (search?.tripType === 'cityCab') {
+      const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
+      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
+      fromDetail = {name: data.from}
+      toDetail = [{name: data.to}]
+      for (let car of cars) {
+        car["totalPrice"] =
+          distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
+        carList.push(car);
+      }
     }
     let hourlyDetails = []
     let hourlyTypes = []
     hourlyCarDetails.map(detail => {
-      if(!hourlyTypes.includes(detail.type)) {
+      if (!hourlyTypes.includes(detail.type)) {
         delete detail?.basePrice
         hourlyDetails.push(detail)
       }
@@ -147,9 +168,9 @@ const getCars = async (req, res) => {
     })
 
     const bookingDetails = {
-      from: fromDetail.name,
-      to: toDetail.map(city => city.name),
-      distance:  distance.toFixed(2),
+      from: { name: fromDetail.name, _id: fromDetail._id },
+      to: toDetail.map(city => ({ name: city.name, _id: city._id })),
+      distance: distance.toFixed(2),
       pickUpDate: search.pickUpDate,
       returnDate: search.returnDate,
       pickUpTime: search.pickUpTime,
@@ -232,5 +253,6 @@ module.exports = {
   getBooking,
   getBookingByPasssengerId,
   cancelBooking,
-  getAddressSuggestion
+  getAddressSuggestion,
+  getAddressSuggestionOnLandingPage
 };

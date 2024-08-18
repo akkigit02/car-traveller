@@ -1236,7 +1236,7 @@ span {
   box-shadow: var(--box-shadow);
   border-radius: 10px;
   padding: 40px;
-  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 15px;
   /* margin-top: -40px; */
   position: relative;

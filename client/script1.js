@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (field.type === 'date') {
                 wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
-                    <input type="date" id="${field.name}"/>
+                    <input type="date" id="${field.name}" change="${handleDateChange}"/>
                     `;
             } else if (field.type === 'time') {
                 wrapper.innerHTML = `
@@ -85,8 +85,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 }
             }
-
             parentContainer.appendChild(wrapper);
+            
         });
         const buttonWrapper = document.createElement('div');
         buttonWrapper.classList.add('pickup-items');
@@ -96,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
         parentContainer.appendChild(buttonWrapper);
         formContainer.appendChild(parentContainer);
         getTimeForDropdown(); // Call the function to populate time dropdown
-        bindSuggestionEvents(type); // Bind events to the new input elements
+        bindSuggestionEvents(type); // Bind events to the new input element
     };
 
     const bindSuggestionEvents = (type) => {
@@ -150,7 +150,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-        } else {
+        } else if (type === 'cityCab') {
+            const pickupCityCab = document.getElementById('pickupCityCab') 
+            const dropCityCab = document.getElementById('dropCityCab') 
+            if(pickupCityCab) {
+                pickupCityCab.addEventListener('input',() => filterFunction('pickupCityCab'))
+                pickupCityCab.addEventListener('focus', () => setSuggestionVisible('pickupCityCab', true));
+                pickupCityCab.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible('pickupCityCab', false);
+                    }, 250);
+                });
+            }
+            if(dropCityCab) {
+                dropCityCab.addEventListener('input',() => filterFunction('dropCityCab'))
+                dropCityCab.addEventListener('focus', () => setSuggestionVisible('dropCityCab', true));
+                dropCityCab.addEventListener('blur', () => {
+                    setTimeout(() => {
+                        setSuggestionVisible('dropCityCab', false);
+                    }, 250);
+                });
+            }
+
+        }else {
             const to = document.getElementById('to');
             if (to) {
                 to.addEventListener('input', () => filterFunction('to'));
@@ -164,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         const submitButtom = document.getElementById('submitButtom')
         submitButtom.addEventListener('click', () => {
-            console.log(query)
             const formData = {
                 ...query
             }
@@ -183,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
         })
 
     };
@@ -200,7 +221,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchQuery = searchInput.value.toLowerCase();
         let cities = await getCities(searchQuery);
         const queryKey = Object.keys(query)
-        console.log(inputType, query, queryKey)
         if (queryKey.length)
             queryKey.map(ele => {
                 if (ele !== inputType) {
@@ -217,49 +237,133 @@ document.addEventListener('DOMContentLoaded', () => {
             suggestion.appendChild(div);
             return;
         }
-        for (const city of cities) {
-            const div = document.createElement('div');
-            div.classList.add('cstm-dropdown-list');
-            div.innerText = `${city.name}, ${city.state_name}`;
-            div.addEventListener('click', () => {
-                query[inputType] = city._id
-                searchInput.value = `${city.name}, ${city.state_name}`;
-                suggestion.innerHTML = '';
-            });
-            suggestion.appendChild(div);
+        if(query?.tripType === 'cityCab') {
+            for (const city of cities) {
+                const div = document.createElement('div');
+                div.classList.add('cstm-dropdown-list');
+                div.innerText = `${city.address}`;
+                div.addEventListener('click', () => {
+                    query[inputType] = city.placeId
+                    searchInput.value = `${city.address}`;
+                    suggestion.innerHTML = '';
+                });
+                suggestion.appendChild(div);
+            }
+        } else {
+            for (const city of cities) {
+                const div = document.createElement('div');
+                div.classList.add('cstm-dropdown-list');
+                div.innerText = `${city.name}, ${city.state_name}`;
+                div.addEventListener('click', () => {
+                    query[inputType] = city._id
+                    searchInput.value = `${city.name}, ${city.state_name}`;
+                    suggestion.innerHTML = '';
+                });
+                suggestion.appendChild(div);
+            }
         }
     };
 
     const getCities = async (search) => {
         try {
-            let response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
-                method: "GET",
-            });
-            let data = await response.json();
-            return data.cities;
+            let response
+            let suggestions = []
+            if(query?.tripType === 'cityCab') {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
+                    method: "GET",
+                });
+
+                let data = await response.json();
+                console.log(data)
+                suggestions = data.address
+            } else {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
+                    method: "GET",
+                });
+                let data = await response.json();
+                suggestions = data.cities
+            }
+            return suggestions;
         } catch (error) {
             console.error('Error fetching cities:', error);
             return [];
         }
     };
 
+    const handleDateChange = (e) => {
+        let date = new Date(e.target.value)
+        date.setHours(0,0,0,0)
+        let endDate = new Date(e.target.value)
+        endDate.setHours(23,45,0,0)
+
+        const optionsInterval = 15;
+        const timeSelect = document.getElementById('timeSelect');
+        if (!timeSelect) return;
+        timeSelect.innerHTML = '';
+        timeSelect.value = ''
+        if(date.getDate() == new Date().getDate() && date.getMonth() == new Date().getMonth() && date.getFullYear() == new Date().getFullYear()) {
+            date = new Date()
+            endDate = new Date()
+            endDate.setHours(23,45,0,0)
+            date.setHours(date.getHours() + 1);
+            date.setMinutes(date.getMinutes() + 30);
+        }
+
+        if(query?.tripType === 'roundTrip') {
+            const returnDate = document.getElementById('returnDate');
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            returnDate.value = `${year}-${month}-${day}`;
+            returnDate.setAttribute('min',returnDate.value)
+        }
+        while (date <= endDate) {
+            let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
+            if (minutes === 60) {
+                minutes = 0;
+                date.setHours(date.getHours() + 1);
+            }
+            const hours = date.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 === 0 ? 12 : hours % 12;
+            const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
+            const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
+            const option = document.createElement('option');
+            option.value = displayTime;
+            option.textContent = displayTime;
+            timeSelect.appendChild(option);
+            date.setMinutes(date.getMinutes() + optionsInterval);
+        }
+    }
+
     const getTimeForDropdown = () => {
         const timeSelect = document.getElementById('timeSelect');
         if (!timeSelect) return;
         const date = new Date();
-        const endDate = new Date();
+        let endDate = new Date();
         endDate.setHours(23, 45, 0, 0);
         const optionsInterval = 15;
-
         date.setHours(date.getHours() + 1);
         date.setMinutes(date.getMinutes() + 30);
+        const now = new Date();
+        now.setHours(now.getHours() + 1);
+        now.setMinutes(now.getMinutes() + 30);
+        if(date > endDate) {
+            now.setHours(0, 30, 0, 0)
+        }
+        if(date > endDate) {
+            date.setHours(0, 30, 0, 0)
+            endDate.setDate(endDate.getDate() + 1);
+            endDate.setHours(23, 45, 0, 0)
+        }
 
         const inputElement = document.getElementById('pickupDate');
-
+        inputElement.addEventListener('change',handleDateChange)
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         inputElement.value = `${year}-${month}-${day}`;
+        inputElement.setAttribute('min',inputElement.value)
         if(query?.tripType === 'roundTrip') {
             const returnDate = document.getElementById('returnDate');
 
@@ -267,11 +371,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         returnDate.value = `${year}-${month}-${day}`;
+        returnDate.setAttribute('min',returnDate.value)
         }
 
-        const now = new Date();
-        now.setHours(now.getHours() + 1);
-        now.setMinutes(now.getMinutes() + 30);
         let nowMinutes = Math.ceil(now.getMinutes() / optionsInterval) * optionsInterval;
         if (nowMinutes === 60) {
             nowMinutes = 0;
@@ -292,7 +394,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const option = document.createElement('option');
             option.value = displayTime;
             option.textContent = displayTime;
-
+            console.log(option.value,"=======------------------")
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
             }

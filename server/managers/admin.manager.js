@@ -1,6 +1,6 @@
 const PricingModel = require('../models/pricing.model');
 const VehicleModel = require('../models/vehicle.model');
-const RideModel = require('../models/booking.model')
+const RideModel = require('../models/ride.model')
 const PackageModel = require('../models/packages.model')
 
 

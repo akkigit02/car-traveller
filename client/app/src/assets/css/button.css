@@ -1,0 +1,86 @@
+.cstm-btn{
+    background-color: var(--theme2);
+    transition: all 0.3s ease;
+    height: 45px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: var(--white);
+    padding: 0 30px;
+    border: none;
+    border-radius: 10px;
+}
+.cstm-btn-red{
+    background-color: var(--theme);
+    transition: all 0.3s ease;
+    height: 45px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: var(--white);
+    padding: 0 30px;
+    border: none;
+    border-radius: 10px;
+}
+.cstm-btn-trans{
+    background-color: transparent;
+    transition: all 0.3s ease;
+    height: 45px;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: var(--theme2);
+    padding: 0 30px;
+    border: 1px solid var(--theme2);
+    border-radius: 10px;
+}
+.cstm-btn-trans:hover{
+    background-color: var(--theme2);
+    color: var(--white);
+    border: 1px solid transparent;
+}
+/* icon-btn */
+.icon-btn{
+    background-color: transparent;
+    transition: all 0.3s ease;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.2;
+    color: var(--theme2);
+    border: 1px solid var(--theme2);
+    border-radius: 8px;
+}
+.icon-btn:hover{
+    background-color: var(--theme2);
+    color: var(--white);
+    border: 1px solid transparent;
+}
+
+
+
+
+/* ************************ table css ************************ */
+
+.cstm-table{
+    width: 100%;
+}
+.cstm-table tr th{
+    background: var(--lightBlue);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 15px 10px;
+}
+.cstm-table tbody tr{
+    border-bottom: 1px solid var(--border);
+}
+.cstm-table tbody tr:hover{
+    background: var(--bg);
+}
+.cstm-table tbody tr td{
+    padding: 10px;
+}

@@ -23,12 +23,12 @@ export default function VehiclePricing() {
 
   return (
     <div>
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between pb-2">
         <div>
-          <h2>Booking Detail</h2>
+          <p className="cstm-title" >Booking Detail</p>
         </div>
       </div>
-      <table>
+      <table className="cstm-table">
         <thead>
           <tr>
             <th>Passanger Name</th>
