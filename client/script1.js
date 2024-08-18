@@ -246,7 +246,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 isDropValid = validateField('dropCityCab', 'errordropCityCab');
             
                 if (!isPickupValid || !isDropValid) return;
-            } else {
+            } else if(query?.tripType === 'hourly') {
+                console.log(query)
+                isPickupValid = validateField('from', 'errorfrom');
+            }else {
                 isPickupValid = validateField('from', 'errorfrom');
                 isDropValid = validateField('to', 'errorto');
             }
@@ -260,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const validateField = (field, errorElementId) => {
+        console.log(errorElementId,"====-------")
         if (!query?.[field]?.trim()) {
             document.getElementById(errorElementId).style.display = 'block';
             return false;
@@ -341,7 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`http://127.0.0.1:5001/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
@@ -349,7 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(data)
                 suggestions = data.address
             } else {
-                response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();

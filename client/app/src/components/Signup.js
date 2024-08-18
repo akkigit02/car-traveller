@@ -5,10 +5,11 @@ import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import TopNavBar from './TopNavBar';
 import { toast } from 'react-toastify';
+import moment from "moment";
 function Signup() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm();
   const { query } = useParams();
-  const [bookingDetails, setBookingDetails] = useState()
+  const [bookingDetails, setBookingDetails] = useState({})
   const [isOtpSent, setIsOtpSent] = useState(false)
   const [sessionId, setSessionId] = useState()
   const [otp, setOtp] = useState()
@@ -58,11 +59,10 @@ function Signup() {
   useEffect(() => {
     if (query) {
       // decode query   
-      const decodedString = atob(query);
+      const decodedString = decodeURIComponent(atob(query));
       const decodedData = JSON.parse(decodedString);
       setBookingDetails(decodedData)
       console.log(decodedData)
-
     }
     else window.location.href = 'http:127.0.0.1:5500'
   }, [])
@@ -96,24 +96,28 @@ function Signup() {
             <h4 className="title">Booking Form</h4>
             <div className='p-3'>
             <div className='d-flex align-items-center justify-content-between mb-4'>
-              <p className='mb-0 desti-details'>Pune sjlsd</p>
-              <p className='mb-0 border-bottom'>(One Way)</p>
-              <p className='mb-0 desti-details'>Mumbai</p>
+              <p className='mb-0 desti-details'>{bookingDetails?.from?.name}</p>
+              <p className='mb-0 border-bottom'>{bookingDetails?.type}</p>
+              {bookingDetails?.to?.map((item, index) => (<p key={index} className='mb-0 desti-details'>{item.name}</p>))}
             </div>
             <div className='row m-0 pb-5'>
               <div className='col-lg-6 col-md-6 col-12 ps-0'>
-              <label>Date</label>
-              <p className='mb-0 desti-details-2'>18-08-24</p>
+              <label>Pickup Date</label>
+              <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
               </div>
+              {bookingDetails?.type === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
+              <label>Return Date</label>
+              <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
+              </div>}
               <div className='col-lg-6 col-md-6 col-12 pe-0'>
               <label>Time</label>
-              <p className='mb-0 desti-details-2'>06:00PM</p>
+              <p className='mb-0 desti-details-2'>{bookingDetails?.pickUpTime}</p>
               </div>
             </div>
             <div>
-              <p><strong>Car type:</strong> Wagon R</p>
-              <p><strong>KMs Included:</strong> 240KM</p>
-              <p><strong>Total Fare:</strong> 3434Rs</p>
+              <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
+              <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
+              <p><strong>Total Fare:</strong> {bookingDetails?.totalPrice}</p>
             </div>
             <ul>
             <li>Your trip comes with a kilometer limit. If you go over this limit, you'll incur additional charges for the extra distance traveled.</li>

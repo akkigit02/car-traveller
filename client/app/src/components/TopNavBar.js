@@ -11,7 +11,7 @@ function TopNavBar() {
             <div className="header-main">
                 <div className="header-left">
                     <div className="logo">
-                        <a href="index.html" className="header-logo">
+                        <a href="http://127.0.0.1:5500/client/index.html" className="header-logo">
                             <img src={logo} alt="logo-img"/>
                         </a>
                     </div>
@@ -20,7 +20,7 @@ function TopNavBar() {
                             <nav id="mobile-menu">
                                 <ul>
                                     <li className="has-dropdown active menu-thumb">
-                                        <a href="index.html">
+                                        <a href="http://127.0.0.1:5500/client/index.html">
                                             Home
                                         </a>
                                     </li>
@@ -53,9 +53,12 @@ function TopNavBar() {
                     </div>
                     {/* <a href="#0" className="search-trigger search-icon"><i
                             className="fa-regular fa-magnifying-glass"></i></a> */}
+                        <a href="http://127.0.0.1:3000/">
+
                      <button class="theme-btn wow fadeInUp padding-signin-btn">
                         Login
                     </button>
+                        </a>
                     {/* <button class="btn-signup" type="button" id="submitSuttom">
                         Login
                     </button> */}

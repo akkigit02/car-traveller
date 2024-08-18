@@ -22,7 +22,6 @@ export default function AvailableVehicle() {
         url: "/api/client/car-list",
         params: { search: decodedQuery },
       });
-      console.log(data.bookingDetails);
       setBookingDetails({
         ...data.bookingDetails,
         type: TRIP_TYPE.find((ty) => ty.value === decodedQuery.tripType)?.name,
@@ -52,10 +51,12 @@ export default function AvailableVehicle() {
     if (!bookingDetails) return;
     const jsonString = JSON.stringify({
       vehicleId: car._id,
+      vehicleType: car.vehicleType,
+      vehicleName: car.vehicleName,
       totalPrice: car.totalPrice,
       ...bookingDetails,
     });
-    const encodedString = btoa(jsonString);
+    const encodedString = btoa(encodeURIComponent(jsonString));
     navigate(`/signup/${encodedString}`);
   };
 
@@ -104,7 +105,7 @@ export default function AvailableVehicle() {
                 </div>
 
                 <div className="d-flex justify-content-end">
-                  <a href="http://127.0.0.1:5501/client/index.html">
+                  <a href="http://127.0.0.1:5500/client/index.html">
                     <button className="cstm-btn-red">Change</button>
                   </a>
                 </div>
