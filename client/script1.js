@@ -204,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
         })
 
     };
