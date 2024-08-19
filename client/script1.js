@@ -137,6 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div id="${conatinerId}ToDelete" class="delete-btn">-</div>
                         <div id="${conatinerId}ToSuggestion" class="suggestion-list"></div>
                     `
+                query[`${conatinerId}To`] = ''
                 toContainer.appendChild(toChildContainer)
                 document.getElementById(`${conatinerId}ToDelete`).addEventListener('click', (event) => {
                     delete query[`${conatinerId}To`]
@@ -213,6 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let isValideDropDate = true
             let isPickupValid = true
             let isDropValid = true
+            let isValideMultiTo = true
             const timeSelect = document.getElementById('timeSelect');
             if (timeSelect){ 
                 formData['pickUpTime'] = timeSelect.value
@@ -246,6 +248,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     isValideDropDate = true
                     document.getElementById(`errorreturnDate`).style.display = 'none';
                 }
+                for (let key in query) {
+                    if(key.match(/^\d+To$/)) {
+                        const isValideError = validateField(key, `error${key}`);
+                        console.log(key, `error${key}`,"====----",isValideError)
+                        if(!isValideError) isValideMultiTo = false
+                    }
+                }
             } 
             if(query?.tripType === 'cityCab') {
 
@@ -261,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 isDropValid = validateField('to', 'errorto');
             }
             
-            if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime) return;
+            if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
             window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
@@ -270,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const validateField = (field, errorElementId) => {
-        console.log(errorElementId,"====-------")
         if (!query?.[field]?.trim()) {
             document.getElementById(errorElementId).style.display = 'block';
             return false;

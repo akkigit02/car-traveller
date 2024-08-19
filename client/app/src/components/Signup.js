@@ -7,7 +7,9 @@ import TopNavBar from './TopNavBar';
 import { toast } from 'react-toastify';
 import moment from "moment";
 function Signup() {
-  const { register, handleSubmit, setValue, formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, formState: { errors } } = useForm({
+    mode: "onChange", // Validate on every change
+  });
   const { query } = useParams();
   const [bookingDetails, setBookingDetails] = useState({})
   const [isOtpSent, setIsOtpSent] = useState(false)
@@ -105,7 +107,7 @@ function Signup() {
               <label>Pickup Date</label>
               <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
               </div>
-              {bookingDetails?.type === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
+              {bookingDetails?.tripType === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
               <label>Return Date</label>
               <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
               </div>}
@@ -215,7 +217,7 @@ function Signup() {
                                   className="p-60"
                                   {...register(
                                     "phoneNumber",
-                                    // phoneNumberValidation
+                                    phoneNumberValidation
                                   )}
                                   type="text"
                                   disabled={isOtpSent}
@@ -254,7 +256,7 @@ function Signup() {
                               )}
                             </div>
                           </div>
-                          <div className="col-lg-6">
+                          {['oneWay'].includes(bookingDetails?.tripType) && <div className="col-lg-6">
                             <div className="form-clt position-relative">
                               <label className="label-text">
                                 Drop Address
@@ -280,7 +282,7 @@ function Signup() {
                                 <span>{errors?.dropAddress?.message}</span>
                               )}
                             </div>
-                          </div>
+                          </div>}
                           <div className="col-lg-12 d-flex justify-content-end">
                             <button className="theme-btn-2" type="submit">
                               Send Request

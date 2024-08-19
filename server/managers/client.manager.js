@@ -54,7 +54,6 @@ const getAddressSuggestionOnLandingPage = async (req, res) => {
 const getCars = async (req, res) => {
   try {
     let search = req?.query?.search;
-    console.log(search)
     const cars = await PricingModel.find({}).lean();
     let distance = null;
     let toDetail = [];

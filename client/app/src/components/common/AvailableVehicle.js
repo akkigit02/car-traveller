@@ -54,6 +54,7 @@ export default function AvailableVehicle() {
       vehicleType: car.vehicleType,
       vehicleName: car.vehicleName,
       totalPrice: car.totalPrice,
+      tripType: decodedQuery?.tripType,
       ...bookingDetails,
     });
     const encodedString = btoa(encodeURIComponent(jsonString));
