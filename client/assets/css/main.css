@@ -17,6 +17,9 @@
   --bg3: #ffffff33;
   --box-shadow: 0px 10px 60px 0px rgba(0, 0, 0, 0.1);
 }
+.bg-blue{
+  background-color: var(--theme2) !important;
+}
 
 .theme-btn {
   background-color: var(--theme);
@@ -5228,12 +5231,20 @@ input.main-search-input::placeholder {
     gap: 30px;
   }
 }
+.hover-up{
+  transition: all 0.4s ease-in-out;
+}
+.hover-up:hover{
+  transform: translateY(-10px);
+}
 
 .center {
   text-align: center;
   margin: 0 auto;
 }
-
+.section-padding-2 {
+  padding: 80px 0;
+}
 .section-padding {
   padding: 120px 0;
 }

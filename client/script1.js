@@ -48,10 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
         formContainer.innerHTML = '';
         const parentContainer = document.createElement('div');
         parentContainer.classList.add('pickup-wrapper', 'wow', 'fadeInUp')
+        if (type === 'roundTrip') {
+            parentContainer.classList.add('pickup-wrapper2');
+        }
         const formFields = tabConfig[type];
         formFields.forEach(field => {
             const wrapper = document.createElement('div');
             wrapper.classList.add('pickup-items');
+            
             if (field.type === 'date') {
                 wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
@@ -78,7 +82,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 } else {
                     wrapper.innerHTML = `
-                    <div id="toContainer">
+                    <div id="toContainer" class="d-flex">
                     <div>
                     <label class="field-label">${field.label}</label>
                     <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}" autocomplete="off">
@@ -86,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div id="${field.name}Suggestion" class="suggestion-list"></div>
                     </div>
                     </div>
-                    <button id="toContainerAdd">+</button>
+                    <button id="toContainerAdd" class="addBtn">+</button>
                     `;
                 }
             }
@@ -123,11 +127,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 let conatinerId = toContainer.children.length + 1
                 const toChildContainer = document.createElement('div');
                 toChildContainer.setAttribute('id', `${conatinerId}ToContainer`)
+                toChildContainer.setAttribute('class', `ms-3 d-flex align-items-end`)
                 toChildContainer.innerHTML = `
+                        <div>
                         <label class="field-label">To</label>
                         <input name="to" id="${conatinerId}To" placeholder="Type City" autocomplete="off">
                         <p class="error" id="error${conatinerId}To">Please fill this field.</p>
-                        <div id="${conatinerId}ToDelete">Delete</div>
+                        </div>
+                        <div id="${conatinerId}ToDelete" class="delete-btn">-</div>
                         <div id="${conatinerId}ToSuggestion" class="suggestion-list"></div>
                     `
                 toContainer.appendChild(toChildContainer)
