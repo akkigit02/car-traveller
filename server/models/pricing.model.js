@@ -7,11 +7,12 @@ const PricingSchema = new Schema({
   vehicleName: {type: String},
   vehicleImageUrl: {type: String},
   upToKm: {type: Number},
+  discount: {type: Number},
   upToCostPerKm: {type: Number},
   upToCostPerHour: {type: Number},
   capacity: {
     totalNumberOfSeats: {type: Number}, // 4+1
-    reservedNumberOfSeats: {type: Number},
+    reservedNumberOfSeats: {type: Number, default: 1},
     description: {type: String}
   },
   acAvailable: {type: Boolean},
@@ -21,7 +22,7 @@ const PricingSchema = new Schema({
   laguageCarrierCost: { type: Number },
   minimumFare: { type: Number },
   additionalCharges: {type: Number},
-  driverAllowance: {type: Number},
+  driverAllowance: {type: Number, default: 0},
   similar: [{type: String}],
   hourly: [{
     type: {type: String},

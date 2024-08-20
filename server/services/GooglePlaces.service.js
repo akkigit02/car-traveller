@@ -2,11 +2,19 @@ const { Client } = require("@googlemaps/google-maps-services-js");
 const { GOOGLE_PLACE_API_KEY } = process.env
 const axios = require('axios')
 
-const getAutoSearchPlaces = async (input, city = 'Mumbai', type = '') => {
+const getAutoSearchPlaces = async (input, city = '', type = '') => {
     try {
         const client = new Client({});
+        let cityArray = []
+        if(!city) {
+            cityArray = ['Mumbai','Thane']
+        } else {
+            cityArray = [city]
+        }
+
+        const combinedInput = cityArray.map(c => `${c} ${input}`).join('|');
         const data = {
-            input: city ? `${city} ${input}` : input,
+            input: combinedInput,
             key: GOOGLE_PLACE_API_KEY,
             components:'country:in'
         }
@@ -15,7 +23,6 @@ const getAutoSearchPlaces = async (input, city = 'Mumbai', type = '') => {
         const res = await client.placeAutocomplete({
             params: data,
         })
-        console.log(res.data.predictions,"====----")
         return res.data.predictions
     } catch (error) {
         console.error(error)

@@ -1,9 +1,10 @@
 import React from 'react'
 
-export default function BookingPage() {
+export default function SpecialPackageEnqure() {
   return (
     <div>
-      Booking Page
+      hello
     </div>
   )
 }
+

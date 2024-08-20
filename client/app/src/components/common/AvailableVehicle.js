@@ -90,7 +90,7 @@ export default function AvailableVehicle() {
                     {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}
                   </div>
                 </div>
-                {bookingDetails.type === "roundTrip" && (
+                {decodedQuery?.tripType === "roundTrip" && (
                   <div className="me-3 col-12 mb-3">
                     <p className="mb-0">Return Date</p>
                     <div className="highlight-data">
@@ -175,6 +175,7 @@ export default function AvailableVehicle() {
                             <p className="mb-0 pb-0 ">
                               {bookingDetails.distance}Km
                             </p>
+                            up to {item?.showDistance}
                           </div>
                           <div>
                             <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">
@@ -225,7 +226,7 @@ export default function AvailableVehicle() {
                               <div className="d-flex align-items-center pe-4">
                                 <p className="mb-0 font-14">
                                   ₹{item?.upToCostPerKm} per km after the first{" "}
-                                  {bookingDetails.distance} km
+                                  {item?.showDistance} km
                                 </p>
                               </div>
                               {decodedQuery?.hourlyType && (

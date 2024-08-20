@@ -73,7 +73,9 @@ const getCars = async (req, res) => {
       toDetail.push(toCity)
       for (let car of cars) {
         car["totalPrice"] =
-          distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
+        distance?.toFixed(2) * car.costPerKm + (car?.driverAllowance ? car.driverAllowance : 0);
+
+        car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
       }
     } else if (search?.tripType === "roundTrip") {
@@ -120,15 +122,18 @@ const getCars = async (req, res) => {
       distance = totalDistance;
       let numberOfDay = dateDifference(search.pickUpDate, search.returnDate);
       if (numberOfDay == 0) numberOfDay = 1
-
+      console.log(numberOfDay,"====------")
       for (let car of cars) {
         if (distance <= numberOfDay * 300) {
           car["totalPrice"] =
             numberOfDay * 300 * car.costPerKm +
             numberOfDay * car.driverAllowance;
+          car['showDistance'] = numberOfDay * 250
         } else {
           car["totalPrice"] =
             distance * car.costPerKm + numberOfDay * car.driverAllowance;
+          
+          car['showDistance'] = numberOfDay * 300
         }
         carList.push(car);
       }
@@ -140,6 +145,7 @@ const getCars = async (req, res) => {
           car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
           car["hour"] = hourlyData.hour
           distance = hourlyData?.distance
+          car['showDistance'] = distance?.toFixed(2);
           carList.push(car);
         }
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
@@ -153,6 +159,7 @@ const getCars = async (req, res) => {
       for (let car of cars) {
         car["totalPrice"] =
           distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
+          car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
       }
     }
