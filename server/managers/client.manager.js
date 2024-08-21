@@ -122,7 +122,6 @@ const getCars = async (req, res) => {
       distance = totalDistance;
       let numberOfDay = dateDifference(search.pickUpDate, search.returnDate);
       if (numberOfDay == 0) numberOfDay = 1
-      console.log(numberOfDay,"====------")
       for (let car of cars) {
         if (distance <= numberOfDay * 300) {
           car["totalPrice"] =
@@ -131,7 +130,7 @@ const getCars = async (req, res) => {
           car['showDistance'] = numberOfDay * 250
         } else {
           car["totalPrice"] =
-            distance * car.costPerKm + numberOfDay * car.driverAllowance;
+            distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
           
           car['showDistance'] = numberOfDay * 300
         }
@@ -142,7 +141,7 @@ const getCars = async (req, res) => {
       for (let car of cars) {
         let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
         if (hourlyData) {
-          car["totalPrice"] = hourlyData.basePrice + car.driverAllowance;
+          car["totalPrice"] = hourlyData.basePrice + car.driverAllowance || 0;
           car["hour"] = hourlyData.hour
           distance = hourlyData?.distance
           car['showDistance'] = distance?.toFixed(2);
@@ -158,7 +157,7 @@ const getCars = async (req, res) => {
       toDetail = [{name: data.to}]
       for (let car of cars) {
         car["totalPrice"] =
-          distance?.toFixed(2) * car.costPerKm + car.driverAllowance;
+          distance?.toFixed(2) * car.costPerKm + car.driverAllowance || 0;
           car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
       }
