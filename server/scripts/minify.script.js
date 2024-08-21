@@ -8,7 +8,7 @@ const UglifyJS = require('uglify-js');
 
 // Directories and files to be processed
 const projectDir = path.join(__dirname, '../../client');
-const outputDir = path.join(__dirname, '../../../build');
+const outputDir = path.join(__dirname, '../../../public_html');
 const ignore = ['app', '.DS_Store']
 
 // Function to minify HTML
@@ -86,8 +86,8 @@ function processFiles(dir) {
     });
 }
 
-if (fs.existsSync(outputDir))
-    fs.rmSync(outputDir, { recursive: true, force: true });
+// if (fs.existsSync(outputDir))
+//     fs.rmSync(outputDir, { recursive: true, force: true });
 // Copy project assets and minify
 fs.mkdirSync(outputDir, { recursive: true });
 processFiles(projectDir);
