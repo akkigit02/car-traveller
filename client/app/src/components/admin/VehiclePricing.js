@@ -273,10 +273,17 @@ export default function VehiclePricing() {
                 <label htmlFor="inputPassword4">Minimum Fare</label>
                 <input
                   type="number"
-                  {...register("minimumFare")}
+                  {...register("minimumFare",{
+                    required: 'Minimum Fare is Required'
+                  })}
                   className="form-control"
                   placeholder="Enter minimum fare"
                 />
+                {errors?.minimumFare && (
+                  <span className="text-danger">
+                    {errors.minimumFare.message}
+                  </span>
+                )}
               </div>
             </div>
             <div className="form-group">
@@ -318,10 +325,17 @@ export default function VehiclePricing() {
                 <label htmlFor="inputCity">Carrier Laguage Charges</label>
                 <input
                   type="number"
-                  {...register("laguageCarrierCost")}
+                  {...register("laguageCarrierCost",{
+                    required: 'Laguage Carrier Cost is Required'
+                  })}
                   className="form-control"
                   placeholder="Carrier luggage cost"
                 />
+                {errors?.laguageCarrierCost && (
+                  <span className="text-danger">
+                    {errors.laguageCarrierCost.message}
+                  </span>
+                )}
               </div>
             </div>
             <div className="form-row">
@@ -329,10 +343,17 @@ export default function VehiclePricing() {
                 <label htmlFor="inputCity">Additional Charges</label>
                 <input
                   type="number"
-                  {...register("additionalCharges")}
+                  {...register("additionalCharges",{
+                    required:'Additional Charges is Required'
+                  })}
                   className="form-control"
                   placeholder="Enter additional cost"
                 />
+                {errors?.additionalCharges && (
+                  <span className="text-danger">
+                    {errors.additionalCharges.message}
+                  </span>
+                )}
               </div>
             </div>
           </div>
