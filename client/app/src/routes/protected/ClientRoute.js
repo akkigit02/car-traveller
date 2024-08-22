@@ -1,5 +1,5 @@
 import React from 'react'
-import AdminDashboard from '../../components/admin/Dashboard'
+import Payment from '../../components/Payment'
 
 export default function ClientRoute() {
   return (
@@ -14,7 +14,7 @@ export default function ClientRoute() {
         <div className="col-lg-10 col-md-10 col-12">
           <div className="border rounded shadow p-3">
             <Routes>
-              <Route path={`/payment`} Component={AdminDashboard} exact />
+              <Route path={`/payment/:bookingId`} Component={Payment} exact />
             </Routes>
           </div>
         </div>

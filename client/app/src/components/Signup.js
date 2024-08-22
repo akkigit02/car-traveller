@@ -33,7 +33,7 @@ function Signup() {
       })
       if (data.message)
         toast.error(data.message)
-
+      
     } catch (error) {
       console.log(error.response.data)
       toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
@@ -53,6 +53,7 @@ function Signup() {
         setIsOtpSent(true)
         setSessionId(data.sessionId)
       }
+      setBookingDetails(old => ({ ...old, bokkingId: data.bokking_id }))
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
@@ -97,37 +98,37 @@ function Signup() {
           <div className="car-list-sidebar mt-30 h-100">
             <h4 className="title">Booking Form</h4>
             <div className='p-3'>
-            <div className='d-flex align-items-center justify-content-between mb-4'>
-              <p className='mb-0 desti-details'>{bookingDetails?.from?.name}</p>
-              <p className='mb-0 border-bottom'>{bookingDetails?.type}</p>
-              {bookingDetails?.to?.map((item, index) => (<p key={index} className='mb-0 desti-details'>{item.name}</p>))}
-            </div>
-            <div className='row m-0 pb-5'>
-              <div className='col-lg-6 col-md-6 col-12 ps-0'>
-              <label>Pickup Date</label>
-              <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
+              <div className='d-flex align-items-center justify-content-between mb-4'>
+                <p className='mb-0 desti-details'>{bookingDetails?.from?.name}</p>
+                <p className='mb-0 border-bottom'>{bookingDetails?.type}</p>
+                {bookingDetails?.to?.map((item, index) => (<p key={index} className='mb-0 desti-details'>{item.name}</p>))}
               </div>
-              {bookingDetails?.tripType === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
-              <label>Return Date</label>
-              <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
-              </div>}
-              <div className='col-lg-6 col-md-6 col-12 pe-0'>
-              <label>Time</label>
-              <p className='mb-0 desti-details-2'>{bookingDetails?.pickUpTime}</p>
+              <div className='row m-0 pb-5'>
+                <div className='col-lg-6 col-md-6 col-12 ps-0'>
+                  <label>Pickup Date</label>
+                  <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
+                </div>
+                {bookingDetails?.tripType === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
+                  <label>Return Date</label>
+                  <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
+                </div>}
+                <div className='col-lg-6 col-md-6 col-12 pe-0'>
+                  <label>Time</label>
+                  <p className='mb-0 desti-details-2'>{bookingDetails?.pickUpTime}</p>
+                </div>
               </div>
-            </div>
-            <div>
-              <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
-              <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
-              <p><strong>Total Fare:</strong> {bookingDetails?.totalPrice}</p>
-            </div>
-            <ul>
-            <li>Your trip comes with a kilometer limit. If you go over this limit, you'll incur additional charges for the extra distance traveled.</li>
-            <li>If your trip involves hill climbs, the cab's air conditioning may be turned off during those sections.</li>
-            <li>Your trip covers one pickup in the Pick-up City and one drop-off at the Destination City. It does not include any travel within the city.</li>
+              <div>
+                <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
+                <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
+                <p><strong>Total Fare:</strong> {bookingDetails?.totalPrice}</p>
+              </div>
+              <ul>
+                <li>Your trip comes with a kilometer limit. If you go over this limit, you'll incur additional charges for the extra distance traveled.</li>
+                <li>If your trip involves hill climbs, the cab's air conditioning may be turned off during those sections.</li>
+                <li>Your trip covers one pickup in the Pick-up City and one drop-off at the Destination City. It does not include any travel within the city.</li>
 
 
-            </ul>
+              </ul>
             </div>
           </div>
         </div>

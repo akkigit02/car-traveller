@@ -6,7 +6,7 @@ class Whatsapp {
         this.delay = delay;
         this.queue = [];
         this.isProcessing = false;
-        this.whatsappClient = new Client({ authStrategy: new LocalAuth({ dataPath: 'whatsapp' }) });
+        this.whatsappClient = new Client({ });
 
         this.authTimeout = null
 
@@ -17,6 +17,7 @@ class Whatsapp {
         });
 
         this.whatsappClient.on('qr', async (qr) => {
+            console.log(qr)
             await this.saveQrCode(qr, 'whatsapp/qr/hello.png');
         });
 

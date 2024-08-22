@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import AdminDashboard from "../../components/admin/Dashboard";
 import React from "react";
 import SideNavBar from "../../components/SideNavBar";
@@ -22,7 +22,7 @@ function AdminRoute() {
           <div className="col-lg-10 col-md-10 col-12">
             <div className="border rounded shadow p-3 h-100">
               <Routes>
-                <Route path={`/`} Component={AdminDashboard} exact />
+                <Route path={`/`} element={<Navigate to="/dashboard" />} exact />
                 <Route path={`/dashboard`} Component={AdminDashboard} exact />
                 <Route path={`/vehicle`} Component={Vehicle} exact />
                 <Route
@@ -32,6 +32,7 @@ function AdminRoute() {
                 />
                 <Route path={`/booking`} Component={Booking} exact />
                 <Route path={`/demo`} Component={Demo} exact />
+                <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
               </Routes>
             </div>
           </div>

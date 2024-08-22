@@ -1,3 +1,4 @@
+const ObjectId = require('mongoose').Types.ObjectId
 const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
@@ -43,7 +44,7 @@ const getAddressSuggestionOnLandingPage = async (req, res) => {
     const { search, cityId } = req?.query;
     const city = await CitiesModel.findById(cityId)
     let address = await getAutoSearchPlaces(search, city?.name)
-    address = address.map(ele => ({address: ele.description,placeId: ele.place_id}))
+    address = address.map(ele => ({ address: ele.description, placeId: ele.place_id }))
     return res.status(200).send({ address });
   } catch (error) {
     console.log(error);
@@ -73,7 +74,7 @@ const getCars = async (req, res) => {
       toDetail.push(toCity)
       for (let car of cars) {
         car["totalPrice"] =
-        distance?.toFixed(2) * car.costPerKm + (car?.driverAllowance ? car.driverAllowance : 0);
+          distance?.toFixed(2) * car.costPerKm + (car?.driverAllowance ? car.driverAllowance : 0);
 
         car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
@@ -131,7 +132,7 @@ const getCars = async (req, res) => {
         } else {
           car["totalPrice"] =
             distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
-          
+
           car['showDistance'] = numberOfDay * 300
         }
         carList.push(car);
@@ -153,12 +154,12 @@ const getCars = async (req, res) => {
     } else if (search?.tripType === 'cityCab') {
       const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
       distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      fromDetail = {name: data.from}
-      toDetail = [{name: data.to}]
+      fromDetail = { name: data.from }
+      toDetail = [{ name: data.to }]
       for (let car of cars) {
         car["totalPrice"] =
           distance?.toFixed(2) * car.costPerKm + car.driverAllowance || 0;
-          car['showDistance'] = distance?.toFixed(2);
+        car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
       }
     }
@@ -251,6 +252,18 @@ const cancelBooking = async (req, res) => {
   }
 };
 
+
+const getBookingDeatils = async (req, res) => {
+  try {
+    const bookingId = req.params.bookingId;
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) }).lean();
+    return res.status(200).send({ bookingDetails });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send({ message: "Something went wrong" });
+  }
+};
+
 module.exports = {
   getCities,
   getCars,
@@ -259,5 +272,6 @@ module.exports = {
   getBookingByPasssengerId,
   cancelBooking,
   getAddressSuggestion,
-  getAddressSuggestionOnLandingPage
+  getAddressSuggestionOnLandingPage,
+  getBookingDeatils
 };

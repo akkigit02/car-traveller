@@ -3,16 +3,18 @@ import React, { useEffect, useState } from "react";
 import { getTokenFromLocal, setTokenToLocal } from "../services/Authentication.service";
 import { useSelector } from "react-redux";
 import UnProtected from './UnProtected'
-import { BrowserRouter, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Routes, useNavigate } from "react-router-dom";
 import Protected from "./Protected";
 import store from "../store";
 
 function Index() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const userInfo = useSelector((state) => state.userInfo)
   const getSession = async () => {
     try {
+      setIsLoading(true)
       const token = getTokenFromLocal();
+      console.log(token)
       if (!token) {
         return
       }
@@ -37,15 +39,11 @@ function Index() {
     getSession();
   }, []);
 
-
-
-
-
   return (
     <>
       {
         isLoading ? <div>Loading.....</div> :
-          <BrowserRouter>
+          <BrowserRouter >
             {userInfo ? <Protected /> : <UnProtected />}
           </BrowserRouter>
       }

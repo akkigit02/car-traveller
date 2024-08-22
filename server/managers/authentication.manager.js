@@ -34,12 +34,10 @@ const login = async (req, res) => {
             return res.status(400).send({ message: 'Email and password are required.' });
         }
         const user = await UserModel.findOne({ $or: [{ email: String(body.userName) }, { primaryPhone: String(body.userName) }] }, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1, modules: 1 })
-        console.log(user)
         if (!user) {
             return res.status(401).send({ message: 'Incorrect username or password. Please try again.' })
         }
         const isPassMatch = await comparePassword(password, user.password)
-        console.log
         if (!isPassMatch)
             return res.status(401).send({ message: 'Incorrect username or password. Please try again.' })
         if (user.status === 'sent') {
@@ -57,8 +55,8 @@ const login = async (req, res) => {
             })
 
             // send otp 
-
-            return res.status(200).send({ session: { otp, sessionId, email: user.email, phone: user.primaryPhone, modules: user.modules }, status: 'TWO_STEP_AUTHENTICATION' })
+            console.log(otp)
+            return res.status(200).send({ session: { sessionId, email: user.email, phone: user.primaryPhone }, status: 'TWO_STEP_AUTHENTICATION' })
         }
         const userSession = await getUserSession(user._id)
         res.status(200).send({ message: 'Login successful.', session: userSession, status: 'LOGIN_SUCCESS' })
