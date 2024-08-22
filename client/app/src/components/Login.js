@@ -27,17 +27,18 @@ function Login() {
           password: formData.password,
         },
       });
-      console.log(data)
       if (data.status === 'TWO_STEP_AUTHENTICATION') {
         setOtpDetails(data.session)
       }
-      // console.log(data)
-      // setTokenToLocal(data.session.jwtToken);
-      // store.dispatch({
-      //   type: "SET_INTO_STORE",
-      //   payload: { userInfo: data.session },
-      // });
-      // navigate('/dashboard', { replace: true })
+      if (data.status === 'LOGIN_SUCCESS') {
+        setTokenToLocal(data.session.jwtToken);
+        store.dispatch({
+          type: "SET_INTO_STORE",
+          payload: { userInfo: data.session },
+        });
+        navigate('/dashboard', { replace: true })
+      }
+
     } catch (error) {
       console.log(error?.response?.data?.message || error);
     }
@@ -52,15 +53,16 @@ function Login() {
           otp, sessionId: otpDetails.sessionId
         }
       })
-      console.log(data)
       if (data.message)
         toast.success(data.message)
-      setTokenToLocal(data.session.jwtToken);
-      store.dispatch({
-        type: "SET_INTO_STORE",
-        payload: { userInfo: data.session },
-      });
-      navigate('/dashboard', { replace: true })
+      if (data.status === 'LOGIN_SUCCESS') {
+        setTokenToLocal(data.session.jwtToken);
+        store.dispatch({
+          type: "SET_INTO_STORE",
+          payload: { userInfo: data.session },
+        });
+        navigate('/dashboard', { replace: true })
+      }
     } catch (error) {
       console.log(error.response.data)
       toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
