@@ -8,8 +8,10 @@ const UglifyJS = require('uglify-js');
 
 // Directories and files to be processed
 const projectDir = path.join(__dirname, '../../client');
-const outputDir = path.join(__dirname, '../../../public_html');
+const outputDir = path.join(__dirname, '../../../build'); // temprary
 const ignore = ['app', '.DS_Store']
+const projectOutputDir = path.join(__dirname, '../../../build1');
+
 
 // Function to minify HTML
 async function minifyHtmlFile(filePath) {
@@ -43,9 +45,14 @@ function minifyCssFile(filePath) {
 }
 
 // Function to minify JS
-async function minifyJsFile(filePath) {
+function minifyJsFile(filePath) {
     try {
-        const jsContent = fs.readFileSync(filePath, 'utf-8');
+        let jsContent = fs.readFileSync(filePath, 'utf-8');
+        const localhostRegex = /http:\/\/localhost:\d+/g;
+        jsContent = jsContent
+            .replace(/http:\/\/127.0.0.1:3000/g, 'https://app.dddcabs.com')
+            .replace(/http:\/\/127.0.0.1:5000/g, 'https://app.dddcabs.com')
+            .replace(localhostRegex, 'https://app.dddcabs.com');
         const minifiedJs = UglifyJS.minify(jsContent);
 
         fs.writeFileSync(filePath.replace(projectDir, outputDir), minifiedJs.code);
@@ -56,9 +63,9 @@ async function minifyJsFile(filePath) {
 }
 
 // Helper function to recursively walk through directories
-function processFiles(dir) {
-    fs.readdirSync(dir).forEach((file) => {
-        console.log(file)
+async function processFiles(dir) {
+    const files = fs.readdirSync(dir)
+    for (const file of files) {
         const fullPath = path.join(dir, file);
         if (ignore.includes(file)) {
             // 
@@ -71,7 +78,7 @@ function processFiles(dir) {
             processFiles(fullPath);
         } else {
             if (fullPath.endsWith('.html')) {
-                minifyHtmlFile(fullPath);
+                await minifyHtmlFile(fullPath);
             } else if (fullPath.endsWith('.css')) {
                 minifyCssFile(fullPath);
             } else if (fullPath.endsWith('.js')) {
@@ -83,11 +90,47 @@ function processFiles(dir) {
                 console.log(`Copied: ${fullPath}`);
             }
         }
-    });
+    }
+
 }
 
-// if (fs.existsSync(outputDir))
-//     fs.rmSync(outputDir, { recursive: true, force: true });
-// Copy project assets and minify
-fs.mkdirSync(outputDir, { recursive: true });
-processFiles(projectDir);
+const deleteDir = (directoryPath) => {
+    if (fs.existsSync(directoryPath)) {
+        fs.readdirSync(directoryPath).forEach((file) => {
+            const fullPath = `${directoryPath}/${file}`
+            if (fs.lstatSync(fullPath).isDirectory())
+                fs.rmdirSync(fullPath, { recursive: true, force: true })
+            else
+                fs.unlinkSync(fullPath)
+        })
+    }
+}
+
+
+
+const move = (source, destination) => {
+    fs.readdirSync(source).forEach((file) => {
+        const sourceFullPath = `${source}/${file}`
+        const destinationFullPath = `${destination}/${file}`
+        if (fs.lstatSync(sourceFullPath).isDirectory())
+            fs.mkdirSync(destinationFullPath, { recursive: true });
+        fs.renameSync(sourceFullPath, destinationFullPath)
+    })
+};
+
+(async () => {
+    if (fs.existsSync(outputDir))
+        deleteDir(outputDir)
+    else
+        fs.mkdirSync(outputDir, { recursive: true });
+    await processFiles(projectDir);
+    deleteDir(projectOutputDir)
+    move(outputDir, projectOutputDir)
+    deleteDir(outputDir)
+})()
+
+
+
+
+
+
