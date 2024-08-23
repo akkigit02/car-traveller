@@ -9,9 +9,9 @@ const requestIp = require('request-ip');
 const userAgent = require('express-useragent');
 const Logger = require('./utils/logger.util.js');
 const app = express();
-if (process.env.NODE_ENV !== 'production') {
+// if (process.env.NODE_ENV !== 'production') {
     app.use(morgan('dev'));
-}
+// }
 const { bodyParser } = require('./utils/bodyParser.util.js');
 app.use(bodyParser());
 app.use(express.urlencoded({ extended: true }));
