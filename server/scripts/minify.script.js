@@ -10,7 +10,7 @@ const UglifyJS = require('uglify-js');
 const projectDir = path.join(__dirname, '../../client');
 const outputDir = path.join(__dirname, '../../../build'); // temprary
 const ignore = ['app', '.DS_Store']
-const projectOutputDir = path.join(__dirname, '../../../build1');
+const projectOutputDir = path.join(__dirname, '../../../www.dddcabs.com');
 
 
 // Function to minify HTML
@@ -109,6 +109,8 @@ const deleteDir = (directoryPath) => {
 
 
 const move = (source, destination) => {
+    if (!fs.existsSync(destination))
+        fs.mkdirSync(destination, { recursive: true });
     fs.readdirSync(source).forEach((file) => {
         const sourceFullPath = `${source}/${file}`
         const destinationFullPath = `${destination}/${file}`
@@ -128,9 +130,3 @@ const move = (source, destination) => {
     move(outputDir, projectOutputDir)
     deleteDir(outputDir)
 })()
-
-
-
-
-
-
