@@ -8,7 +8,7 @@ export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const { register, handleSubmit, reset,setValue , control, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
     mode: "onChange",
   });
 
@@ -23,46 +23,36 @@ export default function VehiclePricing() {
 
   const saveVehiclePrice = async (data) => {
     try {
-      // Convert the 'similar' array from an array of objects to an array of strings
       if (Array.isArray(data.similar)) {
         data.similar = data.similar.map(item => item.value);
       }
-  
+
+      // Handle the 'hourly' field which is an array of objects
+      if (data.hourly) {
+        data.hourly = data.hourly.map(item => ({
+          type: item.type,
+          hour: item.hour,
+          distance: item.distance,
+          basePrice: item.basePrice,
+        }));
+      }
+
       if (data?._id) {
-        const res = await axios({
-          method: "put",
-          url: "/api/admin/vehicle-price",
-          data: data,
-        });
-        setList(
-          list.map((li) => {
-            if (li._id === data._id) {
-              li = data;
-            }
-            return li;
-          })
-        );
+        await axios.put("/api/admin/vehicle-price", data);
+        setList(list.map(li => (li._id === data._id ? data : li)));
       } else {
-        const res = await axios({
-          method: "POST",
-          url: "/api/admin/vehicle-price",
-          data: data,
-        });
+        const res = await axios.post("/api/admin/vehicle-price", data);
         setList([res.data.price, ...list]);
       }
       setIsOpen(false);
     } catch (error) {
       console.error(error);
     }
-  };  
+  };
 
   const getVehiclePrice = async () => {
     try {
-      const res = await axios({
-        method: "get",
-        url: "/api/admin/vehicle-price",
-      });
-
+      const res = await axios.get("/api/admin/vehicle-price");
       setList(res.data.price);
     } catch (error) {
       console.error(error);
@@ -71,12 +61,16 @@ export default function VehiclePricing() {
 
   const getVehiclePriceById = async (id) => {
     try {
-      const res = await axios({
-        method: "get",
-        url: `/api/admin/vehicle-price/${id}`,
-      });
-      reset(res.data.price);
-      setValue('similar', res.data.price.similar.map(value => ({ value })));
+      const res = await axios.get(`/api/admin/vehicle-price/${id}`);
+      const { price } = res.data;
+      reset(price);
+      setValue('similar', price.similar.map(value => ({ value })));
+      setValue('hourly', price.hourly.map(item => ({
+        type: item.type,
+        hour: item.hour,
+        distance: item.distance,
+        basePrice: item.basePrice,
+      })));
       setIsOpen(true);
       setIsEdit(true);
     } catch (error) {
@@ -92,13 +86,10 @@ export default function VehiclePricing() {
 
   const deleteVehiclePrice = async (id) => {
     try {
-      const confirmation = window.confirm("Do you really want to delete!");
-      if (!confirmation) return;
-      const res = await axios({
-        method: "delete",
-        url: "/api/admin/vehicle-price/" + id,
-      });
-      setList(list.filter((li) => li._id !== id));
+      if (window.confirm("Do you really want to delete!")) {
+        await axios.delete(`/api/admin/vehicle-price/${id}`);
+        setList(list.filter(li => li._id !== id));
+      }
     } catch (error) {
       console.error(error);
     }
@@ -112,13 +103,12 @@ export default function VehiclePricing() {
         </div>
         <div>
           <button
-          className="cstm-btn"
+            className="cstm-btn"
             onClick={() => {
               reset({});
               setIsOpen(true);
             }}
           >
-            {/* Add Price */}
             <i className="fa fa-plus"></i>
           </button>
         </div>
@@ -133,62 +123,60 @@ export default function VehiclePricing() {
             <th className="">Minimum Fare</th>
             <th className="">Cost per km</th>
             <th className="">Cost per hour</th>
-            <th className="">Laguage Carrier Cost</th>
+            <th className="">Luggage Carrier Cost</th>
             <th className="">Additional Charges</th>
+            <th className="">Discount</th>
+            <th className="">Up to Cost per Km</th>
+            <th className="">Up to Cost per Hour</th>
+            <th className="">Capacity</th>
+            <th className="">AC Available</th>
+            <th className="">Driver Allowance</th>
             <th className="">Action</th>
           </tr>
         </thead>
-        {list.length &&
-        <tbody>
-          {list?.map((li, index) => (
-            <tr key={index}>
-              <td>
-                <div className="">
-                  <img
-                    style={{ height: "50px", width: "70px" }}
-                    src={li.vehicleImageUrl}
-                  />
-                </div>
-              </td>
-              <td>
-                {
-                  VEHICLE_TYPE.find((item) => item.value === li.vehicleType)
-                    ?.name
-                }
-              </td>
-              <td>{li.vehicleName}</td>
-              <td>{li?.similar?.join()}</td>
-              <td>{li.minimumFare}</td>
-              <td>{li.costPerKm}</td>
-              <td>{li.costPerHour}</td>
-              <td>{li.laguageCarrierCost}</td>
-              <td>{li.additionalCharges}</td>
-              <td className="d-flex align-items-center"> 
-                    <button
-                      onClick={() => getVehiclePriceById(li._id)}
-                      className="icon-btn me-2"
-                      type="button"
-                      data-toggle="tooltip"
-                      data-placement="top"
-                      title="Edit"
-                    >
-                      <i className="fa fa-edit"></i>
-                    </button>
-                 
-                    <button
-                      onClick={() => deleteVehiclePrice(li._id)}
-                      className="icon-btn"
-                      type="button"
-                      data-toggle="tooltip"
-                      data-placement="top"
-                      title="Delete"
-                    >
-                      <i className="fa fa-trash"></i>
-                    </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>}
+        {list.length > 0 && (
+          <tbody>
+            {list.map((li, index) => (
+              <tr key={index}>
+                <td>
+                  <img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle"/>
+                </td>
+                <td>{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</td>
+                <td>{li.vehicleName}</td>
+                <td>{li?.similar?.join()}</td>
+                <td>{li.minimumFare}</td>
+                <td>{li.costPerKm}</td>
+                <td>{li.costPerHour}</td>
+                <td>{li.laguageCarrierCost}</td>
+                <td>{li.additionalCharges}</td>
+                <td>{li.discount}</td>
+                <td>{li.upToCostPerKm}</td>
+                <td>{li.upToCostPerHour}</td>
+                <td>{`Seats: ${li.capacity.totalNumberOfSeats}, Reserved: ${li.capacity.reservedNumberOfSeats}`}</td>
+                <td>{li.acAvailable ? "Yes" : "No"}</td>
+                <td>{li.driverAllowance}</td>
+                <td className="d-flex align-items-center">
+                  <button
+                    onClick={() => getVehiclePriceById(li._id)}
+                    className="icon-btn me-2"
+                    type="button"
+                    title="Edit"
+                  >
+                    <i className="fa fa-edit"></i>
+                  </button>
+                  <button
+                    onClick={() => deleteVehiclePrice(li._id)}
+                    className="icon-btn"
+                    type="button"
+                    title="Delete"
+                  >
+                    <i className="fa fa-trash"></i>
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        )}
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={'Add Price'}>
         <form onSubmit={handleSubmit(saveVehiclePrice)}>
@@ -196,10 +184,8 @@ export default function VehiclePricing() {
             <div className="form-row">
               <div className="form-group col-md-4">
                 <label htmlFor="inputState">Vehicle Type</label>
-                <select {...register("vehicleType",{
-                    required: 'Vehicle Type is Required'
-                  })} className="form-control">
-                  <option value={""}>Choose Type</option>
+                <select {...register("vehicleType", { required: 'Vehicle Type is Required' })} className="form-control">
+                  <option value="">Choose Type</option>
                   {VEHICLE_TYPE.map((vehicle, index) => (
                     <option key={index} value={vehicle.value}>
                       {vehicle.name}
@@ -207,25 +193,19 @@ export default function VehiclePricing() {
                   ))}
                 </select>
                 {errors?.vehicleType && (
-                  <span className="text-danger">
-                    {errors.vehicleType.message}
-                  </span>
+                  <span className="text-danger">{errors.vehicleType.message}</span>
                 )}
               </div>
               <div className="form-group col-md-6">
                 <label htmlFor="inputPassword4">Vehicle Name</label>
                 <input
                   type="text"
-                  {...register("vehicleName",{
-                    required: 'Vehicle Name is Required'
-                  })}
+                  {...register("vehicleName", { required: 'Vehicle Name is Required' })}
                   className="form-control"
                   placeholder="Enter vehicle name"
                 />
                 {errors?.vehicleName && (
-                  <span className="text-danger">
-                    {errors.vehicleName.message}
-                  </span>
+                  <span className="text-danger">{errors.vehicleName.message}</span>
                 )}
               </div>
 
@@ -236,9 +216,7 @@ export default function VehiclePricing() {
                   <div key={item.id} className="d-flex align-items-center mb-2">
                     <input
                       type="text"
-                      {...register(`similar.${index}.value`, {
-                        required: 'This field is required'
-                      })}
+                      {...register(`similar.${index}.value`, { required: 'This field is required' })}
                       className="form-control"
                       placeholder="Enter similar option"
                     />
@@ -273,16 +251,12 @@ export default function VehiclePricing() {
                 <label htmlFor="inputPassword4">Minimum Fare</label>
                 <input
                   type="number"
-                  {...register("minimumFare",{
-                    required: 'Minimum Fare is Required'
-                  })}
+                  {...register("minimumFare", { required: 'Minimum Fare is Required' })}
                   className="form-control"
                   placeholder="Enter minimum fare"
                 />
                 {errors?.minimumFare && (
-                  <span className="text-danger">
-                    {errors.minimumFare.message}
-                  </span>
+                  <span className="text-danger">{errors.minimumFare.message}</span>
                 )}
               </div>
             </div>
@@ -290,51 +264,37 @@ export default function VehiclePricing() {
               <label htmlFor="inputAddress">Cost per km</label>
               <input
                 type="number"
-                {...register("costPerKm",{
-                  required: 'Cost Per Km is Required'
-                })}
+                {...register("costPerKm", { required: 'Cost Per Km is Required' })}
                 className="form-control"
-                id="inputAddress"
                 placeholder="Enter cost per km"
               />
               {errors?.costPerKm && (
-                  <span className="text-danger">
-                    {errors.costPerKm.message}
-                  </span>
-                )}
+                <span className="text-danger">{errors.costPerKm.message}</span>
+              )}
             </div>
             <div className="form-group">
               <label htmlFor="inputAddress2">Cost per hour</label>
               <input
                 type="number"
-                {...register("costPerHour",{
-                  required: 'Cost Per Hour is Required'
-                })}
+                {...register("costPerHour", { required: 'Cost Per Hour is Required' })}
                 className="form-control"
-                id="inputAddress2"
                 placeholder="Enter cost per hour"
               />
               {errors?.costPerHour && (
-                  <span className="text-danger">
-                    {errors.costPerHour.message}
-                  </span>
-                )}
+                <span className="text-danger">{errors.costPerHour.message}</span>
+              )}
             </div>
             <div className="form-row">
               <div className="form-group col-md-6">
-                <label htmlFor="inputCity">Carrier Laguage Charges</label>
+                <label htmlFor="inputCity">Carrier Luggage Charges</label>
                 <input
                   type="number"
-                  {...register("laguageCarrierCost",{
-                    required: 'Laguage Carrier Cost is Required'
-                  })}
+                  {...register("laguageCarrierCost", { required: 'Carrier Luggage Cost is Required' })}
                   className="form-control"
                   placeholder="Carrier luggage cost"
                 />
                 {errors?.laguageCarrierCost && (
-                  <span className="text-danger">
-                    {errors.laguageCarrierCost.message}
-                  </span>
+                  <span className="text-danger">{errors.laguageCarrierCost.message}</span>
                 )}
               </div>
             </div>
@@ -343,17 +303,125 @@ export default function VehiclePricing() {
                 <label htmlFor="inputCity">Additional Charges</label>
                 <input
                   type="number"
-                  {...register("additionalCharges",{
-                    required:'Additional Charges is Required'
-                  })}
+                  {...register("additionalCharges", { required: 'Additional Charges is Required' })}
                   className="form-control"
                   placeholder="Enter additional cost"
                 />
                 {errors?.additionalCharges && (
-                  <span className="text-danger">
-                    {errors.additionalCharges.message}
-                  </span>
+                  <span className="text-danger">{errors.additionalCharges.message}</span>
                 )}
+              </div>
+            </div>
+            <div className="form-row">
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">Discount</label>
+                <input
+                  type="number"
+                  {...register("discount")}
+                  className="form-control"
+                  placeholder="Enter discount percentage"
+                />
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">Up to Cost per Km</label>
+                <input
+                  type="number"
+                  {...register("upToCostPerKm")}
+                  className="form-control"
+                  placeholder="Enter cost per km for the given discount"
+                />
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">Up to Cost per Hour</label>
+                <input
+                  type="number"
+                  {...register("upToCostPerHour")}
+                  className="form-control"
+                  placeholder="Enter cost per hour for the given discount"
+                />
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">Total Number of Seats</label>
+                <input
+                  type="number"
+                  {...register("capacity.totalNumberOfSeats", { required: 'Total Number of Seats is Required' })}
+                  className="form-control"
+                  placeholder="Enter total number of seats"
+                />
+                {errors?.capacity?.totalNumberOfSeats && (
+                  <span className="text-danger">{errors.capacity.totalNumberOfSeats.message}</span>
+                )}
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">Reserved Number of Seats</label>
+                <input
+                  type="number"
+                  {...register("capacity.reservedNumberOfSeats")}
+                  className="form-control"
+                  placeholder="Enter reserved number of seats"
+                />
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">AC Available</label>
+                <select {...register("acAvailable")} className="form-control">
+                  <option value="">Choose Availability</option>
+                  <option value={true}>Yes</option>
+                  <option value={false}>No</option>
+                </select>
+              </div>
+              <div className="form-group col-md-12">
+                <label>Hourly Rates</label>
+                {fields.map((item, index) => (
+                  <div key={item.id} className="d-flex align-items-center mb-2">
+                    <input
+                      type="text"
+                      {...register(`hourly.${index}.type`)}
+                      className="form-control"
+                      placeholder="Enter type"
+                    />
+                    <input
+                      type="number"
+                      {...register(`hourly.${index}.hour`)}
+                      className="form-control ml-2"
+                      placeholder="Enter hour"
+                    />
+                    <input
+                      type="number"
+                      {...register(`hourly.${index}.distance`)}
+                      className="form-control ml-2"
+                      placeholder="Enter distance"
+                    />
+                    <input
+                      type="number"
+                      {...register(`hourly.${index}.basePrice`)}
+                      className="form-control ml-2"
+                      placeholder="Enter base price"
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-danger ml-2"
+                      onClick={() => remove(index)}
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => append({ type: "", hour: 0, distance: 0, basePrice: 0 })}
+                >
+                  +
+                </button>
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="inputCity">Driver Allowance</label>
+                <input
+                  type="number"
+                  {...register("driverAllowance")}
+                  className="form-control"
+                  placeholder="Enter driver allowance"
+                />
               </div>
             </div>
           </div>
