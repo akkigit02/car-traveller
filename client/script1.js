@@ -1,8 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const serverUrl = '194.238.22.186'
     const query = {
 
     };
-    let isValidateGlobal = true;
     const tabConfig = {
         oneWay: [
             { label: 'From', name: 'from', placeholder: 'Enter pickup city' },
@@ -251,7 +251,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 for (let key in query) {
                     if(key.match(/^\d+To$/)) {
                         const isValideError = validateField(key, `error${key}`);
-                        console.log(key, `error${key}`,"====----",isValideError)
                         if(!isValideError) isValideMultiTo = false
                     }
                 }
@@ -263,7 +262,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
                 if (!isPickupValid || !isDropValid) return;
             } else if(query?.tripType === 'hourly') {
-                console.log(query)
                 isPickupValid = validateField('from', 'errorfrom');
             }else {
                 isPickupValid = validateField('from', 'errorfrom');
@@ -273,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
+            window.location.href = `https://app.dddcabs.com/car-list/${encodedString}`
         })
 
     };
@@ -306,6 +304,10 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById(`error${inputType}`).style.display = 'none';
         }
     }
+
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        window.location.href = 'https://app.dddcabs.com'
+    })
 
     const filterFunction = async (inputType) => {
         let searchInput = document.getElementById(inputType);
@@ -360,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`http://127.0.0.1:5001/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`${serverUrl}/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
@@ -368,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(data)
                 suggestions = data.address
             } else {
-                response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
+                response = await fetch(`${serverUrl}/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();
