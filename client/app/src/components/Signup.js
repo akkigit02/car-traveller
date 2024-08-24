@@ -230,7 +230,7 @@ function Signup() {
                               </div>
                             </div>
                           </div>
-                          <div className="col-lg-6">
+                          {bookingDetails?.tripType !== 'cityCab' && <div className="col-lg-6">
                             <div className="form-clt position-relative">
                               <label className="label-text">
                                 Pick up Address
@@ -256,7 +256,7 @@ function Signup() {
                                 <span>{errors?.pickupAddress?.message}</span>
                               )}
                             </div>
-                          </div>
+                          </div>}
                           {['oneWay'].includes(bookingDetails?.tripType) && <div className="col-lg-6">
                             <div className="form-clt position-relative">
                               <label className="label-text">

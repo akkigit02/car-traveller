@@ -17,7 +17,7 @@
     "costPerKm": 13,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
-    "minimumFare": 0,
+    "minimumFare": 600,
     "additionalCharges": 0,
     "driverAllowance": 300,
     "hourly": [{
@@ -56,7 +56,7 @@
     "costPerKm": 16,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
-    "minimumFare": 0,
+    "minimumFare": 600,
     "additionalCharges": 0,
     "driverAllowance": 300,
     "hourly": [{
@@ -92,7 +92,7 @@
     "costPerKm": 19,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
-    "minimumFare": 0,
+    "minimumFare": 600,
     "additionalCharges": 0,
     "driverAllowance": 300,
     "hourly": [{
@@ -128,7 +128,7 @@
     "costPerKm": 21,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
-    "minimumFare": 0,
+    "minimumFare": 600,
     "additionalCharges": 0,
     "driverAllowance": 300,
     "hourly": [{
@@ -164,7 +164,7 @@
     "costPerKm": 24,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
-    "minimumFare": 0,
+    "minimumFare": 600,
     "additionalCharges": 0,
     "driverAllowance": 500,
     "hourly": [{

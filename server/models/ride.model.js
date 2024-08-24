@@ -34,6 +34,10 @@ const rideSchema = new Schema({
   totalPrice: { type: String },
   advancePayment: { type: String },
   totalDistance: { type: Number },
+  trip: {
+    tripType: {type: String},
+    hourlyType: {type: String}
+  },
   isLaguageCarrier: { type: Boolean },
   bokkingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
   rideStatus: {

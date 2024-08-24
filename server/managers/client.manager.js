@@ -157,8 +157,12 @@ const getCars = async (req, res) => {
       fromDetail = { name: data.from }
       toDetail = [{ name: data.to }]
       for (let car of cars) {
-        car["totalPrice"] =
-          distance?.toFixed(2) * car.costPerKm + car.driverAllowance || 0;
+        if(distance < 10) {
+          car["totalPrice"] = car.minimumFare
+        } else if (distance > 10) {
+          const tempDistance = distance - 10;
+          car["totalPrice"] = tempDistance?.toFixed(2) * car.costPerKm + car.minimumFare
+        }
         car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
       }
@@ -177,6 +181,8 @@ const getCars = async (req, res) => {
       from: { name: fromDetail.name, _id: fromDetail._id },
       to: toDetail.map(city => ({ name: city.name, _id: city._id })),
       distance: distance.toFixed(2),
+      pickupCityCab: search?.pickupCityCab,
+      dropCityCab: search?.dropCityCab,
       pickUpDate: search.pickUpDate,
       returnDate: search.returnDate,
       pickUpTime: search.pickUpTime,
