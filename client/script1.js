@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const serverUrl = '194.238.22.186'
     const query = {
 
     };
@@ -271,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `https://app.dddcabs.com/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
         })
 
     };
@@ -306,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('loginBtn').addEventListener('click', () => {
-        window.location.href = 'https://app.dddcabs.com'
+        window.location.href = 'http://127.0.0.1:3000'
     })
 
     const filterFunction = async (inputType) => {
@@ -362,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`${serverUrl}/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
@@ -370,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(data)
                 suggestions = data.address
             } else {
-                response = await fetch(`${serverUrl}/api/client/cities?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();
