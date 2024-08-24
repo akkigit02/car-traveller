@@ -93,7 +93,7 @@ function Signup() {
   return (
     <>
       <TopNavBar />
-      <div className="row m-0">
+      <div className="row m-0 col-reverse-sm">
         <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
           <div className="car-list-sidebar mt-30 h-100">
             <h4 className="title">Booking Form</h4>

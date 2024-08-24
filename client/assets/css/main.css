@@ -1245,7 +1245,7 @@ span {
   position: relative;
   z-index: 9;
 }
-@media (max-width: 1399px) {
+@media (max-width: 991px) {
   .pickup-wrapper {
     flex-wrap: wrap;
     justify-content: initial;

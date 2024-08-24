@@ -244,6 +244,13 @@ a {
     .height-car-list{
         height: auto !important;
     }
+    
+}
+@media only screen and (max-width: 991px) {
+    .col-reverse-sm{
+        display: flex;
+        flex-direction: column-reverse;
+    }
 }
 
 
@@ -584,4 +591,3 @@ background: #8bbaff8c;
 .padding-signin-btn{
 	padding: 15px 30px;
 }
-

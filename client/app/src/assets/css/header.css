@@ -9,4 +9,151 @@
 }
 
 
+/* ********car list nav********* */
 
+
+.offcanvas__info {
+    background: var(--bg) none repeat scroll 0 0;
+    border-left: 2px solid var(--theme2);
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 400px;
+    height: 100%;
+    -webkit-transform: translateX(calc(100% + 80px));
+    -moz-transform: translateX(calc(100% + 80px));
+    -ms-transform: translateX(calc(100% + 80px));
+    -o-transform: translateX(calc(100% + 80px));
+    transform: translateX(calc(100% + 80px));
+    -webkit-transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out;
+    -moz-transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out;
+    transition: transform 0.45s ease-in-out, opacity 0.45s ease-in-out;
+    z-index: 99999;
+    overflow-y: scroll;
+    overscroll-behavior-y: contain;
+    scrollbar-width: none;
+  }
+  .offcanvas__info::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .offcanvas__info.info-open {
+    opacity: 1;
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -ms-transform: translateX(0);
+    -o-transform: translateX(0);
+    transform: translateX(0);
+  }
+  
+  .offcanvas__logo a img {
+    width: 150px;
+  }
+  
+  .offcanvas__wrapper {
+    position: relative;
+    height: 100%;
+    padding: 30px 30px;
+  }
+  .offcanvas__wrapper .offcanvas__content .text {
+    color: var(--text);
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__close {
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    border-radius: 50%;
+    background-color: var(--theme);
+    position: relative;
+    z-index: 9;
+    cursor: pointer;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__close i {
+    color: var(--white);
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact {
+    margin-top: 20px;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact ul {
+    margin-top: 20px;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact ul li {
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact ul li a {
+    color: var(--text);
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact ul li:not(:last-child) {
+    margin-bottom: 15px;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact ul li .offcanvas__contact-icon {
+    margin-right: 20px;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact ul li .offcanvas__contact-icon i {
+    color: var(--theme);
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact span {
+    text-transform: initial;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact .header-button .theme-btn {
+    width: 100%;
+    padding: 16px 40px;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact .social-icon {
+    margin-top: 30px;
+    gap: 10px;
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact .social-icon a {
+    width: 45px;
+    height: 45px;
+    line-height: 45px;
+    text-align: center;
+    font-size: 16px;
+    display: block;
+    background: transparent;
+    color: var(--text);
+    border-radius: 50%;
+    -webkit-transition: all 0.4s ease-in-out;
+    transition: all 0.4s ease-in-out;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .offcanvas__wrapper .offcanvas__content .offcanvas__contact .social-icon a:hover {
+    background-color: var(--theme);
+    color: var(--white);
+  }
+  
+  .offcanvas__overlay {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    background: #151515;
+    z-index: 900;
+    top: 0;
+    opacity: 0;
+    visibility: hidden;
+    right: 0;
+  }
+  
+  .offcanvas__overlay.overlay-open {
+    opacity: 0.8;
+    visibility: visible;
+  }
+  
+  @media (max-width: 450px) {
+    .offcanvas__info {
+      width: 300px;
+    }
+  }
+  @media (max-width: 575px) {
+    .offcanvas__wrapper {
+      padding: 20px;
+    }
+  }
+  .breadcrumb-wrapper {
+    position: relative;
+    overflow: hidden;
+  }
