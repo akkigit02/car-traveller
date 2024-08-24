@@ -1,74 +1,76 @@
 const { Client, LocalAuth } = require('whatsapp-web.js');
 const QRCode = require('qrcode');
 const fs = require('fs')
-class Whatsapp {
-    constructor(delay) {
-        this.delay = delay;
-        this.queue = [];
-        this.isProcessing = false;
-        this.whatsappClient = new Client({ });
+global.delay = 30000;
+global.queue = [];
+global.isProcessing = false;
 
-        this.authTimeout = null
-
-
-        this.whatsappClient.on('ready', () => {
-            console.log('whatsappClient is ready!');
-            clearTimeout(this.authTimeout);
-        });
-
-        this.whatsappClient.on('qr', async (qr) => {
-            console.log(qr)
-            await this.saveQrCode(qr, 'whatsapp/qr/hello.png');
-        });
-
-        this.whatsappClient.initialize();
-    }
-
-    initialize() {
-        this.authTimeout = setTimeout(() => {
-            console.error('Authentication timed out. Destroying client.');
-            this.whatsappClient.destroy();
-        }, 60000); // 1 minute timeout for authentication
-
-        this.whatsappClient.initialize();
-    }
-
-
-
-    async saveQrCode(data, fileName) {
-        if (fs.existsSync(fileName))
-            fs.unlinkSync(fileName)
-        await QRCode.toFile(fileName, data);
-    }
-
-    async sendMessage(payload) {
+const sendMessage = async (payload) => {
+    try {
         return new Promise((resolve, reject) => {
-            this.queue.push({ payload, resolve, reject });
-            this.processQueue();
+            global.queue.push({ payload, resolve, reject });
+            processQueue();
         });
-    }
-
-    async processQueue() {
-        if (this.isProcessing || this.queue.length === 0) return;
-
-        this.isProcessing = true;
-        const { payload, resolve, reject } = this.queue.shift();
-
-        try {
-            const { to, message } = payload;
-            await this.whatsappClient.sendMessage(to, message);  // Corrected to use whatsappClient to send message
-            resolve();
-        } catch (error) {
-            reject(error);
-        }
-
-        setTimeout(() => {
-            this.isProcessing = false;
-            this.processQueue();
-        }, this.delay);
+    } catch (error) {
+        console.log(error)
     }
 }
-const whatsapp = new Whatsapp(2000);
-whatsapp.initialize();
-global.whtasppClient = whatsapp
 
+
+const processQueue = async () => {
+    if (global.isProcessing || global.queue.length === 0) return;
+
+    global.isProcessing = true;
+    const { payload, resolve, reject } = global.queue.shift();
+
+    try {
+        const { to, message } = payload;
+        await global.whatsappClient.sendMessage(to + '@c.us', message);  // Corrected to use whatsappClient to send message
+        resolve();
+    } catch (error) {
+        reject(error);
+    }
+
+    setTimeout(() => {
+        global.isProcessing = false;
+        processQueue();
+    }, global.delay);
+}
+
+
+const saveQrCode = async (data, fileName) => {
+    if (fs.existsSync(fileName))
+        fs.unlinkSync(fileName)
+    await QRCode.toFile(fileName, data);
+}
+
+
+const initialize = () => {
+    try {
+        const client = new Client({ authStrategy: new LocalAuth({ dataPath: 'whatsapp' }) });
+        let authTimeout
+        client.once('ready', () => {
+            console.log('Client is ready!');
+            global.whatsappClient = client;
+            clearTimeout(authTimeout);
+        });
+
+        client.on('qr', (qr) => {
+            saveQrCode(qr, 'whatsapp/qr/whatsappQr.png')
+        });
+        authTimeout = setTimeout(() => {
+            console.error('Authentication timed out. Destroying client.');
+            client.destroy();
+        }, 60000); // 1 minute timeout for authentication
+
+        client.initialize();
+
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+module.exports = {
+    sendMessage,
+    initialize
+}
