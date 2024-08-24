@@ -53,8 +53,7 @@ function TopNavBar() {
                     </div>
                     {/* <a href="#0" className="search-trigger search-icon"><i
                             className="fa-regular fa-magnifying-glass"></i></a> */}
-                        <a href="http://127.0.0.1:3000/">
-
+                <a href="http://127.0.0.1:3000/">
                      <button class="theme-btn wow fadeInUp padding-signin-btn">
                         Login
                     </button>

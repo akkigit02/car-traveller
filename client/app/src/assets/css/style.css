@@ -231,9 +231,18 @@ a {
         display: none !important;
     }
 }
-@media only screen and (min-width: 900px) {
+/* @media only screen and (min-width: 900px) {
     .header__hamburger {
         display: none !important;
+    }
+} */
+@media only screen and (min-width: 576px) {
+    .col-sm-12 {
+        flex: 0 0 auto;
+        width: 100% !important;
+    }
+    .height-car-list{
+        height: auto !important;
     }
 }
 

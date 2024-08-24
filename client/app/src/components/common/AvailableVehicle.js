@@ -71,8 +71,8 @@ export default function AvailableVehicle() {
     <>
       <div>
         <TopNavBar />
-        <div className="row m-0">
-          <div className="col-lg-3 col-md-3 col-12 pe-0">
+        <div className="row m-0 flex-wrap">
+          <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
               <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
                 <h5>
@@ -114,7 +114,7 @@ export default function AvailableVehicle() {
             </div>
           </div>
 
-          <div className="col-lg-9 col-md-9 col-12 mt-3">
+          <div className="col-lg-9 col-md-9 col-sm-12 mt-3">
             <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
                 <div

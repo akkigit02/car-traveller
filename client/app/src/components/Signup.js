@@ -94,7 +94,7 @@ function Signup() {
     <>
       <TopNavBar />
       <div className="row m-0">
-        <div className="col-lg-4 col-md-4 col-12 pe-0 mb-5">
+        <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
           <div className="car-list-sidebar mt-30 h-100">
             <h4 className="title">Booking Form</h4>
             <div className='p-3'>
@@ -133,7 +133,7 @@ function Signup() {
           </div>
         </div>
 
-        <div className="col-lg-8 col-md-8 col-12">
+        <div className="col-lg-8 col-md-8 col-sm-12">
           <section className="car-details fix section-padding">
             <div className="">
               <div className="car-details-wrapper">
