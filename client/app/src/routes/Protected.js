@@ -1,6 +1,7 @@
 import React from 'react'
 import { useSelector } from 'react-redux';
 import AdminRoute from './protected/AdminRoute';
+import ClientRoute from './protected/ClientRoute';
 
 function Protected() {
     const userInfo = useSelector(({ userInfo }) => userInfo)
@@ -13,8 +14,8 @@ function Protected() {
                     return <AdminRoute />;
                 // case "DRIVER":
                 //     return <DriverRoute />;
-                // case "CLIENT":
-                //     return <ClientRoute />;
+                case "CLIENT":
+                    return <ClientRoute />;
                 // case "DEVELOPER":
                 //     return <DeveloperRoute />;
             }

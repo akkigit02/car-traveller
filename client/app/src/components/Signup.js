@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from "react-hook-form"
 import { emailPattern, namePattern, phoneNumberValidation } from '../constants/Validation.constant';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import TopNavBar from './TopNavBar';
 import { toast } from 'react-toastify';
 import moment from "moment";
+import { setTokenToLocal } from '../services/Authentication.service';
+import store from '../store';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function Signup() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     mode: "onChange", // Validate on every change
   });
+  const navigate = useNavigate()
   const { query } = useParams();
   const [bookingDetails, setBookingDetails] = useState({})
   const [isOtpSent, setIsOtpSent] = useState(false)
@@ -34,7 +37,14 @@ function Signup() {
       })
       if (data.message)
         toast.error(data.message)
-      
+      if (data.status === 'LOGIN_SUCCESS') {
+        setTokenToLocal(data.session.jwtToken);
+        store.dispatch({
+          type: "SET_INTO_STORE",
+          payload: { userInfo: data.session },
+        });
+        navigate(`/payment/${bookingDetails.bokkingId}`, { replace: true });
+      }
     } catch (error) {
       console.log(error.response.data)
       toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
