@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import TopNavBar from './TopNavBar';
 import { toast } from 'react-toastify';
 import moment from "moment";
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function Signup() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     mode: "onChange", // Validate on every change
@@ -67,7 +68,7 @@ function Signup() {
       setBookingDetails(decodedData)
       console.log(decodedData)
     }
-    else window.location.href = 'http:127.0.0.1:5500'
+    else window.location.href = CLIENT_URL
   }, [])
 
   const getAddressSuggestion = async (search, type) => {
@@ -93,8 +94,8 @@ function Signup() {
   return (
     <>
       <TopNavBar />
-      <div className="row m-0">
-        <div className="col-lg-4 col-md-4 col-12 pe-0 mb-5">
+      <div className="row m-0 col-reverse-sm flex-wrap">
+        <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
           <div className="car-list-sidebar mt-30 h-100">
             <h4 className="title">Booking Form</h4>
             <div className='p-3'>
@@ -133,7 +134,7 @@ function Signup() {
           </div>
         </div>
 
-        <div className="col-lg-8 col-md-8 col-12">
+        <div className="col-lg-8 col-md-8 col-sm-12">
           <section className="car-details fix section-padding">
             <div className="">
               <div className="car-details-wrapper">
@@ -230,7 +231,7 @@ function Signup() {
                               </div>
                             </div>
                           </div>
-                          <div className="col-lg-6">
+                          {bookingDetails?.tripType !== 'cityCab' && <div className="col-lg-6">
                             <div className="form-clt position-relative">
                               <label className="label-text">
                                 Pick up Address
@@ -256,7 +257,7 @@ function Signup() {
                                 <span>{errors?.pickupAddress?.message}</span>
                               )}
                             </div>
-                          </div>
+                          </div>}
                           {['oneWay'].includes(bookingDetails?.tripType) && <div className="col-lg-6">
                             <div className="form-clt position-relative">
                               <label className="label-text">

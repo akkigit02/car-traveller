@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import TopNavBar from "../TopNavBar";
 import { TRIP_TYPE } from "../../constants/common.constants";
 import moment from "moment";
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 // import { icon } from "../../assets/css/icon.css";
 
 export default function AvailableVehicle() {
@@ -40,7 +41,7 @@ export default function AvailableVehicle() {
         decodedData["hourlyType"] = "8hr80km";
       }
       setDecodedQuery(decodedData);
-    } else window.location.href = "http:127.0.0.1:5500";
+    } else window.location.href = CLIENT_URL;
   }, []);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ export default function AvailableVehicle() {
       vehicleName: car.vehicleName,
       totalPrice: car.totalPrice,
       tripType: decodedQuery?.tripType,
+      hourlyType: decodedQuery?.hourlyType,
       ...bookingDetails,
     });
     const encodedString = btoa(encodeURIComponent(jsonString));
@@ -71,8 +73,8 @@ export default function AvailableVehicle() {
     <>
       <div>
         <TopNavBar />
-        <div className="row m-0">
-          <div className="col-lg-3 col-md-3 col-12 pe-0">
+        <div className="row m-0 flex-wrap">
+          <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
               <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
                 <h5>
@@ -106,7 +108,7 @@ export default function AvailableVehicle() {
                 </div>
 
                 <div className="d-flex justify-content-end">
-                  <a href="http://127.0.0.1:5500/client/index.html">
+                  <a href={CLIENT_URL}>
                     <button className="cstm-btn-red">Change</button>
                   </a>
                 </div>
@@ -114,7 +116,7 @@ export default function AvailableVehicle() {
             </div>
           </div>
 
-          <div className="col-lg-9 col-md-9 col-12 mt-3">
+          <div className="col-lg-9 col-md-9 col-sm-12 mt-3">
             <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
                 <div

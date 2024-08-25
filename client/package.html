@@ -57,9 +57,9 @@
     </svg>
   </div>
 
-  <div class="fix-area">
+  <div class="fix-area ">
     <div class="offcanvas__info">
-      <div class="offcanvas__wrapper">
+      <div class="offcanvas__wrapper side-nav">
         <div class="offcanvas__content">
           <div class="offcanvas__top mb-5 d-flex justify-content-between align-items-center">
             <div class="offcanvas__logo">
@@ -73,60 +73,38 @@
               </button>
             </div>
           </div>
-          <p class="text d-none d-xl-block">
-            Nullam dignissim, ante scelerisque the is euismod fermentum odio
-            sem semper the is erat, a feugiat leo urna eget eros. Duis Aenean
-            a imperdiet risus.
-          </p>
-          <div class="mobile-menu fix mb-3"></div>
-          <div class="offcanvas__contact">
-            <h4>Contact Info</h4>
-            <ul>
-              <li class="d-flex align-items-center">
-                <div class="offcanvas__contact-icon">
-                  <i class="fal fa-map-marker-alt"></i>
-                </div>
-                <div class="offcanvas__contact-text">
-                  <a target="_blank" href="#">sector 52 Noida</a>
-                </div>
-              </li>
-              <li class="d-flex align-items-center">
-                <div class="offcanvas__contact-icon mr-15">
-                  <i class="fal fa-envelope"></i>
-                </div>
-                <div class="offcanvas__contact-text">
-                  <a href="mailto:info@example.com"><span class="mailto:info@example.com">Deepak@gmail.com</span></a>
-                </div>
-              </li>
-              <li class="d-flex align-items-center">
-                <div class="offcanvas__contact-icon mr-15">
-                  <i class="fal fa-clock"></i>
-                </div>
-                <div class="offcanvas__contact-text">
-                  <a target="_blank" href="#">Mod-friday, 09am -05pm</a>
-                </div>
-              </li>
-              <li class="d-flex align-items-center">
-                <div class="offcanvas__contact-icon mr-15">
-                  <i class="far fa-phone"></i>
-                </div>
-                <div class="offcanvas__contact-text">
-                  <a href="tel:+11002345909">+91 002345909</a>
-                </div>
-              </li>
-            </ul>
-            <div class="header-button mt-4">
-              <a href="" class="theme-btn text-center">
-                <span>Get A Quote<i class="fa-solid fa-arrow-right-long"></i></span>
-              </a>
-            </div>
-            <div class="social-icon d-flex align-items-center">
-              <a href="#"><i class="fab fa-facebook-f"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-              <a href="#"><i class="fab fa-youtube"></i></a>
-              <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          
+          <div class="mean__menu-wrapper">
+            <div class="main-menu">
+              <nav id="mobile-menu">
+                <ul>
+                  <li class="has-dropdown active menu-thumb">
+                    <a href="index.html"> Home </a>
+                  </li>
+
+                  <li>
+                    <a href="package.html"> Packages </a>
+                  </li>
+                  <li>
+                    <a href="#">About Us</a>
+                  </li>
+                  <li>
+                    <a href="#contact">Contact</a>
+                  </li>
+                </ul>
+              </nav>
             </div>
           </div>
+          <div class="icon-items">
+            
+            <div class="content">
+              <p>Call Anytime</p>
+              <h6><a href="tel:+9288009850">+91 (8800) - 9850</a></h6>
+            </div>
+          </div>
+
+
+          
         </div>
       </div>
     </div>
@@ -143,7 +121,7 @@
                 <img src="assets/img/logo.png" alt="logo-img" />
               </a>
             </div>
-            <div class="mean__menu-wrapper">
+            <div class="mean__menu-wrapper d-none d-md-block">
               <div class="main-menu">
                 <nav id="mobile-menu">
                   <ul>
@@ -240,7 +218,7 @@
               <div class="d-flex align-items-center justify-content-between">
                 <h4>
                   <!-- <i class="fa-solid fa-location-dot pe-2"></i>  -->
-                  Ashtavinayak Darshan
+                  Mumbai to Ashtavinayak Darshan
                 </h4>
                 <p class="mb-0">3 days 2 Night</p>
               </div>
@@ -263,14 +241,16 @@
             <div class="px-3 py-2 border-top d-flex align-items-center justify-content-between">
               <div class="text-blue"><strong class="font-20">&#8377; 13,999/- (Per Person)</strong></div>
               <div class="d-flex align-items-center">
-                <a href="#modal-1"><button type="button" class="theme-btn bg-blue wow fadeInUp padding-signin-btn me-2"
-                    style="visibility: visible; animation-name: fadeInUp;">
+                <a href="#common-modal">
+                  <button type="button" class="theme-btn bg-blue wow fadeInUp padding-signin-btn me-2" data-package="ashtavinayak">
                     Details
-                  </button></a>
-                <button class="theme-btn wow fadeInUp padding-signin-btn"
-                  style="visibility: visible; animation-name: fadeInUp;">
-                  Book Now
-                </button>
+                  </button>
+                </a>
+                <a href="#booking-modal">
+                  <button type="button" class="theme-btn wow fadeInUp padding-signin-btn" data-book-package="ashtavinayak">
+                    Book Now
+                  </button>
+                </a>
               </div>
             </div>
 
@@ -305,14 +285,16 @@
             <div class="px-3 py-2 border-top d-flex align-items-center justify-content-between">
               <div class="text-blue"><strong class="font-20">&#8377; 13,999/- (Per Person)</strong></div>
               <div class="d-flex align-items-center">
-                <a href="#modal-2"><button type="button" class="theme-btn bg-blue wow fadeInUp padding-signin-btn me-2"
-                  style="visibility: visible; animation-name: fadeInUp;">
-                  Details
-                </button></a>
-                <button class="theme-btn wow fadeInUp padding-signin-btn"
-                  style="visibility: visible; animation-name: fadeInUp;">
-                  Book Now
-                </button>
+                <a href="#common-modal">
+                  <button type="button" class="theme-btn bg-blue wow fadeInUp padding-signin-btn me-2" data-package="mahabaleshwar">
+                    Details
+                  </button>
+                </a>
+                <a href="#booking-modal">
+                  <button type="button" class="theme-btn wow fadeInUp padding-signin-btn" data-book-package="mahabaleshwar">
+                    Book Now
+                  </button>
+                </a>
               </div>
             </div>
 
@@ -639,7 +621,7 @@
   <div data-ml-modal id="modal-1">
     <a href="#!" class="modal-overlay"></a>
     <div class="modal-dialog modal-dialog-lg">
-      <h3>Ashtavinayak Darshan</h3>
+      <h3>Mumbai to Ashtavinayak Darshan</h3>
       <a href="#!" class="modal-close">&times;</a>
       <div class="modal-content newspaper">
         <div class="d-flex align-items-center justify-content-between mb-4" style="gap: 10px;">
@@ -732,6 +714,69 @@
     </div>
   </div>
 
+  <!-- Common Modal Structure -->
+<div data-ml-modal id="common-modal">
+  <a href="#!" class="modal-overlay"></a>
+  <div class="modal-dialog modal-dialog-lg">
+    <h3 id="modal-title"></h3>
+    <a href="#!" class="modal-close">&times;</a>
+    <div class="modal-content newspaper">
+      <div class="d-flex align-items-center justify-content-between mb-4" id="modal-images" style="gap: 10px;">
+        <!-- Images will be inserted dynamically -->
+      </div>
+      <p class="h2 pb-3 text-blue" id="modal-subtitle"></p>
+      <div class="d-flex align-items-center justify-content-between pb-3" id="modal-pricing">
+        <!-- Pricing details will be inserted dynamically -->
+      </div>
+      <p id="modal-description"></p>
+      <div class="d-flex justify-content-end border-top pt-3">
+        <a href="#" id="modal-book-link">
+          <button type="button" id="modal-book-btn" class="theme-btn wow visible fadeInUp padding-signin-btn">Book Now</button>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Common Booking Modal Structure -->
+<div data-ml-modal id="booking-modal">
+  <a href="#!" class="modal-overlay"></a>
+  <div class="modal-dialog modal-dialog-lg">
+    <h3 id="booking-modal-title"></h3>
+    <a href="#!" class="modal-close">&times;</a>
+    <div class="modal-content newspaper">
+      <form id="booking-form">
+        <div class="mb-3">
+          <label for="name" class="form-label">Name</label>
+          <input type="text" class="form-control" id="name" placeholder="Enter your name" required>
+        </div>
+        <div class="mb-3">
+          <label for="email" class="form-label">Email address</label>
+          <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+        </div>
+        <div class="mb-3">
+          <label for="phone" class="form-label">Phone Number</label>
+          <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number" required>
+        </div>
+        <div class="mb-3">
+          <label for="package" class="form-label">Package</label>
+          <input type="text" class="form-control" id="package" readonly>
+        </div>
+        <div class="mb-3">
+          <label for="date" class="form-label">Preferred Travel Date</label>
+          <input type="date" class="form-control" id="date" required>
+        </div>
+        <div class="d-flex justify-content-end border-top pt-3">
+          <button type="submit" class="theme-btn wow visible fadeInUp padding-signin-btn">
+            Confirm Booking
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 
 
 
@@ -791,6 +836,45 @@
       </div>
     </div>
   </section>
+
+   <!-- Booking Form -->
+
+   <!-- Modal for Booking Form -->
+<div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="bookingModalLabel">Book Your Package</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="bookingForm">
+          <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Enter your name">
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input type="email" class="form-control" id="email" placeholder="Enter your email">
+          </div>
+          <div class="mb-3">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" placeholder="Enter your phone number">
+          </div>
+          <div class="mb-3">
+            <label for="package" class="form-label">Package</label>
+            <select class="form-select" id="package">
+              <option value="Ashtavinayak Darshan">Ashtavinayak Darshan</option>
+              <option value="Mumbai To Mahabaleshwar">Mumbai To Mahabaleshwar</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 
   <!-- <section class="section-padding bg-cover" style="background-image: url('assets/img/funfact-bg.webp')">
@@ -1079,7 +1163,7 @@
   <script src="assets/js/jquery.magnific-popup.min.js"></script>
   <script src="assets/js/wow.min.js"></script>
   <script src="assets/js/main.js"></script>
-  <script src="./script1.js"></script>
+  <script src="./package.script.js"></script>
 </body>
 
 </html>

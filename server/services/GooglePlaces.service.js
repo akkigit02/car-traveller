@@ -47,7 +47,6 @@ const getDistanceBetweenPlaces = async (placeId1, placeId2) => {
         if (res.data.rows[0].elements[0].status === 'OK') {
             const distance = res.data.rows[0].elements[0].distance.text;
             const duration = res.data.rows[0].elements[0].duration.text;
-            console.log(`Distance: ${distance}, Duration: ${duration}`);
             return {
                 distance,
                 duration,

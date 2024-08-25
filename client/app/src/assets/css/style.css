@@ -231,8 +231,27 @@ a {
         display: none !important;
     }
 }
-@media only screen and (min-width: 900px) {
+/* @media only screen and (min-width: 900px) {
     .header__hamburger {
+        display: none !important;
+    }
+} */
+@media screen and (min-width: 350px) {
+    /* .col-sm-12 {
+        flex: 0 0 auto !important;
+        width: 100% !important;
+    } */
+    .height-car-list {
+        height: auto !important;
+    }
+}
+
+@media only screen and (max-width: 991px) {
+    .col-reverse-sm{
+        display: flex;
+        flex-direction: column-reverse;
+    }
+    .d-none-cstm{
         display: none !important;
     }
 }
@@ -575,4 +594,3 @@ background: #8bbaff8c;
 .padding-signin-btn{
 	padding: 15px 30px;
 }
-

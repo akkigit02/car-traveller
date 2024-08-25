@@ -1245,7 +1245,7 @@ span {
   position: relative;
   z-index: 9;
 }
-@media (max-width: 1399px) {
+@media (max-width: 991px) {
   .pickup-wrapper {
     flex-wrap: wrap;
     justify-content: initial;
@@ -5256,6 +5256,9 @@ input.main-search-input::placeholder {
 @media (max-width: 991px) {
   .section-padding {
     padding: 80px 0;
+  }
+  .section-padding-2 {
+    padding: 40px 0;
   }
 }
 
