@@ -1,6 +1,7 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function Payment() {
     const { paymentId: bookingId } = useParams();
     const [bookingDetails, setBookingDetails] = useState()
@@ -20,7 +21,7 @@ function Payment() {
         if (bookingId) {
             getBookingDetails()
         }
-        else window.location.href = 'http:127.0.0.1:5500'
+        else window.location.href = CLIENT_URL
     }, [])
     return (
         <div>Payment</div>

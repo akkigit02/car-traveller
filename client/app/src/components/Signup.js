@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import TopNavBar from './TopNavBar';
 import { toast } from 'react-toastify';
 import moment from "moment";
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function Signup() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     mode: "onChange", // Validate on every change
@@ -67,7 +68,7 @@ function Signup() {
       setBookingDetails(decodedData)
       console.log(decodedData)
     }
-    else window.location.href = 'http:127.0.0.1:5500'
+    else window.location.href = CLIENT_URL
   }, [])
 
   const getAddressSuggestion = async (search, type) => {

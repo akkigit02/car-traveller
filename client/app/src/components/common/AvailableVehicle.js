@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import TopNavBar from "../TopNavBar";
 import { TRIP_TYPE } from "../../constants/common.constants";
 import moment from "moment";
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 // import { icon } from "../../assets/css/icon.css";
 
 export default function AvailableVehicle() {
@@ -40,7 +41,7 @@ export default function AvailableVehicle() {
         decodedData["hourlyType"] = "8hr80km";
       }
       setDecodedQuery(decodedData);
-    } else window.location.href = "http:127.0.0.1:5500";
+    } else window.location.href = CLIENT_URL;
   }, []);
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function AvailableVehicle() {
                 </div>
 
                 <div className="d-flex justify-content-end">
-                  <a href="http://127.0.0.1:5500/client/index.html">
+                  <a href={CLIENT_URL}>
                     <button className="cstm-btn-red">Change</button>
                   </a>
                 </div>

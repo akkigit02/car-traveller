@@ -1,5 +1,6 @@
 import React from 'react'
 import style from '../assets/css/style.css'
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 
  const logo = require('../assets/img/logo.png');
 
@@ -67,7 +68,7 @@ function TopNavBar() {
                 <div className="header-main">
                     <div className="header-left">
                         <div className="logo">
-                            <a href="http://127.0.0.1:5500/client/index.html" className="header-logo">
+                            <a href={CLIENT_URL} className="header-logo">
                                 <img src={logo} alt="logo-img"/>
                             </a>
                         </div>
@@ -76,7 +77,7 @@ function TopNavBar() {
                                 <nav id="mobile-menu">
                                     <ul>
                                         <li className="has-dropdown active menu-thumb">
-                                            <a href="http://127.0.0.1:5500/client/index.html">
+                                            <a href={CLIENT_URL}>
                                                 Home
                                             </a>
                                         </li>
