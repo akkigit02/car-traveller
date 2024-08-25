@@ -5257,6 +5257,9 @@ input.main-search-input::placeholder {
   .section-padding {
     padding: 80px 0;
   }
+  .section-padding-2 {
+    padding: 40px 0;
+  }
 }
 
 .car-rentals-section {
