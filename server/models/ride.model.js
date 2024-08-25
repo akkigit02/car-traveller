@@ -15,7 +15,6 @@ const rideSchema = new Schema({
   },
   dropoffLocation: {
     type: String,
-    required: true,
   },
   pickupDate: {
     date: { type: String, required: true },

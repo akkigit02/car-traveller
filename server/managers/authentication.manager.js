@@ -231,7 +231,7 @@ const verifySession = async (req, res) => {
 const signup = async (req, res) => {
   try {
     const { body } = req;
-    console.log(body);
+    console.log(body.bookingDetails.to);
     if (!body.userDetails.phoneNumber)
       return res.status(500).send({ message: "Phone Number is required" });
     if (!body.userDetails.email)
@@ -254,6 +254,7 @@ const signup = async (req, res) => {
       });
     }
     const otp = generateOTP();
+    console.log(otp)
     const sessionId = generateSecureRandomString();
     await UserModel.updateOne(
       { _id: user._id },
@@ -267,57 +268,54 @@ const signup = async (req, res) => {
         },
       }
     );
+    const isCityCab = body?.bookingDetails?.tripType === 'cityCab'
+    const bookingData = {
+      vehicleId: body.bookingDetails?.vehicleId,
+      passengerId: user._id,
+      pickupDate: {
+        date: new Date(body?.bookingDetails?.pickUpDate).getDate(),
+        month: new Date(body?.bookingDetails?.pickUpDate).getMonth(),
+        year: new Date(body.bookingDetails?.pickUpDate).getFullYear(),
+      },
+      pickupTime: body.bookingDetails?.pickUpTime,
+      trip: {
+        tripType: body?.bookingDetails?.tripType,
+        hourlyType: body?.bookingDetails?.hourlyType
+      },
+      bokkingStatus: "pending",
+    };
 
-    const price = await getTotalPrice(body?.bookingDetails);
-
-    let pickupDate = {
-      date: new Date(body.pickUpDate).getDate(),
-      month: new Date(body.pickUpDate).getMonth(),
-      year: new Date(body.pickUpDate).getFullYear(),
+    if (isCityCab) {
+      bookingData['pickupLocation'] = body?.bookingDetails?.from?.name
+      bookingData['dropoffLocation'] = body?.bookingDetails?.to[0]?.name
+    } else {
+      bookingData['pickupCity'] = body?.bookingDetails?.from?._id
+      bookingData['dropCity'] = body?.bookingDetails?.to?.map(ele => ele._id)
+      bookingData['pickupLocation'] = body?.userDetails?.pickupAddress
+      bookingData['dropoffLocation'] = body?.userDetails?.dropAddress
     }
-
-    let dropDate = null
-    if(body?.dropDate) {
-      dropDate = {
+    if (body?.bookingDetails?.dropDate) {
+      bookingData['dropDate'] = {
         date: new Date(body?.dropDate).getDate(),
         month: new Date(body?.dropDate).getMonth(),
         year: new Date(body?.dropDate).getFullYear(),
       }
     }
-    const bookingData = {
-      vehicleId: body.vehicleId,
-      passengerId: user._id,
-      pickupCity: body?.bookingDetails?.tripType === 'cityCab' ? null : body?.bookingDetails?.from?._id,
-      dropCity: body?.bookingDetails?.tripType === 'cityCab' ? null : price?.toDetail?.map((ele) => {
-        (ele) => ele._id;
-      }),
-      pickupLocation: body?.bookingDetails?.tripType === 'cityCab' ? body?.bookingDetails?.from?.name : body?.userDetails?.pickupAddress,
-      dropoffLocation: body?.bookingDetails?.tripType === 'cityCab' ? price?.toDetail[0]?.name : body?.userDetails?.dropAddress,
-      pickupDate: pickupDate,
-      pickupTime: body.pickUpTime,
-      dropDate: dropDate,
-      trip: {
-        tripType: body?.bookingDetails?.tripType,
-        hourlyType: body?.bookingDetails?.hourlyType
-      },
-      totalPrice: price?.totalPrice,
-      totalDistance: parseFloat(price?.distance),
-      bokkingStatus: "pending",
-    };
     const ride = await RideModel.create(bookingData);
-    // send notification to admin
-    return res
-      .status(200)
-      .send({
-        sessionId: sessionId,
-        bokking_id: ride._id,
-        status: "TWO_STEP_AUTHENTICATION",
+    res.status(200).send({ sessionId: sessionId, bokking_id: ride._id, status: "TWO_STEP_AUTHENTICATION", });
+    if (ride._id) {
+      const price = await getTotalPrice(body?.bookingDetails);
+      await RideModel.updateOne({ _id: ride._id }, {
+        $set: {
+          totalPrice: price?.totalPrice,
+          totalDistance: parseFloat(price?.distance)
+        }
       });
+      // send notification to admin
+    }
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
+    res.status(500).send({ message: "Something went wrong. Please try again later." });
   }
 };
 
@@ -381,26 +379,26 @@ const getTotalPrice = async (bookingDetails) => {
           distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
       }
     } else if (bookingDetails?.tripType === "hourly") {
-        fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-          let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
-          if (hourlyData) {
-            totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
-            distance = hourlyData?.distance
-          }
-      } else if (bookingDetails?.tripType === 'cityCab') {
-        const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
-        distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-        fromDetail = { name: data.from }
-        toDetail = [{ name: data.to }]
-        if(distance < 10) {
-          totalPrice = car.minimumFare
-        } else if (distance > 10) {
-          const tempDistance = distance - 10;
-          totalPrice = tempDistance?.toFixed(2) * car.costPerKm + car.minimumFare
-        }
+      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
+      let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
+      if (hourlyData) {
+        totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
+        distance = hourlyData?.distance
       }
+    } else if (bookingDetails?.tripType === 'cityCab') {
+      const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
+      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
+      fromDetail = { name: data.from }
+      toDetail = [{ name: data.to }]
+      if (distance < 10) {
+        totalPrice = car.minimumFare
+      } else if (distance > 10) {
+        const tempDistance = distance - 10;
+        totalPrice = tempDistance?.toFixed(2) * car.costPerKm + car.minimumFare
+      }
+    }
 
-    return {totalPrice, toDetail, distance: distance?.toFixed(2)};
+    return { totalPrice, toDetail, distance: distance?.toFixed(2) };
   } catch (error) {
     console.log(error)
   }
