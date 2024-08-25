@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import style from '../assets/css/style.css';
 import logo from '../assets/img/logo.png';
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 
 function TopNavBar() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
@@ -47,7 +48,7 @@ function TopNavBar() {
                   <nav id="mobile-menu">
                     <ul>
                       <li className="has-dropdown active menu-thumb">
-                        <a href="index.html">Home</a>
+                        <a href={CLIENT_URL}>Home</a>
                       </li>
                       <li>
                         <a href="package.html">Packages</a>
@@ -91,7 +92,7 @@ function TopNavBar() {
             <div className="header-main">
               <div className="header-left">
                 <div className="logo">
-                  <a href="http://127.0.0.1:5500/client/index.html" className="header-logo">
+                  <a href={CLIENT_URL} className="header-logo">
                     <img src={logo} alt="logo-img" />
                   </a>
                 </div>
@@ -100,7 +101,7 @@ function TopNavBar() {
                     <nav id="mobile-menu">
                       <ul>
                         <li className="has-dropdown active menu-thumb">
-                          <a href="http://127.0.0.1:5500/client/index.html">Home</a>
+                          <a href={CLIENT_URL}>Home</a>
                         </li>
                         <li>
                           <a href="car-list.html">Cars</a>
