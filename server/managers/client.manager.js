@@ -2,6 +2,7 @@ const ObjectId = require('mongoose').Types.ObjectId
 const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
+const EnquirePackageModel = require("../models/enquire.package.modal")
 const {
   estimateRouteDistance,
   dateDifference,
@@ -270,6 +271,16 @@ const getBookingDeatils = async (req, res) => {
   }
 };
 
+const sendPackageEnquire = async (req, res) => {
+  try {
+    const body = req.body;
+    await EnquirePackageModel.create(body)
+    return res.status(200).send({message: 'Enquire successfully, we will contact you immediately or later'});
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 module.exports = {
   getCities,
   getCars,
@@ -279,5 +290,6 @@ module.exports = {
   cancelBooking,
   getAddressSuggestion,
   getAddressSuggestionOnLandingPage,
-  getBookingDeatils
+  getBookingDeatils,
+  sendPackageEnquire
 };

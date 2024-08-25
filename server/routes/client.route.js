@@ -10,4 +10,5 @@ router.get('/booking', ClientManager.getBooking)
 router.get('/passanger-booking/:id', ClientManager.getBookingByPasssengerId)
 router.put('/cancel-booking/:id', ClientManager.cancelBooking)
 router.get('/booking-details/:bookingId', ClientManager.getBookingDeatils)
+router.post('/package', ClientManager.sendPackageEnquire)
 module.exports = router
