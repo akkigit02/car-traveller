@@ -67,6 +67,27 @@ document.addEventListener("DOMContentLoaded", function() {
           Mahabaleshwar`, // Add full description here
         bookLink: "#booking-modal",
         valueData: 'mahabaleshwar'
+      },
+      dalhousieDharamshala:{
+        title: 'Dalhousie Dharamshala'
+      },
+      sonmargGulmargPahalgamDalLake: {
+        title: 'Sonmarg - Gulmarg, Pahalgam - Dal lake'
+      },
+      shimlaManali: {
+        title: 'Shimla - Manali'
+      },
+      ayodhyaKashiBanarasPrayagraj : {
+        title: 'Ayodhya, Kashi Banaras, Prayagraj'
+      },
+      jammuvaishnodeviPatnitopAmritsarWagaBorder: {
+        title: 'Jammu-vaishnodevi - Patnitop, Amritsar - Waga Border'
+      },
+      kulluManaliKasol: {
+        title: 'Kullu - Manali Kasol'
+      },
+      shimlaKulluManali: {
+        title: 'Shimla Kullu Manali'
       }
     };
   
@@ -103,7 +124,7 @@ document.addEventListener("DOMContentLoaded", function() {
     button.addEventListener("click", function() {
       const packageKey = this.getAttribute("data-book-package");
       const packageData = packages[packageKey];
-
+      console.log(packageKey,"===------")
       // Populate the booking modal
       document.getElementById("booking-modal-title").innerText = `Book Now - ${packageData.title}`;
       document.getElementById("package").value = packageData.title;
