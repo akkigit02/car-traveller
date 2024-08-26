@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function() {
       const packageData = packages[packageKey];
       console.log(packageKey,"===------")
       // Populate the booking modal
-      document.getElementById("booking-modal-title").innerText = `Book Now - ${packageData.title}`;
+      document.getElementById("booking-modal-title").innerText = `Enquire Now - ${packageData.title}`;
       document.getElementById("package").value = packageData.title;
     });
   });

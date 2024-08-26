@@ -1,7 +1,8 @@
 const PricingModel = require('../models/pricing.model');
 const VehicleModel = require('../models/vehicle.model');
 const RideModel = require('../models/ride.model')
-const PackageModel = require('../models/packages.model')
+const PackageModel = require('../models/packages.model');
+const EnquirePackage = require('../models/enquire.package.modal')
 
 
 const saveVehiclePrice = async(req, res) => {
@@ -158,6 +159,15 @@ const getPackageInfo = async () => {
     }
 }
 
+const getEnquirePackage = async (req, res) => {
+    try {
+        const packages = await EnquirePackage.find({})
+        res.status(200).send({packages})
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 
 module.exports = {
     saveVehiclePrice,
@@ -179,5 +189,7 @@ module.exports = {
     updatePackage,
     deletePackage,
     getPackageById,
-    getPackageInfo
+    getPackageInfo,
+
+    getEnquirePackage
 }

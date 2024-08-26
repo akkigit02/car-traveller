@@ -24,5 +24,7 @@ router.put('/package',AdminManager.updatePackage)
 router.delete('/package/:id',AdminManager.deletePackage)
 router.get('/package/:id',AdminManager.getPackageById)
 
+router.get('/enquire-package',AdminManager.getEnquirePackage)
+
 
 module.exports = router

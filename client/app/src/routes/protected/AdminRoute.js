@@ -7,6 +7,7 @@ import Demo from "../../components/admin/Demo";
 import Vehicle from "../../components/admin/Vehicle";
 import Booking from "../../components/admin/Booking";
 import AppTopNav from "../../components/AppTopNav";
+import EnquirePackage from "../../components/admin/EnquirePackage";
 
 function AdminRoute() {
   return (
@@ -31,6 +32,7 @@ function AdminRoute() {
                   exact
                 />
                 <Route path={`/booking`} Component={Booking} exact />
+                <Route path={`/enquire-package`} Component={EnquirePackage} exact />
                 <Route path={`/demo`} Component={Demo} exact />
                 <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
               </Routes>
