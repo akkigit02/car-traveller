@@ -182,7 +182,7 @@ function Signup() {
                               )}
                             </div>
                           </div>
-                          <div className="col-lg-6">
+                          {/* <div className="col-lg-6">
                             <div className="form-clt">
                               <label className="label-text">Last Name</label>
                               <input
@@ -198,7 +198,7 @@ function Signup() {
                                 <span>{errors?.lastName?.message}</span>
                               )}
                             </div>
-                          </div>
+                          </div> */}
                           <div className="col-lg-6">
                             <div className="form-clt">
                               <label className="label-text">Email *</label>

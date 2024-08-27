@@ -73,6 +73,9 @@
 .flex-2{
     flex: 2;
 }
+.h-60p{
+    height: 60px;
+}
 .cstm-title{
     font-size: 22px;
     margin-bottom: 0;

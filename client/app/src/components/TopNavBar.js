@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import style from '../assets/css/style.css';
-import logo from '../assets/img/logo.png';
+import logo from '../assets/img/logomain.png';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 
 function TopNavBar() {
@@ -33,7 +33,7 @@ function TopNavBar() {
               <div className="offcanvas__top mb-5 d-flex justify-content-between align-items-center">
                 <div className="offcanvas__logo">
                   <a href="index.html">
-                    <img src={logo} alt="logo-img" />
+                    <img className='w-100 h-60p' src={logo} alt="logo-img" />
                   </a>
                 </div>
                 <div className="offcanvas__close">
@@ -93,7 +93,7 @@ function TopNavBar() {
               <div className="header-left">
                 <div className="logo">
                   <a href={CLIENT_URL} className="header-logo">
-                    <img src={logo} alt="logo-img" />
+                    <img className='w-100 h-60p' src={logo} alt="logo-img" />
                   </a>
                 </div>
                 <div className="mean__menu-wrapper d-none-cstm">
@@ -104,7 +104,7 @@ function TopNavBar() {
                           <a href={CLIENT_URL}>Home</a>
                         </li>
                         <li>
-                          <a href="car-list.html">Cars</a>
+                          <a href="package.html">Packages</a>
                         </li>
                         <li>
                           <a href="#">About Us</a>
