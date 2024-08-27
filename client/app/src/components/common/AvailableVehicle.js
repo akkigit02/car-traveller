@@ -120,7 +120,7 @@ export default function AvailableVehicle() {
             <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
                 <div
-                  className="text-center w-100"
+                  className={`text-center w-100 ${decodedQuery?.hourlyType === list.type ? 'bg-active' : ''}`}
                   key={"key_" + idx}
                   onClick={() =>
                     setDecodedQuery({
@@ -129,7 +129,8 @@ export default function AvailableVehicle() {
                     })
                   }
                 >
-                  {list.hour} Hours| {list.distance} Km
+                  {console.log(list)}
+                 <h6>{list.hour} Hours| {list.distance} Km</h6> 
                 </div>
               ))}
             </div>

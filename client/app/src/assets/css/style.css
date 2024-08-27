@@ -324,6 +324,10 @@ span {
     padding-bottom: 25px;
 }
 
+.bg-active {
+    background-color: var(--theme);
+}
+
 
 /* ********* sign up page css *********** */
 

@@ -2,12 +2,13 @@ const ObjectId = require('mongoose').Types.ObjectId
 const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
-const EnquirePackageModel = require("../models/enquire.package.modal")
+const EnquirePackageModel = require("../models/enquire.package.model")
 const {
   estimateRouteDistance,
   dateDifference,
 } = require("../utils/calculation.util");
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
+const { CITY_CAB_PRICE } = require('../constants/common.constants');
 
 const getCities = async (req, res) => {
   try {
@@ -56,7 +57,7 @@ const getAddressSuggestionOnLandingPage = async (req, res) => {
 const getCars = async (req, res) => {
   try {
     let search = req?.query?.search;
-    const cars = await PricingModel.find({}).lean();
+    let cars = await PricingModel.find({}).lean();
     let distance = null;
     let toDetail = [];
     let fromDetail = "";
@@ -143,6 +144,7 @@ const getCars = async (req, res) => {
       for (let car of cars) {
         let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
         if (hourlyData) {
+          console.log('222222222')
           car["totalPrice"] = hourlyData.basePrice + car.driverAllowance || 0;
           car["hour"] = hourlyData.hour
           distance = hourlyData?.distance
@@ -155,14 +157,15 @@ const getCars = async (req, res) => {
     } else if (search?.tripType === 'cityCab') {
       const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
       distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
+      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
       fromDetail = { name: data.from }
       toDetail = [{ name: data.to }]
+      cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
       for (let car of cars) {
-        if(distance < 10) {
-          car["totalPrice"] = car.minimumFare
-        } else if (distance > 10) {
-          const tempDistance = distance - 10;
-          car["totalPrice"] = tempDistance?.toFixed(2) * car.costPerKm + car.minimumFare
+        if(['Sedan'].includes(car.vehicleType)) {
+          car["totalPrice"] = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
+        } else{
+          car["totalPrice"] = priceInfo.suv.base + priceInfo.suv.perKm * distance
         }
         car['showDistance'] = distance?.toFixed(2);
         carList.push(car);

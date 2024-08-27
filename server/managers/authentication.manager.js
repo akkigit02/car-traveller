@@ -14,6 +14,7 @@ const {
 } = require("../utils/calculation.util");
 const CitiesModel = require("../models/cities.model");
 const { getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
+const { CITY_CAB_PRICE } = require("../constants/common.constants");
 
 const getUserSession = async (userId) => {
   const loginSessionId = generateSecureRandomString(10);
@@ -388,13 +389,13 @@ const getTotalPrice = async (bookingDetails) => {
     } else if (bookingDetails?.tripType === 'cityCab') {
       const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
       distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
+      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
       fromDetail = { name: data.from }
       toDetail = [{ name: data.to }]
-      if (distance < 10) {
-        totalPrice = car.minimumFare
-      } else if (distance > 10) {
-        const tempDistance = distance - 10;
-        totalPrice = tempDistance?.toFixed(2) * car.costPerKm + car.minimumFare
+      if(['Sedan'].includes(car.vehicleType)) {
+        totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
+      } else{
+        totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
       }
     }
 

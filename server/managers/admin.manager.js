@@ -2,7 +2,7 @@ const PricingModel = require('../models/pricing.model');
 const VehicleModel = require('../models/vehicle.model');
 const RideModel = require('../models/ride.model')
 const PackageModel = require('../models/packages.model');
-const EnquirePackage = require('../models/enquire.package.modal')
+const EnquirePackage = require('../models/enquire.package.model')
 
 
 const saveVehiclePrice = async(req, res) => {
