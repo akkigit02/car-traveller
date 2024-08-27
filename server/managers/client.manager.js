@@ -48,8 +48,8 @@ const getAddressSuggestionOnLandingPage = async (req, res) => {
     address = address.map(ele => ({ address: ele.description, placeId: ele.place_id }))
     return res.status(200).send({ address });
   } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: "Something went wrong" });
+    logger.log('server/managers/client.manager.js-> getAddressSuggestionOnLandingPage', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 
@@ -191,8 +191,8 @@ const getCars = async (req, res) => {
     };
     return res.status(200).send({ cars: carList, bookingDetails });
   } catch (error) {
-    console.error(error);
-    return res.status(500).send({ message: "Something went wrong" });
+    logger.log('server/managers/client.manager.js-> getCars', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 const addBooking = async (req, res) => {
@@ -202,8 +202,8 @@ const addBooking = async (req, res) => {
     const booking = await RideModel.create(bookingDetails);
     return res.status(200).send({ booking, message: "Ride has been Booked" });
   } catch (error) {
-    console.error(error);
-    return res.status(500).send({ message: "Something went wrong" });
+    logger.log('server/managers/client.manager.js-> addBooking', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 const getBooking = async (req, res) => {
@@ -211,7 +211,8 @@ const getBooking = async (req, res) => {
     const booking = await RideModel.find().lean();
     res.status(200).send({ booking });
   } catch (error) {
-    console.error(error);
+    logger.log('server/managers/client.manager.js-> getBooking', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 const getBookingByPasssengerId = async (req, res) => {
@@ -220,7 +221,8 @@ const getBookingByPasssengerId = async (req, res) => {
     const booking = await RideModel.find({ passengerId }).lean();
     res.status(200).send({ booking });
   } catch (error) {
-    console.error(error);
+    logger.log('server/managers/client.manager.js-> getBookingByPasssengerId', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 const cancelBooking = async (req, res) => {
@@ -254,8 +256,8 @@ const cancelBooking = async (req, res) => {
     await RideModel.findOneAndUpdate({ _id: rideId }, { status: "cancelled" });
     return res.status(200).send({ message: "Ride cancelled successfully" });
   } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: "Something went wrong" });
+    logger.log('server/managers/client.manager.js-> cancelBooking', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 
@@ -266,8 +268,8 @@ const getBookingDeatils = async (req, res) => {
     const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) }).lean();
     return res.status(200).send({ bookingDetails });
   } catch (error) {
-    console.log(error);
-    return res.status(500).send({ message: "Something went wrong" });
+    logger.log('server/managers/client.manager.js-> getBookingDeatils', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 };
 
@@ -277,7 +279,8 @@ const sendPackageEnquire = async (req, res) => {
     await EnquirePackageModel.create(body)
     return res.status(200).send({message: 'Enquire successfully, we will contact you immediately or later'});
   } catch (error) {
-    console.log(error)
+    logger.log('server/managers/client.manager.js-> sendPackageEnquire', {error: error})
+    res.status(500).send({ message: 'Server Error' })
   }
 }
 

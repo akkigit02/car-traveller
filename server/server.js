@@ -8,7 +8,7 @@ const cors = require('cors');
 const morgan = require('morgan');
 const requestIp = require('request-ip');
 const userAgent = require('express-useragent');
-const Logger = require('./utils/logger.util.js');
+global.logger = require('./utils/logger.util.js');
 const app = express();
 // if (process.env.NODE_ENV !== 'production') {
 app.use(morgan('dev'));
@@ -27,7 +27,7 @@ app.get('*', (req, res) => {
     });
 });
 app.use(async function (error, req, res, next) {
-    Logger.log('errorHandler', error, req.userId, {
+    logger.log('errorHandler', error, req.userId, {
         'query': req?.query,
         'params': req?.params,
         'body': req?.body,
