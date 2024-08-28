@@ -4589,7 +4589,8 @@
     "country_name": "India",
     "latitude": "23.02579000",
     "longitude": "72.58727000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Ahwa",
@@ -6381,7 +6382,8 @@
     "country_name": "India",
     "latitude": "22.33333000",
     "longitude": "70.83333000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Rajpipla",
@@ -6621,7 +6623,8 @@
     "country_name": "India",
     "latitude": "21.17801000",
     "longitude": "72.81189000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Surendranagar",
@@ -6789,7 +6792,8 @@
     "country_name": "India",
     "latitude": "22.29941000",
     "longitude": "73.20812000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Vaghodia",
@@ -6829,7 +6833,8 @@
     "country_name": "India",
     "latitude": "20.50000000",
     "longitude": "73.08333000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Vanala",
@@ -6861,7 +6866,8 @@
     "country_name": "India",
     "latitude": "20.37175000",
     "longitude": "72.90493000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Vartej",
@@ -14189,7 +14195,8 @@
     "country_name": "India",
     "latitude": "19.08333333",
     "longitude": "74.73333333",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Airoli",
@@ -14269,7 +14276,8 @@
     "country_name": "India",
     "latitude": "19.17000000",
     "longitude": "74.12000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Alibag",
@@ -14501,7 +14509,8 @@
     "country_name": "India",
     "latitude": "19.88467000",
     "longitude": "75.33986000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Ausa",
@@ -14517,7 +14526,8 @@
     "country_name": "India",
     "latitude": "19.15516000",
     "longitude": "73.26553000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Badnapur",
@@ -14869,7 +14879,8 @@
     "country_name": "India",
     "latitude": "18.76059000",
     "longitude": "73.86351000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Chakur",
@@ -15581,7 +15592,8 @@
     "country_name": "India",
     "latitude": "19.69522000",
     "longitude": "73.56260000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Indapur",
@@ -15861,7 +15873,8 @@
     "country_name": "India",
     "latitude": "19.24370000",
     "longitude": "73.13554000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Kalyani Nagar",
@@ -15933,7 +15946,8 @@
     "country_name": "India",
     "latitude": "17.28937000",
     "longitude": "74.18183000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Karajagi",
@@ -16181,7 +16195,8 @@
     "country_name": "India",
     "latitude": "16.69013000",
     "longitude": "74.22981000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Kondalwadi",
@@ -16357,7 +16372,8 @@
     "country_name": "India",
     "latitude": "18.75275000",
     "longitude": "73.40575000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Mahabaleshwar",
@@ -16365,7 +16381,8 @@
     "country_name": "India",
     "latitude": "17.56000000",
     "longitude": "73.40000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Mahad",
@@ -16461,7 +16478,8 @@
     "country_name": "India",
     "latitude": "19.00436000",
     "longitude": "73.94346000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Mandangad",
@@ -16765,7 +16783,8 @@
     "country_name": "India",
     "latitude": "19.07283000",
     "longitude": "72.88261000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Mumbai Suburban",
@@ -16773,7 +16792,8 @@
     "country_name": "India",
     "latitude": "19.12636000",
     "longitude": "72.84897000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Murbad",
@@ -16949,7 +16969,8 @@
     "country_name": "India",
     "latitude": "19.07000000",
     "longitude": "73.97000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Nardana",
@@ -16981,7 +17002,8 @@
     "country_name": "India",
     "latitude": "19.99727000",
     "longitude": "73.79096000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Nashik Division",
@@ -16989,7 +17011,8 @@
     "country_name": "India",
     "latitude": "19.98295000",
     "longitude": "73.78942000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Navapur",
@@ -17005,7 +17028,8 @@
     "country_name": "India",
     "latitude": "19.03681000",
     "longitude": "73.01582000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Neral",
@@ -17429,7 +17453,8 @@
     "country_name": "India",
     "latitude": "18.51957000",
     "longitude": "73.85535000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Pune Division",
@@ -17437,7 +17462,8 @@
     "country_name": "India",
     "latitude": "18.74673000",
     "longitude": "73.75465000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Puntamba",
@@ -17765,7 +17791,8 @@
     "country_name": "India",
     "latitude": "17.68589000",
     "longitude": "73.99333000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Satara Division",
@@ -17773,7 +17800,8 @@
     "country_name": "India",
     "latitude": "17.72601000",
     "longitude": "74.06433000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Satpati",
@@ -17909,7 +17937,8 @@
     "country_name": "India",
     "latitude": "19.76616000",
     "longitude": "74.47738000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Shirgaon",
@@ -18021,7 +18050,8 @@
     "country_name": "India",
     "latitude": "19.04000000",
     "longitude": "72.86000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Sironcha",
@@ -18205,7 +18235,8 @@
     "country_name": "India",
     "latitude": "19.33333000",
     "longitude": "73.25000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Trimbak",
@@ -18445,7 +18476,8 @@
     "country_name": "India",
     "latitude": "19.45591000",
     "longitude": "72.81136000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Vita Maharashtra",

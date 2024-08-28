@@ -74,9 +74,13 @@ const getCars = async (req, res) => {
         1.25
       );
       toDetail.push(toCity)
+      console.log(toCity)
+      let metroCityPrice = 1
+      if(!toCity?.isMetroCity) metroCityPrice = 1.75
+
       for (let car of cars) {
         car["totalPrice"] =
-          distance?.toFixed(2) * car.costPerKm + (car?.driverAllowance ? car.driverAllowance : 0);
+          distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
 
         car['showDistance'] = distance?.toFixed(2);
         carList.push(car);
@@ -144,7 +148,6 @@ const getCars = async (req, res) => {
       for (let car of cars) {
         let hourlyData = car.hourly.find(hr => hr.type === search.hourlyType)
         if (hourlyData) {
-          console.log('222222222')
           car["totalPrice"] = hourlyData.basePrice + car.driverAllowance || 0;
           car["hour"] = hourlyData.hour
           distance = hourlyData?.distance
@@ -157,7 +160,8 @@ const getCars = async (req, res) => {
     } else if (search?.tripType === 'cityCab') {
       const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
       distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
+      console.log(distance,"====-------")
+      const priceInfo = CITY_CAB_PRICE.find(info => info.max >= distance && info.min <= distance)
       fromDetail = { name: data.from }
       toDetail = [{ name: data.to }]
       cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
@@ -182,7 +186,7 @@ const getCars = async (req, res) => {
     })
 
     const bookingDetails = {
-      from: { name: fromDetail.name, _id: fromDetail._id },
+      from: { name: fromDetail.name, _id: fromDetail._id, isMetroCity: fromDetail?.isMetroCity },
       to: toDetail.map(city => ({ name: city.name, _id: city._id })),
       distance: distance.toFixed(2),
       pickupCityCab: search?.pickupCityCab,
@@ -190,7 +194,7 @@ const getCars = async (req, res) => {
       pickUpDate: search.pickUpDate,
       returnDate: search.returnDate,
       pickUpTime: search.pickUpTime,
-      hourlyDetails: hourlyDetails
+      hourlyDetails: hourlyDetails,
     };
     return res.status(200).send({ cars: carList, bookingDetails });
   } catch (error) {

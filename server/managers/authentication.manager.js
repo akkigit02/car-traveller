@@ -340,7 +340,10 @@ const getTotalPrice = async (bookingDetails) => {
         1.25
       );
       toDetail.push(toCity);
-      totalPrice = distance?.toFixed(2) * car.costPerKm + (car?.driverAllowance ? car.driverAllowance : 0);
+      let metroCityPrice = 1
+      if(!toCity?.isMetroCity) metroCityPrice = 1.75
+
+      totalPrice = distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
     } else if (bookingDetails?.tripType === "roundTrip") {
       let cityIds = bookingDetails?.to?.map((vehicle) => vehicle._id);
       cityIds.unshift(bookingDetails?.from?._id);

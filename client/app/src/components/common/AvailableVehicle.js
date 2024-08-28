@@ -185,7 +185,13 @@ export default function AvailableVehicle() {
                               &#8377; {Math.ceil(item.totalPrice)}
                             </p>
                           </div>
-                          <button
+                          {decodedQuery?.tripType !== 'cityCab' && !bookingDetails?.from?.isMetroCity ? <button
+                            className="border-0"
+                          >
+                            <h6 className="cstm-btn-red">
+                              Coming Soon
+                            </h6>
+                          </button> :<button
                             className="border-0 bg-unset"
                             onClick={() => {
                               book(item);
@@ -194,7 +200,7 @@ export default function AvailableVehicle() {
                             <h6 className="price mb-0">
                               &#8377; {Math.ceil(item.totalPrice)}
                             </h6>
-                          </button>
+                          </button>}
                         </div>
                       </div>
                       <div className="p-1 d-flex flex-column ">
