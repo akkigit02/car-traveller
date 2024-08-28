@@ -306,7 +306,7 @@ function Login() {
                     >
                       <div className="form-group-login">
                         <label for="your_name">
-                          <i class="fa fa-key"></i>
+                          <i class="fa fa-mobile"></i>
                         </label>
                         <input
                           type="text"
@@ -358,18 +358,23 @@ function Login() {
                 </>
               )}
               {otpDetails && (
+                <>
                 <div className="form-group-login">
+                  <label>
+                          <i class="fa fa-key"></i>
+                        </label>
                   <input
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="Enter your OTP"
                   />
+                  </div>
                   <div className="form-group-login form-button">
                     <button onClick={verifyOtp} className="form-submit">
                       Verify
                     </button>
                   </div>
-                </div>
+                  </>
               )}
             </div>
           </div>
