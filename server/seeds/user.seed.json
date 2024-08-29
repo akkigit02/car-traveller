@@ -1,7 +1,6 @@
 [
   {
-    "firstName": "Master",
-    "lastName": "Admin1",
+    "name": "Master Admin1",
     "email": "masteradmin@traveller.com",
     "primaryPhone": "1234567890",
     "status": "verified",
@@ -25,8 +24,7 @@
     "logo": ""
   },
   {
-    "firstName": "User",
-    "lastName": "User1",
+    "name": "User1",
     "email": "user0@traveller.com",
     "primaryPhone": "1234567890",
     "status": "verified",

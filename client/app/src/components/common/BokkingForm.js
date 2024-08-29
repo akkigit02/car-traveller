@@ -5,42 +5,110 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import moment from "moment";
+import { setTokenToLocal } from '../../services/Authentication.service';
+import store from '../../store';
+import { useSelector } from 'react-redux';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function BookingForm() {
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-        mode: "onChange",
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+        mode: "onChange", // Validate on every change
     });
+    const userInfo = useSelector(({ userInfo }) => userInfo)
     const navigate = useNavigate()
     const { query } = useParams();
     const [bookingDetails, setBookingDetails] = useState({})
+    const [isOtpSent, setIsOtpSent] = useState(false)
+    const [sessionId, setSessionId] = useState()
+    const [otp, setOtp] = useState()
     const [addressSuggestion, setAdressSugeestion] = useState({
         isOpen: false,
         type: '',
         address: []
     })
-    const [isEditable, setIsEditable] = useState(false)
 
-    const saveBokking = async (formData) => {
+
+    const verifyOtp = async () => {
         try {
-            console.log(34)
+            const { data } = await axios({
+                url: '/api/auth/verify-otp',
+                method: 'POST',
+                data: {
+                    otp, sessionId
+                }
+            })
+            if (data.message)
+                toast.error(data.message)
+            if (data.status === 'LOGIN_SUCCESS') {
+                setTokenToLocal(data.session.jwtToken);
+                store.dispatch({
+                    type: "SET_INTO_STORE",
+                    payload: { userInfo: data.session },
+                });
+                console.log(bookingDetails.bokkingId, "=====---")
+                navigate(`/payment/${bookingDetails.bokkingId}`, { replace: true });
+            }
+        } catch (error) {
+            console.log(error.response.data)
+            toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
+        }
+    }
+
+
+    const signUp = async (formData) => {
+        try {
             const { data } = await axios({
                 url: '/api/auth/signup',
                 method: 'POST',
-                data: { userDetails: { ...formData, userId: '' }, bookingDetails }
+                data: { userDetails: formData, bookingDetails }
             })
+
+            if (data.status === 'TWO_STEP_AUTHENTICATION') {
+                setIsOtpSent(true)
+                setSessionId(data.sessionId)
+            }
             setBookingDetails(old => ({ ...old, bokkingId: data.bokking_id }))
         } catch (error) {
             console.log(error)
             toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
         }
     }
+    
+    const saveBooking = async (formData) => {
+        try {
+            const { data } = await axios({
+                url: '/api/client/booking',
+                method: 'POST',
+                data: { userDetails: formData, bookingDetails }
+            })
+            setBookingDetails(old => ({ ...old, bokkingId: data.bokking_id }))
+            navigate(`/payment/${data.bokking_id}`);
+        } catch (error) {
+            console.log(error)
+            toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
+        }
+    }
+    const handleSubmitForm = async (formData) => {
+        try {
+            if (userInfo) await saveBooking(formData)
+            else await signUp(formData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+
     useEffect(() => {
+        if (userInfo) {
+            console.log(userInfo)
+            reset({ name: userInfo.name, email: userInfo.email, phoneNumber: userInfo.primaryPhone }, { keepDefaultValues: true })
+        }
         if (query) {
             // decode query   
             const decodedString = decodeURIComponent(atob(query));
             const decodedData = JSON.parse(decodedString);
             setBookingDetails(decodedData)
-            console.log(decodedData)
+
         }
         else window.location.href = CLIENT_URL
     }, [])
@@ -122,43 +190,26 @@ function BookingForm() {
                                                 </p>
                                             </div>
                                             <form
-                                                onSubmit={handleSubmit(saveBokking)}
+                                                onSubmit={handleSubmit(handleSubmitForm)}
                                                 className="contact-form-items"
                                             >
                                                 <div className="row g-4">
                                                     <div className="col-lg-6">
                                                         <div className="form-clt">
                                                             <label className="label-text">
-                                                                First Name *
+                                                                Name *
                                                             </label>
                                                             <input
-                                                                {...register("firstName", {
+                                                                {...register("name", {
                                                                     required: "First Name is required",
                                                                     pattern: namePattern,
                                                                 })}
                                                                 type="text"
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent}
                                                                 placeholder="Enter First name"
                                                             />
-                                                            {errors?.firstName?.message && (
-                                                                <span>{errors?.firstName?.message}</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-6">
-                                                        <div className="form-clt">
-                                                            <label className="label-text">Last Name</label>
-                                                            <input
-                                                                {...register("lastName", {
-                                                                    required: "Last Name is required",
-                                                                    pattern: namePattern,
-                                                                })}
-                                                                type="text"
-                                                                disabled={isEditable}
-                                                                placeholder="Enter Last name"
-                                                            />
-                                                            {errors?.lastName?.message && (
-                                                                <span>{errors?.lastName?.message}</span>
+                                                            {errors?.name?.message && (
+                                                                <span>{errors?.name?.message}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -171,7 +222,7 @@ function BookingForm() {
                                                                     required: "Email is required",
                                                                     pattern: emailPattern,
                                                                 })}
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent || userInfo}
                                                                 placeholder="Enter Email "
                                                             />
                                                             {errors?.email?.message && (
@@ -195,7 +246,7 @@ function BookingForm() {
                                                                         phoneNumberValidation
                                                                     )}
                                                                     type="text"
-                                                                    disabled={isEditable}
+                                                                    disabled={isOtpSent || userInfo}
                                                                     placeholder="Enter Phone Number"
                                                                 />
                                                                 {errors?.phoneNumber?.message && (
@@ -219,7 +270,7 @@ function BookingForm() {
                                                                 onBlur={() => setTimeout(() => {
                                                                     setAdressSugeestion({ isOpen: false, type: '', address: [] })
                                                                 }, 250)}
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent}
                                                                 placeholder="Address"
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'pickupAddress' &&
@@ -246,7 +297,7 @@ function BookingForm() {
                                                                 onBlur={() => setTimeout(() => {
                                                                     setAdressSugeestion({ isOpen: false, type: '', address: [] })
                                                                 }, 250)}
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent}
                                                                 placeholder="Address"
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'dropAddress' &&
@@ -265,6 +316,16 @@ function BookingForm() {
                                                     </div>
                                                 </div>
                                             </form>
+                                            {isOtpSent && (
+                                                <div>
+                                                    <input className="cstm-input me-3"
+                                                        value={otp}
+                                                        onChange={(e) => setOtp(e.target.value)}
+                                                        placeholder="Enter your OTP"
+                                                    />
+                                                    <button className="cstm-btn-red" onClick={verifyOtp}>verify</button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

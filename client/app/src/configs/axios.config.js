@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { getTokenFromLocal } from "../services/Authentication.service";
 
 const { REACT_APP_SERVER_BASE_URL } = process.env
 console.log(REACT_APP_SERVER_BASE_URL)
@@ -6,9 +7,10 @@ Axios.defaults.baseURL = REACT_APP_SERVER_BASE_URL;
 Axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 Axios.interceptors.request.use(async (request) => {
-    // const token = await getToken()
-    // if (token)
-    //     request.headers.common['token'] = token
+    const token = await getTokenFromLocal()
+    console.log(request)
+    if (token)
+        request.headers['token'] = token
     return request;
 }, error => {
     // console.log(error);

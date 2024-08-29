@@ -1,8 +1,6 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import TopNavBar from './TopNavBar';
-import moment from 'moment';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function Payment() {
     const { bookingId } = useParams();
