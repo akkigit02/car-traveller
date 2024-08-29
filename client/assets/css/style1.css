@@ -744,7 +744,7 @@ h1, h2, h3, h4, h5, h6 {
 	position: absolute;
 	width: 100%;
 	border: 1px solid #2d344a;
-	height: 300px;
+	max-height: 300px;
 	overflow: auto;
 	background: #dae6f9;
 	border-radius: 8px;
@@ -963,6 +963,7 @@ h1, h2, h3, h4, h5, h6 {
 		color: red;
 		font-size: 0.9em;
 		display: none;
+		position: absolute;
 	}
 
 	.pickup-wrapper2 div:nth-child(2){

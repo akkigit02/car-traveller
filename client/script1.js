@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
         })
 
     };
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('loginBtn').addEventListener('click', () => {
-        window.location.href = 'http://127.0.0.1:3000'
+        window.location.href = 'http://127.0.0.1:3001'
     })
 
     const filterFunction = async (inputType) => {
@@ -361,7 +361,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5001/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
@@ -369,7 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(data)
                 suggestions = data.address
             } else {
-                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();

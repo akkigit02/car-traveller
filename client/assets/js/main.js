@@ -55,7 +55,7 @@ Js TABLE OF CONTENTS
         //>> Sticky Header Js Start <<//
 
         $(window).scroll(function() {
-            if ($(this).scrollTop() > 250) {
+            if ($(this).scrollTop() > 150) {
                 $("#header-sticky").addClass("sticky");
             } else {
                 $("#header-sticky").removeClass("sticky");
