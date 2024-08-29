@@ -280,7 +280,6 @@ const getBookingDeatils = async (req, res) => {
         { path: 'vehicleId', select: 'modelName' },
       ])
       .lean();
-
     return res.status(200).send({ bookingDetails });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingDeatils', {error: error})

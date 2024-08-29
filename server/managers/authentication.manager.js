@@ -290,7 +290,7 @@ const signup = async (req, res) => {
       bookingData['pickupLocation'] = body?.bookingDetails?.from?.name
       bookingData['dropoffLocation'] = body?.bookingDetails?.to[0]?.name
     } else {
-      bookingData['pickupCity'] = body?.bookingDetails?.from?._id
+      bookingData['pickUpCity'] = body?.bookingDetails?.from?._id
       bookingData['dropCity'] = body?.bookingDetails?.to?.map(ele => ele._id)
       bookingData['pickupLocation'] = body?.userDetails?.pickupAddress
       bookingData['dropoffLocation'] = body?.userDetails?.dropAddress

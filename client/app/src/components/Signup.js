@@ -43,6 +43,7 @@ function BookingForm() {
           type: "SET_INTO_STORE",
           payload: { userInfo: data.session },
         });
+        console.log(bookingDetails.bokkingId,"=====---")
         navigate(`/payment/${bookingDetails.bokkingId}`, { replace: true });
       }
     } catch (error) {
@@ -165,7 +166,7 @@ function BookingForm() {
                           <div className="col-lg-6">
                             <div className="form-clt">
                               <label className="label-text">
-                                First Name *
+                                Name *
                               </label>
                               <input
                                 {...register("firstName", {
