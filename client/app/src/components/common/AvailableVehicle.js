@@ -1,16 +1,16 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import TopNavBar from "../TopNavBar";
 import { TRIP_TYPE } from "../../constants/common.constants";
 import moment from "moment";
+import { useSelector } from "react-redux";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 // import { icon } from "../../assets/css/icon.css";
 
 export default function AvailableVehicle() {
   const { query } = useParams();
   const navigate = useNavigate();
-
+  const userInfo = useSelector((state) => state.userInfo)
   const [bookingDetails, setBookingDetails] = useState("");
   const [carList, setCarList] = useState([]);
   const [decodedQuery, setDecodedQuery] = useState(null);
@@ -60,7 +60,7 @@ export default function AvailableVehicle() {
       ...bookingDetails,
     });
     const encodedString = btoa(encodeURIComponent(jsonString));
-    navigate(`/signup/${encodedString}`);
+    navigate(`/booking/${encodedString}`);
   };
 
   const toggleDetails = (index) => {
@@ -72,7 +72,6 @@ export default function AvailableVehicle() {
   return (
     <>
       <div>
-        <TopNavBar />
         <div className="row m-0 flex-wrap">
           <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">

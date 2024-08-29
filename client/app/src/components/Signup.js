@@ -9,7 +9,7 @@ import moment from "moment";
 import { setTokenToLocal } from '../services/Authentication.service';
 import store from '../store';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
-function Signup() {
+function BookingForm() {
   const { register, handleSubmit, setValue, formState: { errors } } = useForm({
     mode: "onChange", // Validate on every change
   });
@@ -103,7 +103,6 @@ function Signup() {
 
   return (
     <>
-      <TopNavBar />
       <div className="row m-0 col-reverse-sm flex-wrap">
         <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
           <div className="car-list-sidebar mt-30 h-100">
@@ -324,4 +323,4 @@ function Signup() {
   );
 }
 
-export default Signup;
+export default BookingForm;

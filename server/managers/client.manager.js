@@ -2,7 +2,8 @@ const ObjectId = require('mongoose').Types.ObjectId
 const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
-const EnquirePackageModel = require("../models/enquire.package.model")
+const UserModel = require("../models/user.model");
+const EnquirePackageModel = require("../models/enquire.package.modal")
 const {
   estimateRouteDistance,
   dateDifference,
@@ -272,7 +273,14 @@ const cancelBooking = async (req, res) => {
 const getBookingDeatils = async (req, res) => {
   try {
     const bookingId = req.params.bookingId;
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) }).lean();
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
+      .populate([
+        { path: 'pickUpCity', select: 'name' },
+        { path: 'dropCity', select: 'name' },
+        { path: 'vehicleId', select: 'modelName' },
+      ])
+      .lean();
+
     return res.status(200).send({ bookingDetails });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingDeatils', {error: error})
@@ -284,7 +292,7 @@ const sendPackageEnquire = async (req, res) => {
   try {
     const body = req.body;
     await EnquirePackageModel.create(body)
-    return res.status(200).send({message: 'Enquire successfully, we will contact you immediately or later'});
+    return res.status(200).send({ message: 'Enquire successfully, we will contact you immediately or later' });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> sendPackageEnquire', {error: error})
     res.status(500).send({ message: 'Server Error' })
