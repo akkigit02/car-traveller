@@ -5,6 +5,7 @@ import AdminDashboard from '../../components/admin/Dashboard'
 import ClientHeaderBar from '../../components/ClientHeaderBar'
 import AvailableVehicle from '../../components/common/AvailableVehicle'
 import BookingForm from '../../components/common/BokkingForm'
+import BookingHistory from '../../components/client/BookingHistory'
 
 export default function ClientRoute() {
   return (
@@ -19,6 +20,7 @@ export default function ClientRoute() {
               <Route path="/car-list/:query" Component={AvailableVehicle} exact />
               <Route path="/booking/:query" Component={BookingForm} exact />
               <Route path={`/payment/:bookingId`} Component={Payment} exact />
+              <Route path={`/booking-list`} Component={BookingHistory} exact />
               <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
             </Routes>
           </div>

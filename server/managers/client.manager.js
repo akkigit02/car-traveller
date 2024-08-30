@@ -212,7 +212,7 @@ const getTotalPrice = async (bookingDetails) => {
     let fromDetail = "";
     const car = await PricingModel.findOne({
       _id: bookingDetails?.vehicleId,
-    }).lean();    
+    }).lean();
     if (bookingDetails?.tripType === "oneWay") {
       let toCity = await CitiesModel.findOne({ _id: bookingDetails.to }).lean();
       fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
@@ -362,12 +362,13 @@ const saveBooking = async (req, res) => {
 
 
 
-const getBooking = async (req, res) => {
+const getBookingList = async (req, res) => {
   try {
-    const booking = await RideModel.find().lean();
-    res.status(200).send({ booking });
+    const { user, query } = req
+    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
+    res.status(200).send({ list: bookingList });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBooking', { error: error })
+    logger.log('server/managers/client.manager.js-> getBookingList', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
@@ -451,7 +452,7 @@ module.exports = {
   getCars,
   saveBooking,
 
-  getBooking,
+  getBookingList,
   getBookingByPasssengerId,
   cancelBooking,
   getAddressSuggestion,
