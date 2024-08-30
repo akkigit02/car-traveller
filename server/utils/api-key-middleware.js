@@ -4,7 +4,6 @@ const UserModel = require('../models/user.model')
 const jwtUserAuthentication = async (req, res, next) => {
     try {
         const { token } = req.headers;
-        console.log(token)
         /**
          * Check whether the token is provided in header
          * else return response with 401.
@@ -17,7 +16,6 @@ const jwtUserAuthentication = async (req, res, next) => {
         const { sessionId } = decodedToken;
 
         const userData = await UserModel.findOne({ "authentication.loginSessionId": sessionId, }).lean();
-        console.log(userData)
         if (!userData)
             return res.status(401).send({
                 auth: false,

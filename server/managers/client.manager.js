@@ -365,13 +365,29 @@ const saveBooking = async (req, res) => {
 const getBookingList = async (req, res) => {
   try {
     const { user, query } = req
-    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
+    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bokkingStatus: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
+const getBookingById = async (req, res) => {
+  try {
+    const { user, params } = req
+    if (!params?.bookingId)
+      res.status(400).send({ message: 'Booking Id not found' });
+    const bookingData = await RideModel.find({ userId: user._id, _id: String(params?.bookingId) }).lean()
+    res.status(200).send({ bookingData });
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+};
+
+
+
+
 const getBookingByPasssengerId = async (req, res) => {
   try {
     const passengerId = req.params.id;
@@ -451,8 +467,9 @@ module.exports = {
   getCities,
   getCars,
   saveBooking,
-
   getBookingList,
+  getBookingById,
+
   getBookingByPasssengerId,
   cancelBooking,
   getAddressSuggestion,
