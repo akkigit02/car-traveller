@@ -1,112 +1,193 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom';
-const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
+const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
-    const { bookingId } = useParams();
-    const [bookingDetails, setBookingDetails] = useState({
-        "_id": "66cb80dce3e02c4623c39414",
-        "vehicleId": null,
-        "passengerId": "66cb80dce3e02c4623c39411",
-        "dropCity": [],
-        "pickupLocation": "Thane West, Mumbai, Maharashtra, India",
-        "dropoffLocation": "Thane West, Mumbai, Maharashtra, India",
-        "pickupDate": {
-            "date": "26",
-            "month": "7",
-            "year": "2024"
-        },
-        "pickupTime": "12:30 AM",
-        "trip": {
-            "tripType": "cityCab"
-        },
-        "bokkingStatus": "pending",
-        "rideStatus": null,
-        "__v": 0,
-        "totalDistance": 1,
-        "totalPrice": "600"
-    })
+  const { bookingId } = useParams();
+  const [bookingDetails, setBookingDetails] = useState({});
 
-    const getBookingDetails = async () => {
-        try {
-            const { data } = await axios({ url: `/api/client/booking-details/${bookingId}` })
-            console.log(data)
-            setBookingDetails(data?.bookingDetails)
-        } catch (error) {
-            console.log(error)
-        }
+  const getBookingDetails = async () => {
+    try {
+      console.log("bookingId", bookingId);
+      const { data } = await axios({
+        url: `/api/client/booking-details/${bookingId}`,
+      });
+      console.log(data, "-------------");
+      setBookingDetails(data?.bookingDetails);
+    } catch (error) {
+      console.log(error);
     }
+  };
 
+  const advancePaymentOnPercentage = (percentage) => {
+    try {
+      const price = (parseFloat(bookingDetails?.totalPrice) / 100) * percentage;
+      return price;
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    useEffect(() => {
-        if (bookingId) {
-            getBookingDetails()
-        }
-        else window.location.href = CLIENT_URL
-    }, [])
-    return (
-        <>
-            <div class="booking-details">
-                <h2>Booking details</h2>
-
-                <div class="time-place">
-                    <h3>Time and place</h3>
-                    <p><strong>Pick-up:</strong></p>
-                    <p> Time:- {`${bookingDetails?.pickupDate?.date}/${bookingDetails?.pickupDate?.month}/${bookingDetails?.pickupDate?.year} ${bookingDetails.pickupTime}`} </p>
-                    <p> Address:- {bookingDetails?.pickupLocation}</p>
-                    <p><strong>Drop Address:</strong></p>
-                    <p> Time:- {`${bookingDetails?.dropCity?.date}/${bookingDetails?.dropCity?.month}/${bookingDetails?.dropCity?.year}`}</p>
-                    <p> Address:- {bookingDetails?.dropoffLocation}</p>
-                    <p><strong>Rental Type:</strong> {bookingDetails?.trip?.tripType}</p>
+  useEffect(() => {
+    if (bookingId) {
+      getBookingDetails();
+    } else window.location.href = CLIENT_URL;
+  }, []);
+  return (
+    <>
+      <div className="row m-0 col-reverse-sm flex-wrap">
+        <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
+          <div className="car-list-sidebar mt-30 h-100">
+            <h4 className="title">Booking Summary</h4>
+            
+            <div className="p-3">
+            <div className="col-lg-6 col-md-6 col-12 pe-0">
+                  <label>Name</label>
+                  <p className="mb-0 desti-details-2">
+                    {bookingDetails?.name}
+                  </p>
                 </div>
-                <div class="car-type">
-                    <h3>Car type</h3>
-                    <p><strong></strong></p>
-                    <p>(Example of this range: Audi S8)</p>
+              {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="d-flex align-items-center justify-content-between mb-4">
+                <p className="mb-0 desti-details">
+                  {bookingDetails?.pickUpCity?.name}
+                </p>
+                {['oneWay','roundTrip'].includes(bookingDetails?.trip?.tripType) && <div>
+                { bookingDetails?.dropCity?.map((item, index) => (
+                  <p key={index} className="mb-0 desti-details">
+                    {item.name}
+                  </p>
+                ))}
+                </div>}
+              </div>}
+              {<div className="d-flex align-items-center justify-content-between mb-4">
+                <p> Pickup Address:- <p className="mb-0 desti-details">{bookingDetails?.pickupLocation}</p></p>
+                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p> Drop Address:- <p className="mb-0 desti-details">{bookingDetails?.dropoffLocation}</p></p>}
+              </div>}
+              <div className="row m-0 pb-5">
+                <div className="col-lg-6 col-md-6 col-12 ps-0">
+                  <label>Pickup Date</label>
+                  <p className="mb-0 desti-details-2">
+                    {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
+                    {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
+                    {bookingDetails?.pickupDate?.year}
+                  </p>
                 </div>
+                {bookingDetails?.trip?.tripType === "roundTrip" && (
+                  <div className="col-lg-6 col-md-6 col-12 ps-0">
+                    <label>Return Date</label>
+                    <p className="mb-0 desti-details-2">
+                      {bookingDetails?.dropDate?.date?.padStart(2, "0")}/
+                      {bookingDetails?.dropDate?.month?.padStart(2, "0")}/
+                      {bookingDetails?.dropDate?.year}
+                    </p>
+                  </div>
+                )}
+                <div className="col-lg-6 col-md-6 col-12 pe-0">
+                  <label>Time</label>
+                  <p className="mb-0 desti-details-2">
+                    {bookingDetails?.pickupTime}
+                  </p>
+                </div>
+              </div>
+              <div>
+              <p>
+                  <strong>Trip type:</strong>{" "}
+                  {
+                    TRIP_TYPE.find(
+                      (li) => li.value === bookingDetails?.trip?.tripType
+                    )?.name
+                  }
+                </p>
+                {bookingDetails?.trip?.tripType === "hourly" && 
+                    <p>HOURLY_TYPE
+                    <strong>Hourly type:</strong>{" "}
+                    {HOURLY_TYPE.find(li => li.value === bookingDetails?.trip?.hourlyType)?.name}
+                  </p>
+                }
+                <p>
+                  <strong>Car type:</strong>{" "}
+                  {bookingDetails?.vehicleId?.vehicleType}(
+                  {bookingDetails?.vehicleId?.vehicleName}) or similar
+                </p>
+                <p>
+                  <strong>Car type:</strong>{" "}
+                  {bookingDetails?.vehicleId?.vehicleType}(
+                  {bookingDetails?.vehicleId?.vehicleName}) or similar
+                </p>
+                <p>
+                  <strong>Included:</strong> {bookingDetails?.totalDistance} Km
+                </p>
+                <p>
+                  <strong>Total Fare:</strong> {bookingDetails?.totalPrice}
+                </p>
+              </div>
+              <ul>
+                <li>
+                  Your trip comes with a kilometer limit. If you go over this
+                  limit, you'll incur additional charges for the extra distance
+                  traveled.
+                </li>
+                <li>
+                  If your trip involves hill climbs, the cab's air conditioning
+                  may be turned off during those sections.
+                </li>
+                <li>
+                  Your trip covers one pickup in the Pick-up City and one
+                  drop-off at the Destination City. It does not include any
+                  travel within the city.
+                </li>
+              </ul>
             </div>
-
-            <div class="payment-summary">
-                <h2>Payment Summary</h2>
-
-                <div class="rental-duration">
-                    <p><strong>Rental Duration:</strong> 1 day 15 hours</p>
-                </div>
-
-                <div class="price-per-hour">
-                    <p><strong>Price per hour:</strong> 39 hours x € 10</p>
-                </div>
-
-                <div class="car-rental-fee">
-                    <p><strong>CAR RENTAL FEE:</strong> € 390</p>
-                </div>
-
-                <div class="extras-price">
-                    <p><strong>Extras price:</strong> € 0</p>
-                </div>
-
-                <div class="sub-total">
-                    <p><strong>SUB-TOTAL:</strong> € 390</p>
-                </div>
-
-                <div class="vat">
-                    <p><strong>VAT:</strong> € 78</p>
-                </div>
-
-                <div class="total-price">
-                    <p><strong>TOTAL PRICE:</strong> € 468</p>
-                </div>
-
-                <div class="required-deposit">
-                    <p><strong>Required deposit:</strong> 10% of € 468</p>
-                    <p>€ 47</p>
-                </div>
+          </div>
+        </div>
+        <div className="col-lg-8 col-md-8 col-sm-12">
+          <section className="car-details fix section-padding">
+            <div className="d-flex justify-content-between">
+              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+                <input type="radio" name="advancePayment" />
+                <label htmlFor="">
+                  {bookingDetails?.totalPrice} of 20%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
+              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+                <input type="radio" name="advancePayment" />
+                <label htmlFor="">
+                  {bookingDetails?.totalPrice} of 40%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
+              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+                <input type="radio" name="advancePayment" />
+                <label htmlFor="">
+                  {bookingDetails?.totalPrice} of 60%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
+              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+                <input type="radio" name="advancePayment" />
+                <label htmlFor="">
+                  {bookingDetails?.totalPrice} of 80%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
+              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+                <input type="radio" name="advancePayment" />
+                <label htmlFor="">
+                  {bookingDetails?.totalPrice} of 100%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
             </div>
-
-            <button class="continue-button">Continue</button>
-
-        </>
-    )
+            <button>
+                Continue
+            </button>
+          </section>
+        </div>
+      </div>
+    </>
+  );
 }
 
-export default Payment
+export default Payment;

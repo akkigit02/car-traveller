@@ -108,7 +108,6 @@ function BookingForm() {
             const decodedString = decodeURIComponent(atob(query));
             const decodedData = JSON.parse(decodedString);
             setBookingDetails(decodedData)
-
         }
         else window.location.href = CLIENT_URL
     }, [])
@@ -152,7 +151,7 @@ function BookingForm() {
                                 </div>
                                 {bookingDetails?.tripType === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
                                     <label>Return Date</label>
-                                    <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
+                                    <p className='mb-0 desti-details-2'>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
                                 </div>}
                                 <div className='col-lg-6 col-md-6 col-12 pe-0'>
                                     <label>Time</label>

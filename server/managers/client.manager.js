@@ -298,7 +298,7 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
   const price = await getTotalPrice(bookingDetails);
   await RideModel.updateOne({ _id: rideId }, {
     $set: {
-      totalPrice: price?.totalPrice,
+      totalPrice: price?.totalPrice?.toFixed(2),
       totalDistance: parseFloat(price?.distance)
     }
   });
@@ -309,6 +309,7 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
 const saveBooking = async (req, res) => {
   try {
     const { body, user } = req;
+    console.log(body,"======-------")
     const isCityCab = body?.bookingDetails?.tripType === 'cityCab'
     const bookingData = {
       name: body.userDetails.name,
@@ -336,11 +337,11 @@ const saveBooking = async (req, res) => {
       bookingData['pickupLocation'] = body?.userDetails?.pickupAddress
       bookingData['dropoffLocation'] = body?.userDetails?.dropAddress
     }
-    if (body?.bookingDetails?.dropDate) {
+    if (body?.bookingDetails?.returnDate) {
       bookingData['dropDate'] = {
-        date: new Date(body?.dropDate).getDate(),
-        month: new Date(body?.dropDate).getMonth()+1,
-        year: new Date(body?.dropDate).getFullYear(),
+        date: new Date(body?.bookingDetails?.returnDate).getDate(),
+        month: new Date(body?.bookingDetails?.returnDate).getMonth()+1,
+        year: new Date(body?.bookingDetails?.returnDate).getFullYear(),
       }
     }
     const ride = await RideModel.create(bookingData);
@@ -442,7 +443,7 @@ const getBookingDeatils = async (req, res) => {
       .populate([
         { path: 'pickUpCity', select: 'name' },
         { path: 'dropCity', select: 'name' },
-        { path: 'vehicleId', select: 'modelName' },
+        { path: 'vehicleId', select: 'vehicleType vehicleName' },
       ])
       .lean();
     return res.status(200).send({ bookingDetails });

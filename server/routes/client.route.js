@@ -13,6 +13,6 @@ router.get('/booking/:bookingId', jwtUserAuthentication, ClientManager.getBookin
 
 // router.get('/passanger-booking/:id', ClientManager.getBookingByPasssengerId)
 // router.put('/cancel-booking/:id', ClientManager.cancelBooking)
-// router.get('/booking-details/:bookingId', ClientManager.getBookingDeatils)
+router.get('/booking-details/:bookingId', ClientManager.getBookingDeatils)
 // router.post('/package', ClientManager.sendPackageEnquire)
 module.exports = router

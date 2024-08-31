@@ -97,6 +97,20 @@ const VEHICLE_TYPE = [
       "name": "City Cab"
     }
   ]
+
+  const HOURLY_TYPE = [
+    {
+      name: '8 Hours| 80 Km',
+      value: "8hr80km"
+    },{
+      name: '10 Hours| 100 Km',
+      value: "10hr100km"
+    },
+    {
+      name: '12 Hours| 120 Km',
+      value: "12hr120km"
+    },
+  ]
   
 
 
@@ -104,5 +118,6 @@ module.exports = {
     USER_ROUTE,
     VEHICLE_TYPE,
     FUEL_TYPE,
-    TRIP_TYPE
+    TRIP_TYPE,
+    HOURLY_TYPE
 }

@@ -6,7 +6,7 @@ const Schema = mongoose.Schema;
 const rideSchema = new Schema({
   name: { type: String },
   driverId: { type: Schema.Types.ObjectId, ref: "user" },
-  vehicleId: { type: Schema.Types.ObjectId, ref: "vehicle" },
+  vehicleId: { type: Schema.Types.ObjectId, ref: "price" },
   userId: { type: Schema.Types.ObjectId, ref: "user" },
   pickUpCity: { type: Schema.Types.ObjectId, ref: "cities" },
   dropCity: [{ type: Schema.Types.ObjectId, ref: "cities" }],
@@ -31,7 +31,7 @@ const rideSchema = new Schema({
     month: { type: String },
     year: { type: String },
   },
-  totalPrice: { type: String },
+  totalPrice: { type: Number },
   advancePayment: { type: String },
   totalDistance: { type: Number },
   trip: {
