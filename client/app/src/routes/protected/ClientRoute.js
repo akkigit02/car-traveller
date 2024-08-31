@@ -4,7 +4,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminDashboard from '../../components/admin/Dashboard'
 import ClientHeaderBar from '../../components/ClientHeaderBar'
 import AvailableVehicle from '../../components/common/AvailableVehicle'
-import BookingForm from '../../components/common/BokkingForm'
+import BookingForm from '../../components/common/BookingForm'
 import BookingHistory from '../../components/client/BookingHistory'
 
 export default function ClientRoute() {

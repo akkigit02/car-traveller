@@ -100,7 +100,7 @@ function Payment() {
                   }
                 </p>
                 {bookingDetails?.trip?.tripType === "hourly" && 
-                    <p>HOURLY_TYPE
+                    <p>
                     <strong>Hourly type:</strong>{" "}
                     {HOURLY_TYPE.find(li => li.value === bookingDetails?.trip?.hourlyType)?.name}
                   </p>

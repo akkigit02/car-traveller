@@ -39,7 +39,7 @@ const rideSchema = new Schema({
     hourlyType: { type: String }
   },
   isLaguageCarrier: { type: Boolean },
-  bokkingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
+  bookingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
     enum: ["none", "scheduled", "inProgress", "completed", "cancelled"],

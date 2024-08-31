@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from '../components/Login'
 import AvailableVehicle from '../components/common/AvailableVehicle'
-import BookingForm from '../components/common/BokkingForm'
+import BookingForm from '../components/common/BookingForm'
 import ClientHeaderBar from '../components/ClientHeaderBar'
 
 function UnProtected() {

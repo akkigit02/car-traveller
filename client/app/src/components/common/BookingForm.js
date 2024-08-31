@@ -8,6 +8,7 @@ import moment from "moment";
 import { setTokenToLocal } from '../../services/Authentication.service';
 import store from '../../store';
 import { useSelector } from 'react-redux';
+import { HOURLY_TYPE } from '../../constants/common.constants';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function BookingForm() {
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
@@ -44,8 +45,8 @@ function BookingForm() {
                     type: "SET_INTO_STORE",
                     payload: { userInfo: data.session },
                 });
-                console.log(bookingDetails.bokkingId, "=====---")
-                navigate(`/payment/${bookingDetails.bokkingId}`, { replace: true });
+                console.log(bookingDetails.bookingId, "=====---")
+                navigate(`/payment/${bookingDetails.bookingId}`, { replace: true });
             }
         } catch (error) {
             console.log(error.response.data)
@@ -66,7 +67,7 @@ function BookingForm() {
                 setIsOtpSent(true)
                 setSessionId(data.sessionId)
             }
-            setBookingDetails(old => ({ ...old, bokkingId: data.bokking_id }))
+            setBookingDetails(old => ({ ...old, bookingId: data.booking_id }))
         } catch (error) {
             console.log(error)
             toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
@@ -80,8 +81,8 @@ function BookingForm() {
                 method: 'POST',
                 data: { userDetails: formData, bookingDetails }
             })
-            setBookingDetails(old => ({ ...old, bokkingId: data.bokking_id }))
-            navigate(`/payment/${data.bokking_id}`);
+            setBookingDetails(old => ({ ...old, bookingId: data.booking_id }))
+            navigate(`/payment/${data.booking_id}`);
         } catch (error) {
             console.log(error)
             toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
@@ -141,7 +142,6 @@ function BookingForm() {
                         <div className='p-3'>
                             <div className='d-flex align-items-center justify-content-between mb-4'>
                                 <p className='mb-0 desti-details'>{bookingDetails?.from?.name}</p>
-                                <p className='mb-0 border-bottom'>{bookingDetails?.type}</p>
                                 {bookingDetails?.to?.map((item, index) => (<p key={index} className='mb-0 desti-details'>{item.name}</p>))}
                             </div>
                             <div className='row m-0 pb-5'>
@@ -159,6 +159,17 @@ function BookingForm() {
                                 </div>
                             </div>
                             <div>
+                                <p>
+                                    <strong>Trip type:</strong>{" "}
+                                        {bookingDetails?.type}
+                                </p>
+                            {bookingDetails?.tripType === "hourly" && 
+                                <p>
+                                    <strong>Hourly type:</strong>{" "}
+                                        {HOURLY_TYPE.find(li => li.value === bookingDetails?.hourlyType)?.name}
+                                </p>
+                                }
+
                                 <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
                                 <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
                                 <p><strong>Total Fare:</strong> {bookingDetails?.totalPrice}</p>

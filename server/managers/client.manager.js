@@ -325,7 +325,7 @@ const saveBooking = async (req, res) => {
         tripType: body?.bookingDetails?.tripType,
         hourlyType: body?.bookingDetails?.hourlyType
       },
-      bokkingStatus: "pending",
+      bookingStatus: "pending",
     };
 
     if (isCityCab) {
@@ -351,7 +351,7 @@ const saveBooking = async (req, res) => {
     }
     else {
       await updatePriceAndSendNotification(body?.bookingDetails, ride._id)
-      res.status(200).send({ bokking_id: ride._id });
+      res.status(200).send({ booking_id: ride._id });
     }
   } catch (error) {
     logger.log('server/managers/client.manager.js-> saveBooking', { error: error })
@@ -366,7 +366,7 @@ const saveBooking = async (req, res) => {
 const getBookingList = async (req, res) => {
   try {
     const { user, query } = req
-    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bokkingStatus: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
+    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bookingStatus: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error })

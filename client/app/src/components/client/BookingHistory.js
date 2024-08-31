@@ -11,7 +11,7 @@ function BookingHistory() {
   const [hasMore, setHasMore] = useState(false)
   const [bookingDetails, setBookingDetails] = useState()
   const [isFetched, setIsFetched] = useState(false)
-  const fetchBokkingHistory = async (isScroll) => {
+  const fetchBookingHistory = async (isScroll) => {
     try {
       if (!isScroll)
         setSkip(0)
@@ -61,7 +61,7 @@ function BookingHistory() {
     }
   }
   useEffect(() => {
-    fetchBokkingHistory()
+    fetchBookingHistory()
   }, [])
 
 
@@ -71,7 +71,7 @@ function BookingHistory() {
       <div>
         <InfiniteScroll
           dataLength={bookingList.length}
-          next={() => fetchBokkingHistory(true)}
+          next={() => fetchBookingHistory(true)}
           hasMore={hasMore}
           loader={<h4>Loading...</h4>}
           endMessage={<p>No more bookings to show.</p>}
@@ -96,7 +96,7 @@ function BookingHistory() {
                   <td>{getDateAndTimeString(item.pickupDate, item.pickupTime)}</td>
                   <td>{item.totalPrice}</td>
                   <td>{item.advancePayment}</td>
-                  <td>{item.bokkingStatus}</td>
+                  <td>{item.bookingStatus}</td>
                   <td>
                     <button onClick={() => getBookingById(item._id)} >view</button>
                     <button disabled={item.isCancelable} >reshduled</button>
