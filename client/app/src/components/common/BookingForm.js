@@ -45,7 +45,6 @@ function BookingForm() {
                     type: "SET_INTO_STORE",
                     payload: { userInfo: data.session },
                 });
-                console.log(bookingDetails.bookingId, "=====---")
                 navigate(`/payment/${bookingDetails.bookingId}`, { replace: true });
             }
         } catch (error) {

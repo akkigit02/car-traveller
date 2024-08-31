@@ -6,6 +6,11 @@ const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
   const { bookingId } = useParams();
   const [bookingDetails, setBookingDetails] = useState({});
+  const [advancePercentage, setAdvancePercentage] = useState(null);
+  const [totalPayment, setTotalPayment] = useState({
+    coupon: '',
+    amount: null
+  })
 
   const getBookingDetails = async () => {
     try {
@@ -13,8 +18,9 @@ function Payment() {
       const { data } = await axios({
         url: `/api/client/booking-details/${bookingId}`,
       });
-      console.log(data, "-------------");
+      console.log(data, "-------------",data?.bookingDetails?.totalPrice);
       setBookingDetails(data?.bookingDetails);
+      setTotalPayment(old => ({...old,amount: data?.bookingDetails?.totalPrice}))
     } catch (error) {
       console.log(error);
     }
@@ -22,12 +28,27 @@ function Payment() {
 
   const advancePaymentOnPercentage = (percentage) => {
     try {
-      const price = (parseFloat(bookingDetails?.totalPrice) / 100) * percentage;
+      const price = (parseFloat(totalPayment?.amount) / 100) * percentage;
       return price;
     } catch (error) {
       console.log(error);
     }
   };
+
+  const handleCoupon = () => {
+
+    if(totalPayment?.coupon === 'DISCOUNT10') {
+      const price = (parseFloat(bookingDetails?.totalPrice) / 100) * 90;
+      setTotalPayment(old => ({...old,amount: price}))
+    } else {
+      setTotalPayment(old => ({ ...old, amount: parseFloat(bookingDetails?.totalPrice) || 0 }));
+    }
+  }
+
+  const handlePayment = () =>{
+    if(!advancePercentage) return
+    console.log(totalPayment,"====-------",advancePercentage, totalPayment.amount * (advancePercentage/100))
+  }
 
   useEffect(() => {
     if (bookingId) {
@@ -142,46 +163,54 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12">
+            <div>
+            <label htmlFor="">Coupon</label>
+            <input type="text" onChange={(e) => setTotalPayment(old => ({...old,coupon: e.target.value}))} />
+            <button onClick={handleCoupon}>Apply</button>
+            </div>
           <section className="car-details fix section-padding">
             <div className="d-flex justify-content-between">
               <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
-                <input type="radio" name="advancePayment" />
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(20)} />
                 <label htmlFor="">
-                  {bookingDetails?.totalPrice} of 20%{" "}
+                  20%{" "}
                   {advancePaymentOnPercentage(20)}
                 </label>
               </div>
               <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
-                <input type="radio" name="advancePayment" />
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(40)} />
                 <label htmlFor="">
-                  {bookingDetails?.totalPrice} of 40%{" "}
-                  {advancePaymentOnPercentage(20)}
+                  40%{" "}
+                  {advancePaymentOnPercentage(40)}
                 </label>
               </div>
               <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
-                <input type="radio" name="advancePayment" />
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(60)} />
                 <label htmlFor="">
-                  {bookingDetails?.totalPrice} of 60%{" "}
-                  {advancePaymentOnPercentage(20)}
+                  60%{" "}
+                  {advancePaymentOnPercentage(60)}
                 </label>
               </div>
               <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
-                <input type="radio" name="advancePayment" />
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(80)} />
                 <label htmlFor="">
-                  {bookingDetails?.totalPrice} of 80%{" "}
-                  {advancePaymentOnPercentage(20)}
+                   80%{" "}
+                  {advancePaymentOnPercentage(80)}
                 </label>
               </div>
               <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
-                <input type="radio" name="advancePayment" />
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(100)} />
                 <label htmlFor="">
-                  {bookingDetails?.totalPrice} of 100%{" "}
-                  {advancePaymentOnPercentage(20)}
+                  100%{" "}
+                  {advancePaymentOnPercentage(100)}
                 </label>
               </div>
             </div>
-            <button>
-                Continue
+            <div>
+              Total Payment amount: {totalPayment?.amount}
+            </div>
+            <button onClick={handlePayment}>
+                Proceed to pay
             </button>
           </section>
         </div>
