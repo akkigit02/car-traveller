@@ -423,10 +423,17 @@ export default function VehiclePricing() {
                     <label htmlFor="">Price</label>
                     <input
                       type="number"
-                      {...register(`hourly.${index}.basePrice`)}
+                      {...register(`hourly.${index}.basePrice`, {
+                        required: "Price is required",
+                        min: { value: 0, message: "Price must be a positive number" },
+                      })}
                       className="form-control ml-2"
                       placeholder="Enter base price"
+                      min={0}
                     />
+                    {errors?.hourly?.[index]?.basePrice && (
+                  <span className="text-danger">{errors?.hourly?.[index]?.basePrice?.message}</span>
+                )}
                     </div>
                   </div>
                 ))}
