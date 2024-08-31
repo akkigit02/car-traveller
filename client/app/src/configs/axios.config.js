@@ -8,7 +8,6 @@ Axios.defaults.headers.post['Content-Type'] = 'application/json';
 
 Axios.interceptors.request.use(async (request) => {
     const token = await getTokenFromLocal()
-    console.log(request)
     if (token)
         request.headers['token'] = token
     return request;

@@ -316,7 +316,7 @@ const saveBooking = async (req, res) => {
       userId: user._id,
       pickupDate: {
         date: new Date(body?.bookingDetails?.pickUpDate).getDate(),
-        month: new Date(body?.bookingDetails?.pickUpDate).getMonth(),
+        month: new Date(body?.bookingDetails?.pickUpDate).getMonth()+1,
         year: new Date(body.bookingDetails?.pickUpDate).getFullYear(),
       },
       pickupTime: body.bookingDetails?.pickUpTime,
@@ -339,7 +339,7 @@ const saveBooking = async (req, res) => {
     if (body?.bookingDetails?.dropDate) {
       bookingData['dropDate'] = {
         date: new Date(body?.dropDate).getDate(),
-        month: new Date(body?.dropDate).getMonth(),
+        month: new Date(body?.dropDate).getMonth()+1,
         year: new Date(body?.dropDate).getFullYear(),
       }
     }

@@ -42,8 +42,8 @@ const rideSchema = new Schema({
   bokkingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
-    enum: ["scheduled", "inProgress", "completed", "cancelled"],
-    default: null,
+    enum: ["none", "scheduled", "inProgress", "completed", "cancelled"],
+    default: 'none',
   },
 });
 

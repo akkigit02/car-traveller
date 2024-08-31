@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { checkTheDateDiifrence, getDateAndTimeString } from '../../utils/format.util';
 function BookingHistory() {
 
   const [skip, setSkip] = useState(0)
@@ -22,9 +23,22 @@ function BookingHistory() {
           limit,
         }
       })
-      console.log(data)
-      setBookingList(data.list)
-      setHasMore(data.list.length === limit);
+
+      const list = data.list.map(ele => {
+        console.log(checkTheDateDiifrence(ele.pickupDate, ele.pickupTime))
+        ele['isCancelable'] = checkTheDateDiifrence(ele.pickupDate, ele.pickupTime)
+        return ele
+      })
+
+
+
+      if (isScroll) {
+        setBookingList(old => old.concat(list));
+      }
+      else {
+        setBookingList(list)
+      }
+      setHasMore(list.length === limit);
       setSkip(old => old + limit);
     } catch (error) {
       console.log(error)
@@ -46,19 +60,10 @@ function BookingHistory() {
       setIsFetched(false)
     }
   }
-
-
-
-
-
   useEffect(() => {
     fetchBokkingHistory()
   }, [])
 
-
-  const getDateAndTimeString = (dateObj, time) => {
-    return `${dateObj.date}/${dateObj.month}/${dateObj.year} ${time}`
-  }
 
 
   return (
@@ -94,8 +99,8 @@ function BookingHistory() {
                   <td>{item.bokkingStatus}</td>
                   <td>
                     <button onClick={() => getBookingById(item._id)} >view</button>
-                    <button>reshduled</button>
-                    <button>Cancel</button>
+                    <button disabled={item.isCancelable} >reshduled</button>
+                    <button disabled={item.isCancelable}>Cancel</button>
                   </td>
                 </tr>))
                   :
