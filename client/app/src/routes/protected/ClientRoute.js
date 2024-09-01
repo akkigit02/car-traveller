@@ -1,15 +1,16 @@
 import React from 'react'
-import Payment from '../../components/Payment'
+import Payment from '../../components/client/Payment'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import AdminDashboard from '../../components/admin/Dashboard'
-import TopNavBar from '../../components/TopNavBar'
+import ClientHeaderBar from '../../components/ClientHeaderBar'
 import AvailableVehicle from '../../components/common/AvailableVehicle'
-import BookingForm from '../../components/common/BokkingForm'
+import BookingForm from '../../components/common/BookingForm'
+import BookingHistory from '../../components/client/BookingHistory'
 
 export default function ClientRoute() {
   return (
     <main className="position-relative h-100vh">
-      <TopNavBar />
+      <ClientHeaderBar />
       <div className="row mx-0 mt-3">
         <div className="col-lg-12 col-md-12 col-12">
           <div className="border rounded shadow p-3 h-100">
@@ -19,6 +20,7 @@ export default function ClientRoute() {
               <Route path="/car-list/:query" Component={AvailableVehicle} exact />
               <Route path="/booking/:query" Component={BookingForm} exact />
               <Route path={`/payment/:bookingId`} Component={Payment} exact />
+              <Route path={`/booking-list`} Component={BookingHistory} exact />
               <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
             </Routes>
           </div>

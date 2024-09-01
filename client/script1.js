@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formFields.forEach(field => {
             const wrapper = document.createElement('div');
             wrapper.classList.add('pickup-items');
-            
+
             if (field.type === 'date') {
                 wrapper.innerHTML = `
                     <label class="field-label">${field.label}</label>
@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
             parentContainer.appendChild(wrapper);
-            
+
         });
         const buttonWrapper = document.createElement('div');
         buttonWrapper.classList.add('pickup-items');
@@ -167,10 +167,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
         } else if (type === 'cityCab') {
-            const pickupCityCab = document.getElementById('pickupCityCab') 
-            const dropCityCab = document.getElementById('dropCityCab') 
-            if(pickupCityCab) {
-                pickupCityCab.addEventListener('input',() => filterFunction('pickupCityCab'))
+            const pickupCityCab = document.getElementById('pickupCityCab')
+            const dropCityCab = document.getElementById('dropCityCab')
+            if (pickupCityCab) {
+                pickupCityCab.addEventListener('input', () => filterFunction('pickupCityCab'))
                 pickupCityCab.addEventListener('focus', () => setSuggestionVisible('pickupCityCab', true));
                 pickupCityCab.addEventListener('blur', () => {
                     setTimeout(() => {
@@ -179,8 +179,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 250);
                 });
             }
-            if(dropCityCab) {
-                dropCityCab.addEventListener('input',() => filterFunction('dropCityCab'))
+            if (dropCityCab) {
+                dropCityCab.addEventListener('input', () => filterFunction('dropCityCab'))
                 dropCityCab.addEventListener('focus', () => setSuggestionVisible('dropCityCab', true));
                 dropCityCab.addEventListener('blur', () => {
                     setTimeout(() => {
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-        }else {
+        } else {
             const to = document.getElementById('to');
             if (to) {
                 to.addEventListener('input', () => filterFunction('to'));
@@ -215,9 +215,9 @@ document.addEventListener('DOMContentLoaded', () => {
             let isDropValid = true
             let isValideMultiTo = true
             const timeSelect = document.getElementById('timeSelect');
-            if (timeSelect){ 
+            if (timeSelect) {
                 formData['pickUpTime'] = timeSelect.value
-                if(!timeSelect.value) {
+                if (!timeSelect.value) {
                     isValidePickupDate = false
                     document.getElementById(`errortimeSelect`).style.display = 'block';
                 } else {
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const pickupDate = document.getElementById('pickupDate');
             if (pickupDate) {
                 formData['pickUpDate'] = pickupDate.value
-                if(!pickupDate.value) {
+                if (!pickupDate.value) {
                     isValidePickupDate = false
                     document.getElementById(`errorpickupDate`).style.display = 'block';
                 } else {
@@ -237,10 +237,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById(`errorpickupDate`).style.display = 'none';
                 }
             }
-            if(query?.tripType === 'roundTrip') {
+            if (query?.tripType === 'roundTrip') {
                 const returnDate = document.getElementById('returnDate')
                 formData['returnDate'] = returnDate.value
-                if(!returnDate.value) {
+                if (!returnDate.value) {
                     isValideDropDate = false
                     document.getElementById(`errorreturnDate`).style.display = 'block';
                 } else {
@@ -248,25 +248,25 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById(`errorreturnDate`).style.display = 'none';
                 }
                 for (let key in query) {
-                    if(key.match(/^\d+To$/)) {
+                    if (key.match(/^\d+To$/)) {
                         const isValideError = validateField(key, `error${key}`);
-                        if(!isValideError) isValideMultiTo = false
+                        if (!isValideError) isValideMultiTo = false
                     }
                 }
-            } 
-            if(query?.tripType === 'cityCab') {
+            }
+            if (query?.tripType === 'cityCab') {
 
                 isPickupValid = validateField('pickupCityCab', 'errorpickupCityCab');
                 isDropValid = validateField('dropCityCab', 'errordropCityCab');
-            
+
                 if (!isPickupValid || !isDropValid) return;
-            } else if(query?.tripType === 'hourly') {
+            } else if (query?.tripType === 'hourly') {
                 isPickupValid = validateField('from', 'errorfrom');
-            }else {
+            } else {
                 isPickupValid = validateField('from', 'errorfrom');
                 isDropValid = validateField('to', 'errorto');
             }
-            
+
             if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
@@ -284,17 +284,22 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     };
 
-    const setSuggestionVisible = (inputType, isVisible) => {
+    const setSuggestionVisible = async (inputType, isVisible) => {
         const suggestion = document.getElementById(`${inputType}Suggestion`);
-        suggestion.style.display = isVisible ? 'block' : 'none';
-        if (isVisible) filterFunction(inputType);
-        else suggestion.innerHTML = '';
+        if (isVisible) {
+            await filterFunction(inputType);
+            suggestion.style.display = 'block'
+        }
+        else {
+            suggestion.style.display = 'none'
+            suggestion.innerHTML = '';
+        }
     };
 
 
     const handleValidationOnBlur = (inputType) => {
         let searchInput = document.getElementById(inputType);
-        if(!searchInput.value.trim()) {
+        if (!searchInput.value.trim()) {
             isValidateGlobal = false
             query[inputType] = ''
             document.getElementById(`error${inputType}`).style.display = 'block';
@@ -305,7 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('loginBtn').addEventListener('click', () => {
-        window.location.href = 'http://127.0.0.1:3000'
+        window.location.href = 'http://127.0.0.1:3000/login'
     })
 
     const filterFunction = async (inputType) => {
@@ -329,7 +334,7 @@ document.addEventListener('DOMContentLoaded', () => {
             suggestion.appendChild(div);
             return;
         }
-        if(query?.tripType === 'cityCab') {
+        if (query?.tripType === 'cityCab') {
             for (const city of cities) {
                 const div = document.createElement('div');
                 div.classList.add('cstm-dropdown-list');
@@ -361,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`http://127.0.0.1:5001/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
@@ -369,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(data)
                 suggestions = data.address
             } else {
-                response = await fetch(`http://127.0.0.1:5001/api/client/cities?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();
@@ -384,31 +389,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const handleDateChange = (e) => {
         let date = new Date(e.target.value)
-        date.setHours(0,0,0,0)
+        date.setHours(0, 0, 0, 0)
         let endDate = new Date(e.target.value)
-        endDate.setHours(23,45,0,0)
+        endDate.setHours(23, 45, 0, 0)
 
         const optionsInterval = 15;
         const timeSelect = document.getElementById('timeSelect');
         if (!timeSelect) return;
         timeSelect.innerHTML = '';
         timeSelect.value = ''
-        if(date.getDate() == new Date().getDate() && date.getMonth() == new Date().getMonth() && date.getFullYear() == new Date().getFullYear()) {
+        if (date.getDate() == new Date().getDate() && date.getMonth() == new Date().getMonth() && date.getFullYear() == new Date().getFullYear()) {
             date = new Date()
             endDate = new Date()
-            endDate.setHours(23,45,0,0)
+            endDate.setHours(23, 45, 0, 0)
             date.setHours(date.getHours() + 1);
             date.setMinutes(date.getMinutes() + 30);
         }
 
-        if(query?.tripType === 'roundTrip') {
+        if (query?.tripType === 'roundTrip') {
             const returnDate = document.getElementById('returnDate');
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
             returnDate.value = `${year}-${month}-${day}`;
             returnDate.textContent = `${day}/${month}/${year}`
-            returnDate.setAttribute('min',returnDate.value)
+            returnDate.setAttribute('min', returnDate.value)
         }
         while (date <= endDate) {
             let minutes = Math.ceil(date.getMinutes() / optionsInterval) * optionsInterval;
@@ -441,32 +446,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         now.setHours(now.getHours() + 1);
         now.setMinutes(now.getMinutes() + 30);
-        if(date > endDate) {
+        if (date > endDate) {
             now.setHours(0, 30, 0, 0)
         }
-        if(date > endDate) {
+        if (date > endDate) {
             date.setHours(0, 30, 0, 0)
             endDate.setDate(endDate.getDate() + 1);
             endDate.setHours(23, 45, 0, 0)
         }
 
         const inputElement = document.getElementById('pickupDate');
-        inputElement.addEventListener('change',handleDateChange)
+        inputElement.addEventListener('change', handleDateChange)
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
         inputElement.value = `${year}-${month}-${day}`;
         inputElement.textContent = `${day}/${month}/${year}`
-        inputElement.setAttribute('min',inputElement.value)
-        if(query?.tripType === 'roundTrip') {
+        inputElement.setAttribute('min', inputElement.value)
+        if (query?.tripType === 'roundTrip') {
             const returnDate = document.getElementById('returnDate');
 
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        returnDate.value = `${year}-${month}-${day}`;
-        returnDate.textContent = `${day}/${month}/${year}`
-        returnDate.setAttribute('min',returnDate.value)
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            returnDate.value = `${year}-${month}-${day}`;
+            returnDate.textContent = `${day}/${month}/${year}`
+            returnDate.setAttribute('min', returnDate.value)
         }
 
         let nowMinutes = Math.ceil(now.getMinutes() / optionsInterval) * optionsInterval;

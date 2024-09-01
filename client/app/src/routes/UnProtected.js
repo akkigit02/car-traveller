@@ -2,13 +2,13 @@ import React, { useEffect } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from '../components/Login'
 import AvailableVehicle from '../components/common/AvailableVehicle'
-import BookingForm from '../components/Signup'
-import TopNavBar from '../components/TopNavBar'
+import BookingForm from '../components/common/BookingForm'
+import ClientHeaderBar from '../components/ClientHeaderBar'
 
 function UnProtected() {
   return (
     <>
-      <TopNavBar />
+      <ClientHeaderBar />
       <Routes>
         <Route path="/" element={<Navigate to='/login' />} exact />
         <Route path="/login" Component={Login} exact />

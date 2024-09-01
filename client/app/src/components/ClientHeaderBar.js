@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import style from '../assets/css/style.css';
 import logo from '../assets/img/logomain.png';
+import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 
 function TopNavBar() {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [isBodyOverlayOpen, setIsBodyOverlayOpen] = useState(false);
+  const userInfo = useSelector((state) => state.userInfo)
 
   const handleSidebarToggle = () => {
     setIsOffcanvasOpen(true);
@@ -129,11 +131,18 @@ function TopNavBar() {
                     </h6>
                   </div>
                 </div>
-                <a href="http://127.0.0.1:3000/">
-                  <button className="theme-btn wow fadeInUp padding-signin-btn">
-                    Login
-                  </button>
-                </a>
+                {userInfo ? <>
+                  <Link
+                    to={`/profile`}
+                  >
+                    <span>Profile</span>
+                  </Link>
+                </> :
+                  <a href="http://127.0.0.1:3000/">
+                    <button className="theme-btn wow fadeInUp padding-signin-btn">
+                      Login
+                    </button>
+                  </a>}
                 <div className="header__hamburger d-xl-none my-auto">
                   <div className="sidebar__toggle" onClick={handleSidebarToggle}>
                     <i className="fas fa-bars"></i>

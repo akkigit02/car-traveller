@@ -64,7 +64,7 @@ const CITY_CAB_PRICE = [
     {
       radiusRange: "70-79 KM",
       min: 69,
-      max: 79,
+      max: 500,
       sedan: { base: 1200, perKm: 16, min: 2320, max: 2464 },
       suv: { base: 1300, perKm: 18, min: 2560, max: 2722 }
     }

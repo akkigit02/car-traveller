@@ -5,42 +5,109 @@ import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import moment from "moment";
+import { setTokenToLocal } from '../../services/Authentication.service';
+import store from '../../store';
+import { useSelector } from 'react-redux';
+import { HOURLY_TYPE } from '../../constants/common.constants';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function BookingForm() {
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm({
-        mode: "onChange",
+    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+        mode: "onChange", // Validate on every change
     });
+    const userInfo = useSelector(({ userInfo }) => userInfo)
     const navigate = useNavigate()
     const { query } = useParams();
     const [bookingDetails, setBookingDetails] = useState({})
+    const [isOtpSent, setIsOtpSent] = useState(false)
+    const [sessionId, setSessionId] = useState()
+    const [otp, setOtp] = useState()
     const [addressSuggestion, setAdressSugeestion] = useState({
         isOpen: false,
         type: '',
         address: []
     })
-    const [isEditable, setIsEditable] = useState(false)
 
-    const saveBokking = async (formData) => {
+
+    const verifyOtp = async () => {
         try {
-            console.log(34)
+            const { data } = await axios({
+                url: '/api/auth/verify-otp',
+                method: 'POST',
+                data: {
+                    otp, sessionId
+                }
+            })
+            if (data.message)
+                toast.error(data.message)
+            if (data.status === 'LOGIN_SUCCESS') {
+                setTokenToLocal(data.session.jwtToken);
+                store.dispatch({
+                    type: "SET_INTO_STORE",
+                    payload: { userInfo: data.session },
+                });
+                navigate(`/payment/${bookingDetails.bookingId}`, { replace: true });
+            }
+        } catch (error) {
+            console.log(error.response.data)
+            toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
+        }
+    }
+
+
+    const signUp = async (formData) => {
+        try {
             const { data } = await axios({
                 url: '/api/auth/signup',
                 method: 'POST',
-                data: { userDetails: { ...formData, userId: '' }, bookingDetails }
+                data: { userDetails: formData, bookingDetails }
             })
-            setBookingDetails(old => ({ ...old, bokkingId: data.bokking_id }))
+
+            if (data.status === 'TWO_STEP_AUTHENTICATION') {
+                setIsOtpSent(true)
+                setSessionId(data.sessionId)
+            }
+            setBookingDetails(old => ({ ...old, bookingId: data.booking_id }))
         } catch (error) {
             console.log(error)
             toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
         }
     }
+    
+    const saveBooking = async (formData) => {
+        try {
+            const { data } = await axios({
+                url: '/api/client/booking',
+                method: 'POST',
+                data: { userDetails: formData, bookingDetails }
+            })
+            setBookingDetails(old => ({ ...old, bookingId: data.booking_id }))
+            navigate(`/payment/${data.booking_id}`);
+        } catch (error) {
+            console.log(error)
+            toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
+        }
+    }
+    const handleSubmitForm = async (formData) => {
+        try {
+            if (userInfo) await saveBooking(formData)
+            else await signUp(formData)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+
+
     useEffect(() => {
+        if (userInfo) {
+            console.log(userInfo)
+            reset({ name: userInfo.name, email: userInfo.email, phoneNumber: userInfo.primaryPhone }, { keepDefaultValues: true })
+        }
         if (query) {
             // decode query   
             const decodedString = decodeURIComponent(atob(query));
             const decodedData = JSON.parse(decodedString);
             setBookingDetails(decodedData)
-            console.log(decodedData)
         }
         else window.location.href = CLIENT_URL
     }, [])
@@ -74,7 +141,6 @@ function BookingForm() {
                         <div className='p-3'>
                             <div className='d-flex align-items-center justify-content-between mb-4'>
                                 <p className='mb-0 desti-details'>{bookingDetails?.from?.name}</p>
-                                <p className='mb-0 border-bottom'>{bookingDetails?.type}</p>
                                 {bookingDetails?.to?.map((item, index) => (<p key={index} className='mb-0 desti-details'>{item.name}</p>))}
                             </div>
                             <div className='row m-0 pb-5'>
@@ -84,7 +150,7 @@ function BookingForm() {
                                 </div>
                                 {bookingDetails?.tripType === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
                                     <label>Return Date</label>
-                                    <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
+                                    <p className='mb-0 desti-details-2'>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
                                 </div>}
                                 <div className='col-lg-6 col-md-6 col-12 pe-0'>
                                     <label>Time</label>
@@ -92,6 +158,17 @@ function BookingForm() {
                                 </div>
                             </div>
                             <div>
+                                <p>
+                                    <strong>Trip type:</strong>{" "}
+                                        {bookingDetails?.type}
+                                </p>
+                            {bookingDetails?.tripType === "hourly" && 
+                                <p>
+                                    <strong>Hourly type:</strong>{" "}
+                                        {HOURLY_TYPE.find(li => li.value === bookingDetails?.hourlyType)?.name}
+                                </p>
+                                }
+
                                 <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
                                 <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
                                 <p><strong>Total Fare:</strong> {bookingDetails?.totalPrice}</p>
@@ -122,43 +199,26 @@ function BookingForm() {
                                                 </p>
                                             </div>
                                             <form
-                                                onSubmit={handleSubmit(saveBokking)}
+                                                onSubmit={handleSubmit(handleSubmitForm)}
                                                 className="contact-form-items"
                                             >
                                                 <div className="row g-4">
                                                     <div className="col-lg-6">
                                                         <div className="form-clt">
                                                             <label className="label-text">
-                                                                First Name *
+                                                                Name *
                                                             </label>
                                                             <input
-                                                                {...register("firstName", {
+                                                                {...register("name", {
                                                                     required: "First Name is required",
                                                                     pattern: namePattern,
                                                                 })}
                                                                 type="text"
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent}
                                                                 placeholder="Enter First name"
                                                             />
-                                                            {errors?.firstName?.message && (
-                                                                <span>{errors?.firstName?.message}</span>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                    <div className="col-lg-6">
-                                                        <div className="form-clt">
-                                                            <label className="label-text">Last Name</label>
-                                                            <input
-                                                                {...register("lastName", {
-                                                                    required: "Last Name is required",
-                                                                    pattern: namePattern,
-                                                                })}
-                                                                type="text"
-                                                                disabled={isEditable}
-                                                                placeholder="Enter Last name"
-                                                            />
-                                                            {errors?.lastName?.message && (
-                                                                <span>{errors?.lastName?.message}</span>
+                                                            {errors?.name?.message && (
+                                                                <span>{errors?.name?.message}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -171,7 +231,7 @@ function BookingForm() {
                                                                     required: "Email is required",
                                                                     pattern: emailPattern,
                                                                 })}
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent || userInfo}
                                                                 placeholder="Enter Email "
                                                             />
                                                             {errors?.email?.message && (
@@ -195,7 +255,7 @@ function BookingForm() {
                                                                         phoneNumberValidation
                                                                     )}
                                                                     type="text"
-                                                                    disabled={isEditable}
+                                                                    disabled={isOtpSent || userInfo}
                                                                     placeholder="Enter Phone Number"
                                                                 />
                                                                 {errors?.phoneNumber?.message && (
@@ -219,7 +279,7 @@ function BookingForm() {
                                                                 onBlur={() => setTimeout(() => {
                                                                     setAdressSugeestion({ isOpen: false, type: '', address: [] })
                                                                 }, 250)}
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent}
                                                                 placeholder="Address"
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'pickupAddress' &&
@@ -246,7 +306,7 @@ function BookingForm() {
                                                                 onBlur={() => setTimeout(() => {
                                                                     setAdressSugeestion({ isOpen: false, type: '', address: [] })
                                                                 }, 250)}
-                                                                disabled={isEditable}
+                                                                disabled={isOtpSent}
                                                                 placeholder="Address"
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'dropAddress' &&
@@ -265,6 +325,16 @@ function BookingForm() {
                                                     </div>
                                                 </div>
                                             </form>
+                                            {isOtpSent && (
+                                                <div>
+                                                    <input className="cstm-input me-3"
+                                                        value={otp}
+                                                        onChange={(e) => setOtp(e.target.value)}
+                                                        placeholder="Enter your OTP"
+                                                    />
+                                                    <button className="cstm-btn-red" onClick={verifyOtp}>verify</button>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

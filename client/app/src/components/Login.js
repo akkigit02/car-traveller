@@ -209,7 +209,8 @@ function Login() {
 
             <div className="signin-form">
               <div className="w-100 d-flex justify-content-center">
-            <img className="h-60p mb-3" src={logo} alt="logo-img" /></div>
+            <a href="https://dddcabs.com/index.html"  rel="noopener noreferrer"><img className="h-60p mb-3" src={logo} alt="logo-img" /></a>
+            </div>
               <h4 className="form-title">
                 {otpDetails ? "Verify OTP" : <>{userType === "admin" ? "Admin Login" : "User Login"}</>}
               </h4>
@@ -332,7 +333,7 @@ function Login() {
                       </div>
                     </form>
                   )}
-                  <div className="social-login">
+                  {/* <div className="social-login">
                     <span className="social-label">Or login with</span>
                     <ul className="socials">
                       <li
@@ -354,7 +355,7 @@ function Login() {
                         </a>
                       </li>
                     </ul>
-                  </div>
+                  </div> */}
                 </>
               )}
               {otpDetails && (

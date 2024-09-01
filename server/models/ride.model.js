@@ -4,9 +4,10 @@ const Schema = mongoose.Schema;
 
 // Define the Ride schema
 const rideSchema = new Schema({
+  name: { type: String },
   driverId: { type: Schema.Types.ObjectId, ref: "user" },
-  vehicleId: { type: Schema.Types.ObjectId, ref: "vehicle" },
-  passengerId: { type: Schema.Types.ObjectId, ref: "user" },
+  vehicleId: { type: Schema.Types.ObjectId, ref: "price" },
+  userId: { type: Schema.Types.ObjectId, ref: "user" },
   pickUpCity: { type: Schema.Types.ObjectId, ref: "cities" },
   dropCity: [{ type: Schema.Types.ObjectId, ref: "cities" }],
   pickupLocation: {
@@ -30,19 +31,19 @@ const rideSchema = new Schema({
     month: { type: String },
     year: { type: String },
   },
-  totalPrice: { type: String },
+  totalPrice: { type: Number },
   advancePayment: { type: String },
   totalDistance: { type: Number },
   trip: {
-    tripType: {type: String},
-    hourlyType: {type: String}
+    tripType: { type: String },
+    hourlyType: { type: String }
   },
   isLaguageCarrier: { type: Boolean },
-  bokkingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
+  bookingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
-    enum: ["scheduled", "inProgress", "completed", "cancelled"],
-    default: null,
+    enum: ["none", "scheduled", "inProgress", "completed", "cancelled"],
+    default: 'none',
   },
 });
 

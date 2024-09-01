@@ -374,7 +374,7 @@ span {
     background-color: var(--bg);
 }
 input {
-    color: var(--white);
+    color: var(--text);
 }
 
 .theme-btn {

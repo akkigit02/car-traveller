@@ -50,7 +50,7 @@ const getAddressSuggestionOnLandingPage = async (req, res) => {
     address = address.map(ele => ({ address: ele.description, placeId: ele.place_id }))
     return res.status(200).send({ address });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getAddressSuggestionOnLandingPage', {error: error})
+    logger.log('server/managers/client.manager.js-> getAddressSuggestionOnLandingPage', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
@@ -77,7 +77,7 @@ const getCars = async (req, res) => {
       toDetail.push(toCity)
       console.log(toCity)
       let metroCityPrice = 1
-      if(!toCity?.isMetroCity) metroCityPrice = 1.75
+      if (!toCity?.isMetroCity) metroCityPrice = 1.75
 
       for (let car of cars) {
         car["totalPrice"] =
@@ -161,15 +161,15 @@ const getCars = async (req, res) => {
     } else if (search?.tripType === 'cityCab') {
       const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
       distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      console.log(distance,"====-------")
+      console.log(distance, "====-------")
       const priceInfo = CITY_CAB_PRICE.find(info => info.max >= distance && info.min <= distance)
       fromDetail = { name: data.from }
       toDetail = [{ name: data.to }]
       cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
       for (let car of cars) {
-        if(['Sedan'].includes(car.vehicleType)) {
+        if (['Sedan'].includes(car.vehicleType)) {
           car["totalPrice"] = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
-        } else{
+        } else {
           car["totalPrice"] = priceInfo.suv.base + priceInfo.suv.perKm * distance
         }
         car['showDistance'] = distance?.toFixed(2);
@@ -199,37 +199,203 @@ const getCars = async (req, res) => {
     };
     return res.status(200).send({ cars: carList, bookingDetails });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getCars', {error: error})
+    logger.log('server/managers/client.manager.js-> getCars', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
-const addBooking = async (req, res) => {
+
+const getTotalPrice = async (bookingDetails) => {
   try {
-    let bookingDetails = req.body;
-    bookingDetails.status = "completed";
-    const booking = await RideModel.create(bookingDetails);
-    return res.status(200).send({ booking, message: "Ride has been Booked" });
+    let totalPrice = 0;
+    let distance = 0;
+    let toDetail = [];
+    let fromDetail = "";
+    const car = await PricingModel.findOne({
+      _id: bookingDetails?.vehicleId,
+    }).lean();
+    if (bookingDetails?.tripType === "oneWay") {
+      let toCity = await CitiesModel.findOne({ _id: bookingDetails.to }).lean();
+      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
+      distance = estimateRouteDistance(
+        fromDetail.latitude,
+        fromDetail.longitude,
+        toCity.latitude,
+        toCity.longitude,
+        1.25
+      );
+      toDetail.push(toCity);
+      let metroCityPrice = 1
+      if (!toCity?.isMetroCity) metroCityPrice = 1.75
+
+      totalPrice = distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
+    } else if (bookingDetails?.tripType === "roundTrip") {
+      let cityIds = bookingDetails?.to?.map((vehicle) => vehicle._id);
+      cityIds.unshift(bookingDetails?.from?._id);
+      let totalDistance = 0;
+      for (let i = 0; i < cityIds.length - 1; i++) {
+        const fromCity = await CitiesModel.findOne({ _id: cityIds[i] }).lean();
+        if (i == 0) {
+          fromDetail = fromCity;
+        }
+        const toCity = await CitiesModel.findOne({
+          _id: cityIds[i + 1],
+        }).lean();
+        // if(i+1 < cityIds.length - 1)
+        toDetail.push(toCity);
+        const dist = estimateRouteDistance(
+          fromCity.latitude,
+          fromCity.longitude,
+          toCity.latitude,
+          toCity.longitude,
+          1.25
+        );
+
+        totalDistance += dist;
+      }
+      distance = totalDistance;
+      let numberOfDay = dateDifference(
+        bookingDetails?.pickUpDate,
+        bookingDetails?.returnDate
+      );
+      if (numberOfDay == 0) numberOfDay = 1;
+
+      if (distance <= numberOfDay * 300) {
+        totalPrice =
+          numberOfDay * 300 * car.costPerKm + numberOfDay * car.driverAllowance;
+      } else {
+        totalPrice =
+          distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
+      }
+    } else if (bookingDetails?.tripType === "hourly") {
+      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
+      let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
+      if (hourlyData) {
+        totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
+        distance = hourlyData?.distance
+      }
+    } else if (bookingDetails?.tripType === 'cityCab') {
+      const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
+      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
+      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
+      fromDetail = { name: data.from }
+      toDetail = [{ name: data.to }]
+      if (['Sedan'].includes(car.vehicleType)) {
+        totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
+      } else {
+        totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
+      }
+    }
+
+    return { totalPrice, toDetail, distance: distance?.toFixed(2) };
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> addBooking', {error: error})
-    res.status(500).send({ message: 'Server Error' })
+    console.log(error)
   }
 };
-const getBooking = async (req, res) => {
+
+
+const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
+
+  const price = await getTotalPrice(bookingDetails);
+  await RideModel.updateOne({ _id: rideId }, {
+    $set: {
+      totalPrice: price?.totalPrice?.toFixed(2),
+      totalDistance: parseFloat(price?.distance)
+    }
+  });
+  // send notification to admin
+
+}
+
+const saveBooking = async (req, res) => {
   try {
-    const booking = await RideModel.find().lean();
-    res.status(200).send({ booking });
+    const { body, user } = req;
+    console.log(body,"======-------")
+    const isCityCab = body?.bookingDetails?.tripType === 'cityCab'
+    const bookingData = {
+      name: body.userDetails.name,
+      vehicleId: body.bookingDetails?.vehicleId,
+      userId: user._id,
+      pickupDate: {
+        date: new Date(body?.bookingDetails?.pickUpDate).getDate(),
+        month: new Date(body?.bookingDetails?.pickUpDate).getMonth()+1,
+        year: new Date(body.bookingDetails?.pickUpDate).getFullYear(),
+      },
+      pickupTime: body.bookingDetails?.pickUpTime,
+      trip: {
+        tripType: body?.bookingDetails?.tripType,
+        hourlyType: body?.bookingDetails?.hourlyType
+      },
+      bookingStatus: "pending",
+    };
+
+    if (isCityCab) {
+      bookingData['pickupLocation'] = body?.bookingDetails?.from?.name
+      bookingData['dropoffLocation'] = body?.bookingDetails?.to[0]?.name
+    } else {
+      bookingData['pickUpCity'] = body?.bookingDetails?.from?._id
+      bookingData['dropCity'] = body?.bookingDetails?.to?.map(ele => ele._id)
+      bookingData['pickupLocation'] = body?.userDetails?.pickupAddress
+      bookingData['dropoffLocation'] = body?.userDetails?.dropAddress
+    }
+    if (body?.bookingDetails?.returnDate) {
+      bookingData['dropDate'] = {
+        date: new Date(body?.bookingDetails?.returnDate).getDate(),
+        month: new Date(body?.bookingDetails?.returnDate).getMonth()+1,
+        year: new Date(body?.bookingDetails?.returnDate).getFullYear(),
+      }
+    }
+    const ride = await RideModel.create(bookingData);
+    if (!res) {
+      updatePriceAndSendNotification(body?.bookingDetails, ride._id)
+      return { rideId: ride._id }
+    }
+    else {
+      await updatePriceAndSendNotification(body?.bookingDetails, ride._id)
+      res.status(200).send({ booking_id: ride._id });
+    }
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBooking', {error: error})
+    logger.log('server/managers/client.manager.js-> saveBooking', { error: error })
+    if (res)
+      res.status(500).send({ message: 'Server Error' })
+  }
+}
+
+
+
+
+const getBookingList = async (req, res) => {
+  try {
+    const { user, query } = req
+    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bookingStatus: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
+    res.status(200).send({ list: bookingList });
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> getBookingList', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
+const getBookingById = async (req, res) => {
+  try {
+    const { user, params } = req
+    if (!params?.bookingId)
+      res.status(400).send({ message: 'Booking Id not found' });
+    const bookingData = await RideModel.find({ userId: user._id, _id: String(params?.bookingId) }).lean()
+    res.status(200).send({ bookingData });
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+};
+
+
+
+
 const getBookingByPasssengerId = async (req, res) => {
   try {
     const passengerId = req.params.id;
     const booking = await RideModel.find({ passengerId }).lean();
     res.status(200).send({ booking });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingByPasssengerId', {error: error})
+    logger.log('server/managers/client.manager.js-> getBookingByPasssengerId', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
@@ -264,7 +430,7 @@ const cancelBooking = async (req, res) => {
     await RideModel.findOneAndUpdate({ _id: rideId }, { status: "cancelled" });
     return res.status(200).send({ message: "Ride cancelled successfully" });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> cancelBooking', {error: error})
+    logger.log('server/managers/client.manager.js-> cancelBooking', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
@@ -277,12 +443,12 @@ const getBookingDeatils = async (req, res) => {
       .populate([
         { path: 'pickUpCity', select: 'name' },
         { path: 'dropCity', select: 'name' },
-        { path: 'vehicleId', select: 'modelName' },
+        { path: 'vehicleId', select: 'vehicleType vehicleName' },
       ])
       .lean();
     return res.status(200).send({ bookingDetails });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingDeatils', {error: error})
+    logger.log('server/managers/client.manager.js-> getBookingDeatils', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
@@ -293,7 +459,7 @@ const sendPackageEnquire = async (req, res) => {
     await EnquirePackageModel.create(body)
     return res.status(200).send({ message: 'Enquire successfully, we will contact you immediately or later' });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> sendPackageEnquire', {error: error})
+    logger.log('server/managers/client.manager.js-> sendPackageEnquire', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 }
@@ -301,8 +467,10 @@ const sendPackageEnquire = async (req, res) => {
 module.exports = {
   getCities,
   getCars,
-  addBooking,
-  getBooking,
+  saveBooking,
+  getBookingList,
+  getBookingById,
+
   getBookingByPasssengerId,
   cancelBooking,
   getAddressSuggestion,

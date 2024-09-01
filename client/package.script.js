@@ -90,6 +90,9 @@ document.addEventListener("DOMContentLoaded", function() {
         title: 'Shimla Kullu Manali'
       }
     };
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      window.location.href = 'http://127.0.0.1:3001'
+  })
   
     document.querySelectorAll("[data-package]").forEach(button => {
       button.addEventListener("click", function() {

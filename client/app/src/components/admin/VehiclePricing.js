@@ -8,10 +8,16 @@ export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
+  const [vehicleTypes, setVehicleTypes] = useState(VEHICLE_TYPE)
   const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
     mode: "onChange",
   });
 
+  const HOURLY_DEFAULT = [
+      { type: "8hr80km", hour: 8, distance: 80, basePrice: null },
+      { type: "10hr100km", hour: 10, distance: 100, basePrice: null },
+      { type: "12hr120km", hour: 12, distance: 120, basePrice: null }
+    ]
   const { fields, append, remove } = useFieldArray({
     control,
     name: "similar"
@@ -54,6 +60,10 @@ export default function VehiclePricing() {
     try {
       const res = await axios.get("/api/admin/vehicle-price");
       setList(res.data.price);
+      const filteredList = VEHICLE_TYPE.filter(
+        (vehicle) => !res.data.price.some(dbVehicle => dbVehicle.vehicleType === vehicle.value)
+      );
+      setVehicleTypes(filteredList)
     } catch (error) {
       console.error(error);
     }
@@ -85,11 +95,16 @@ export default function VehiclePricing() {
   };
 
   const deleteVehiclePrice = async (id) => {
+    const isConfirmed = window.confirm("Do you really want to delete?");
+    if (!isConfirmed) return;
     try {
-      if (window.confirm("Do you really want to delete!")) {
         await axios.delete(`/api/admin/vehicle-price/${id}`);
+        const vehicleData = list.find(li => li.id == id)
+        const vehicleType = VEHICLE_TYPE.find(car => car.value === vehicleData.vehicleType)
+        if (vehicleType) {
+          setVehicleTypes((prevTypes) => [...prevTypes, vehicleType]);
+        }
         setList(list.filter(li => li._id !== id));
-      }
     } catch (error) {
       console.error(error);
     }
@@ -186,7 +201,7 @@ export default function VehiclePricing() {
                 <label htmlFor="inputState">Vehicle Type</label>
                 <select {...register("vehicleType", { required: 'Vehicle Type is Required' })} className="form-control">
                   <option value="">Choose Type</option>
-                  {VEHICLE_TYPE.map((vehicle, index) => (
+                  {vehicleTypes.map((vehicle, index) => (
                     <option key={index} value={vehicle.value}>
                       {vehicle.name}
                     </option>
@@ -371,48 +386,57 @@ export default function VehiclePricing() {
               </div>
               <div className="form-group col-md-12">
                 <label>Hourly Rates</label>
-                {fields.map((item, index) => (
+                {HOURLY_DEFAULT.map((item, index) => (
                   <div key={item.id} className="d-flex align-items-center mb-2">
                     <input
                       type="text"
                       {...register(`hourly.${index}.type`)}
                       className="form-control"
                       placeholder="Enter type"
+                      value={item?.type}
+                      disabled
+                      hidden
                     />
+                    <div className="form-group col-md-6">
+                    <label htmlFor="">Time (Hour)</label>
                     <input
                       type="number"
                       {...register(`hourly.${index}.hour`)}
                       className="form-control ml-2"
                       placeholder="Enter hour"
+                      value={item.hour}
+                      disabled
                     />
+                    </div>
+                    <div className="form-group col-md-6">
+                    <label htmlFor="">Distance (Km)</label>
                     <input
                       type="number"
                       {...register(`hourly.${index}.distance`)}
                       className="form-control ml-2"
                       placeholder="Enter distance"
+                      value={item.distance}
+                      disabled
                     />
+                    </div>
+                    <div className="form-group col-md-6">
+                    <label htmlFor="">Price</label>
                     <input
                       type="number"
-                      {...register(`hourly.${index}.basePrice`)}
+                      {...register(`hourly.${index}.basePrice`, {
+                        required: "Price is required",
+                        min: { value: 0, message: "Price must be a positive number" },
+                      })}
                       className="form-control ml-2"
                       placeholder="Enter base price"
+                      min={0}
                     />
-                    <button
-                      type="button"
-                      className="btn btn-danger ml-2"
-                      onClick={() => remove(index)}
-                    >
-                      -
-                    </button>
+                    {errors?.hourly?.[index]?.basePrice && (
+                  <span className="text-danger">{errors?.hourly?.[index]?.basePrice?.message}</span>
+                )}
+                    </div>
                   </div>
                 ))}
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => append({ type: "", hour: 0, distance: 0, basePrice: 0 })}
-                >
-                  +
-                </button>
               </div>
               <div className="form-group col-md-6">
                 <label htmlFor="inputCity">Driver Allowance</label>

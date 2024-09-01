@@ -6,44 +6,22 @@ const {
 } = require("../utils/common.utils");
 const { JWT_SECRET_KEY } = process.env;
 const JWT = require("jsonwebtoken");
-const RideModel = require("../models/ride.model");
-const PricingModel = require("../models/pricing.model");
-const {
-  dateDifference,
-  estimateRouteDistance,
-} = require("../utils/calculation.util");
-const CitiesModel = require("../models/cities.model");
-const { getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
-const { CITY_CAB_PRICE } = require("../constants/common.constants");
+
+const { saveBooking } = require("./client.manager");
 
 const getUserSession = async (userId) => {
   const loginSessionId = generateSecureRandomString(10);
-  const token = JWT.sign({ sessionId: loginSessionId }, JWT_SECRET_KEY, {
-    expiresIn: "24h",
-  });
+  const token = JWT.sign({ sessionId: loginSessionId }, JWT_SECRET_KEY, { expiresIn: "24h", });
 
-  const user = await UserModel.findOne(
-    { _id: userId },
-    {
-      firstName: 1,
-      lastName: 1,
-      email: 1,
-      primaryPhone: 1,
-      modules: 1,
-    }
-  ).lean();
-  await UserModel.updateOne(
-    { _id: userId },
-    {
-      $set: {
-        "authentication.loginSessionId": loginSessionId,
-      },
-    }
-  );
-  return {
-    ...user,
-    jwtToken: token,
-  };
+  const user = await UserModel.findOne({ _id: userId }, {
+    name: 1, email: 1, primaryPhone: 1, modules: 1,
+  }).lean();
+  await UserModel.updateOne({ _id: userId }, {
+    $set: {
+      "authentication.loginSessionId": loginSessionId,
+    },
+  });
+  return { ...user, jwtToken: token, };
 };
 
 const login = async (req, res) => {
@@ -51,17 +29,14 @@ const login = async (req, res) => {
     const { body } = req;
     const { userName, password } = body;
     if (!userName || !password) {
-      return res
-        .status(400)
-        .send({ message: "Email and password are required." });
+      return res.status(400).send({ message: "Email and password are required." });
     }
-    const user = await UserModel.findOne(
-      {
-        $or: [
-          { email: String(body.userName) },
-          { primaryPhone: String(body.userName) },
-        ],
-      },
+    const user = await UserModel.findOne({
+      $or: [
+        { email: String(body.userName) },
+        { primaryPhone: String(body.userName) },
+      ],
+    },
       {
         password: 1,
         status: 1,
@@ -69,25 +44,15 @@ const login = async (req, res) => {
         email: 1,
         primaryPhone: 1,
         modules: 1,
-      }
-    );
+      });
     if (!user) {
-      return res
-        .status(401)
-        .send({ message: "Incorrect username or password. Please try again." });
+      return res.status(401).send({ message: "Incorrect username or password. Please try again." });
     }
     const isPassMatch = await comparePassword(password, user.password);
     if (!isPassMatch)
-      return res
-        .status(401)
-        .send({ message: "Incorrect username or password. Please try again." });
+      return res.status(401).send({ message: "Incorrect username or password. Please try again." });
     if (user.status === "sent") {
-      return res
-        .status(403)
-        .send({
-          message: "Please verify your account via OTP.",
-          status: "UNVERIFIED",
-        });
+      return res.status(403).send({ message: "Please verify your account via OTP.", status: "UNVERIFIED", });
     }
     if (user?.authentication?.twoFactor?.enabled) {
       const otp = generateOTP();
@@ -232,7 +197,6 @@ const verifySession = async (req, res) => {
 const signup = async (req, res) => {
   try {
     const { body } = req;
-    console.log(body.bookingDetails.to);
     if (!body.userDetails.phoneNumber)
       return res.status(500).send({ message: "Phone Number is required" });
     if (!body.userDetails.email)
@@ -245,8 +209,7 @@ const signup = async (req, res) => {
       return res.status(500).send({ message: "Phone Number already exist." });
     else {
       user = await UserModel.create({
-        firstName: body.userDetails.firstName,
-        lastName: body.userDetails.lastName,
+        name: body.userDetails.name,
         email: body.userDetails.email,
         primaryPhone: body.userDetails.phoneNumber,
         modules: {
@@ -269,142 +232,12 @@ const signup = async (req, res) => {
         },
       }
     );
-    const isCityCab = body?.bookingDetails?.tripType === 'cityCab'
-    const bookingData = {
-      vehicleId: body.bookingDetails?.vehicleId,
-      passengerId: user._id,
-      pickupDate: {
-        date: new Date(body?.bookingDetails?.pickUpDate).getDate(),
-        month: new Date(body?.bookingDetails?.pickUpDate).getMonth(),
-        year: new Date(body.bookingDetails?.pickUpDate).getFullYear(),
-      },
-      pickupTime: body.bookingDetails?.pickUpTime,
-      trip: {
-        tripType: body?.bookingDetails?.tripType,
-        hourlyType: body?.bookingDetails?.hourlyType
-      },
-      bokkingStatus: "pending",
-    };
+    const rideId = await saveBooking({ body, user })
+    res.status(200).send({ sessionId: sessionId, booking_id: rideId, status: "TWO_STEP_AUTHENTICATION", });
 
-    if (isCityCab) {
-      bookingData['pickupLocation'] = body?.bookingDetails?.from?.name
-      bookingData['dropoffLocation'] = body?.bookingDetails?.to[0]?.name
-    } else {
-      bookingData['pickUpCity'] = body?.bookingDetails?.from?._id
-      bookingData['dropCity'] = body?.bookingDetails?.to?.map(ele => ele._id)
-      bookingData['pickupLocation'] = body?.userDetails?.pickupAddress
-      bookingData['dropoffLocation'] = body?.userDetails?.dropAddress
-    }
-    if (body?.bookingDetails?.dropDate) {
-      bookingData['dropDate'] = {
-        date: new Date(body?.dropDate).getDate(),
-        month: new Date(body?.dropDate).getMonth(),
-        year: new Date(body?.dropDate).getFullYear(),
-      }
-    }
-    const ride = await RideModel.create(bookingData);
-    res.status(200).send({ sessionId: sessionId, bokking_id: ride._id, status: "TWO_STEP_AUTHENTICATION", });
-    if (ride._id) {
-      const price = await getTotalPrice(body?.bookingDetails);
-      await RideModel.updateOne({ _id: ride._id }, {
-        $set: {
-          totalPrice: price?.totalPrice,
-          totalDistance: parseFloat(price?.distance)
-        }
-      });
-      // send notification to admin
-    }
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong. Please try again later." });
-  }
-};
-
-const getTotalPrice = async (bookingDetails) => {
-  try {
-    let totalPrice = 0;
-    let distance = 0;
-    let toDetail = [];
-    let fromDetail = "";
-    const car = await PricingModel.findOne({
-      _id: bookingDetails?.vehicleId,
-    }).lean();
-    if (bookingDetails?.tripType === "oneWay") {
-      let toCity = await CitiesModel.findOne({ _id: bookingDetails.to }).lean();
-      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-      distance = estimateRouteDistance(
-        fromDetail.latitude,
-        fromDetail.longitude,
-        toCity.latitude,
-        toCity.longitude,
-        1.25
-      );
-      toDetail.push(toCity);
-      let metroCityPrice = 1
-      if(!toCity?.isMetroCity) metroCityPrice = 1.75
-
-      totalPrice = distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
-    } else if (bookingDetails?.tripType === "roundTrip") {
-      let cityIds = bookingDetails?.to?.map((vehicle) => vehicle._id);
-      cityIds.unshift(bookingDetails?.from?._id);
-      let totalDistance = 0;
-      for (let i = 0; i < cityIds.length - 1; i++) {
-        const fromCity = await CitiesModel.findOne({ _id: cityIds[i] }).lean();
-        if (i == 0) {
-          fromDetail = fromCity;
-        }
-        const toCity = await CitiesModel.findOne({
-          _id: cityIds[i + 1],
-        }).lean();
-        // if(i+1 < cityIds.length - 1)
-        toDetail.push(toCity);
-        const dist = estimateRouteDistance(
-          fromCity.latitude,
-          fromCity.longitude,
-          toCity.latitude,
-          toCity.longitude,
-          1.25
-        );
-
-        totalDistance += dist;
-      }
-      distance = totalDistance;
-      let numberOfDay = dateDifference(
-        bookingDetails?.pickUpDate,
-        bookingDetails?.returnDate
-      );
-      if (numberOfDay == 0) numberOfDay = 1;
-
-      if (distance <= numberOfDay * 300) {
-        totalPrice =
-          numberOfDay * 300 * car.costPerKm + numberOfDay * car.driverAllowance;
-      } else {
-        totalPrice =
-          distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
-      }
-    } else if (bookingDetails?.tripType === "hourly") {
-      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-      let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
-      if (hourlyData) {
-        totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
-        distance = hourlyData?.distance
-      }
-    } else if (bookingDetails?.tripType === 'cityCab') {
-      const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
-      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
-      fromDetail = { name: data.from }
-      toDetail = [{ name: data.to }]
-      if(['Sedan'].includes(car.vehicleType)) {
-        totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
-      } else{
-        totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
-      }
-    }
-
-    return { totalPrice, toDetail, distance: distance?.toFixed(2) };
-  } catch (error) {
-    console.log(error)
   }
 };
 
