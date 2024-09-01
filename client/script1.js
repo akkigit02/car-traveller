@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://127.0.0.1:3001/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
         })
 
     };
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.getElementById('loginBtn').addEventListener('click', () => {
-        window.location.href = 'http://127.0.0.1:3001'
+        window.location.href = 'http://127.0.0.1:3000'
     })
 
     const filterFunction = async (inputType) => {

@@ -3,7 +3,7 @@ const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
 const UserModel = require("../models/user.model");
-const EnquirePackageModel = require("../models/enquire.package.modal")
+const EnquirePackageModel = require("../models/enquire.package.model")
 const {
   estimateRouteDistance,
   dateDifference,
