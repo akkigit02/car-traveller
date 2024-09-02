@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logo from '../assets/img/logomain.png';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import store from '../store';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 
 function TopNavBar() {
@@ -25,6 +26,11 @@ function TopNavBar() {
     setIsOverlayOpen(false);
     setIsBodyOverlayOpen(false);
   };
+
+  const handleLogout = () => {
+    localStorage.clear()
+    store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: null } })
+  }
 
   return (
     <div>
@@ -143,6 +149,11 @@ function TopNavBar() {
                       Login
                     </button>
                   </a>}
+                  {userInfo && 
+                    <button onClick={handleLogout} className="theme-btn wow fadeInUp padding-signin-btn">
+                    Logout
+                  </button>
+                  }
                 <div className="header__hamburger d-xl-none my-auto">
                   <div className="sidebar__toggle" onClick={handleSidebarToggle}>
                     <i className="fas fa-bars"></i>

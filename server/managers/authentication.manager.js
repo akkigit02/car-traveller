@@ -171,7 +171,7 @@ const verifySession = async (req, res) => {
         .send({ message: "Session expired or invalid. Please login again" });
     const user = await UserModel.findOne(
       { "authentication.loginSessionId": String(token?.sessionId) },
-      { status: 1, authentication: 1, email: 1, primaryPhone: 1 }
+      { status: 1, authentication: 1, email: 1, primaryPhone: 1, name: 1 }
     );
     console.log(113, user);
     if (!user)
