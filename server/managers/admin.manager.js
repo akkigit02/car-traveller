@@ -3,6 +3,7 @@ const VehicleModel = require('../models/vehicle.model');
 const RideModel = require('../models/ride.model')
 const PackageModel = require('../models/packages.model');
 const EnquirePackage = require('../models/enquire.package.model')
+const ReferralCodeModel = require('../models/referral.model');
 
 
 const saveVehiclePrice = async(req, res) => {
@@ -186,6 +187,57 @@ const getEnquirePackage = async (req, res) => {
     }
 }
 
+/*****************************Referral Code***************************************/
+
+const saveReferral = async(req, res) => {
+    try {
+        const ReferralCode = await ReferralCodeModel.create(req.body)
+        res.status(201).send({message: 'Vehicle add successfully!', ReferralCode})
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> saveReferral', {error: error})
+        res.status(500).send({ message: 'Server Error' })  
+    }
+}
+
+const getReferral = async(req, res) => {
+    try {
+        const ReferralCodes = await ReferralCodeModel.find().lean();
+        res.status(200).send({ReferralCodes})
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> getReferral', {error: error})
+        res.status(500).send({ message: 'Server Error' })
+    }
+}
+
+const updateReferral = async(req, res) => {
+    try {
+        await ReferralCodeModel.updateOne({_id: req.body._id}, req.body)
+        res.status(200).send({message: 'Vehicle update successfully!'})
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> updateReferral', {error: error})
+        res.status(500).send({ message: 'Server Error' })
+    }
+}
+
+const deleteReferral = async(req, res) => {
+    try {
+        await ReferralCodeModel.deleteOne({_id: req.params.id})
+        res.status(200).send({message: 'Vehicle delete successfully!'})
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> deleteReferral', {error: error})
+        res.status(500).send({ message: 'Server Error' })
+    }
+}
+
+const getReferralById = async(req, res) => {
+    try {
+       const ReferralCode = await ReferralCodeModel.findOne({_id: req.params.id})
+        res.status(200).send({ReferralCode})
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> getReferralById', {error: error})
+        res.status(500).send({ message: 'Server Error' })
+    }
+}
 
 module.exports = {
     saveVehiclePrice,
@@ -209,5 +261,12 @@ module.exports = {
     getPackageById,
     getPackageInfo,
 
-    getEnquirePackage
+    getEnquirePackage,
+
+    getReferralById,
+    deleteReferral,
+    updateReferral,
+    getReferral,
+    saveReferral
+
 }

@@ -8,6 +8,7 @@ import Vehicle from "../../components/admin/Vehicle";
 import Booking from "../../components/admin/Booking";
 import AppTopNav from "../../components/AppTopNav";
 import EnquirePackage from "../../components/admin/EnquirePackage";
+import ReferralCode from "../../components/admin/ReferralCode";
 
 function AdminRoute() {
   return (
@@ -33,7 +34,7 @@ function AdminRoute() {
                 />
                 <Route path={`/booking`} Component={Booking} exact />
                 <Route path={`/enquire-package`} Component={EnquirePackage} exact />
-                <Route path={`/demo`} Component={Demo} exact />
+                <Route path={`/referral`} Component={ReferralCode} exact />
                 <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
               </Routes>
             </div>
