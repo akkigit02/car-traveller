@@ -542,6 +542,10 @@ background: #8bbaff8c;
     padding: 20px 20px;
     border-radius: 8px;
 }
+.height-300c{
+    height: calc(100vh - 300px);
+    overflow-y: auto;
+}
 
 
 .bg-unset{
@@ -602,3 +606,10 @@ background: #8bbaff8c;
 	padding: 15px 30px;
 }
 
+.payment-percentage{
+    border: 1px solid #005cb5 ;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 5px;
+    width: fit-content;
+}
