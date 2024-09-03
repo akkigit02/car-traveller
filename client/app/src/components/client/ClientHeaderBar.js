@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import logo from '../assets/img/logomain.png';
+import logo from '../../assets/img/logomain.png';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
-import store from '../store';
+import store from '../../store';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 
 function TopNavBar() {
@@ -149,11 +149,11 @@ function TopNavBar() {
                   </button>
                 </> :
                   <>
-                    {pathname !== '/login' && <a href={CLIENT_URL}>
+                    <a href={`${CLIENT_URL}${pathname === '/login' ? '/admin-login' : '/login'}`}>
                       <button className="theme-btn wow fadeInUp padding-signin-btn">
-                        Login
+                        {pathname === '/login' ? 'Admin' : 'User'} Login
                       </button>
-                    </a>}
+                    </a>
                   </>
                 }
                 <div className="header__hamburger d-xl-none my-auto">

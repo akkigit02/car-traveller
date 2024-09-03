@@ -300,11 +300,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleValidationOnBlur = (inputType) => {
         let searchInput = document.getElementById(inputType);
         if (!searchInput.value.trim()) {
-            isValidateGlobal = false
+            
             query[inputType] = ''
             document.getElementById(`error${inputType}`).style.display = 'block';
         } else {
-            isValidateGlobal = true
+        
             document.getElementById(`error${inputType}`).style.display = 'none';
         }
     }
