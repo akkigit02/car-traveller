@@ -35,7 +35,7 @@ const Profile = () => {
       <div className="form-group col-md-6">
         <label>Name</label>
         <input
-        class="form-control"
+        className="form-control"
           {...register('name', {
             required: 'Name is required',
             pattern: namePattern
@@ -46,7 +46,7 @@ const Profile = () => {
       <div className="form-group col-md-6">
         <label>Email</label>
         <input
-        class="form-control"
+        className="form-control"
           {...register('email', {
             required: 'Email is required',
             pattern: emailPattern
@@ -57,7 +57,7 @@ const Profile = () => {
       <div className="form-group col-md-6">
         <label>Primary Phone</label>
         <input
-        class="form-control"
+        className="form-control"
           {...register('primaryPhone',
             {
               required: 'Primary Phone is required',
@@ -69,7 +69,7 @@ const Profile = () => {
       <div className="form-group col-md-6">
         <label>Secondary Phone</label>
         <input
-        class="form-control"
+        className="form-control"
         {...register('secondaryPhone', {
           pattern: phoneNumberValidation
         }
@@ -78,7 +78,7 @@ const Profile = () => {
       <div className="form-group col-md-6"> 
         <label>Date of Birth</label>
         <input
-        class="form-control"
+        className="form-control"
          type="date"
           {...register('dateOfBirth')}
         />
@@ -90,26 +90,26 @@ const Profile = () => {
         <div className="form-group col-md-6">
           <label>Address Line</label>
           <input 
-          class="form-control"
+          className="form-control"
            {...register('currentAddress.addressLine')} />
         </div>
         <div className="form-group col-md-6">
           <label>City</label>
           <input 
-          class="form-control"
+          className="form-control"
            {...register('currentAddress.city')} />
         </div>
         <div className="form-group col-md-6">
           <label>State</label>
-          <input class="form-control" {...register('currentAddress.state')} />
+          <input className="form-control" {...register('currentAddress.state')} />
         </div>
         <div className="form-group col-md-6">
           <label>Country</label>
-          <input class="form-control" {...register('currentAddress.country')} />
+          <input className="form-control" {...register('currentAddress.country')} />
         </div>
         <div className="form-group col-md-6">
           <label>Zip</label>
-          <input class="form-control" {...register('currentAddress.zip')} />
+          <input className="form-control" {...register('currentAddress.zip')} />
         </div>
         </div>
       </fieldset>

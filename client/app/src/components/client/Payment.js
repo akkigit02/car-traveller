@@ -58,12 +58,12 @@ function Payment() {
   return (
     <>
       <div className="row m-0 col-reverse-sm flex-wrap">
-        <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
-          <div className="car-list-sidebar mt-30 h-100">
+        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 pe-0":"col-lg-4 col-md-4 col-sm-12 pe-0 mb-5"}>
+          <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100": "car-list-sidebar mt-30 h-100"}>
             <h4 className="title">Booking Summary</h4>
             
-            <div className="p-3">
-            <div className="col-lg-6 col-md-6 col-12 pe-0">
+            <div className="p-3 height-300c">
+            <div className="col-lg-12 col-md-12 col-12 pe-0">
                   <label>Name</label>
                   <p className="mb-0 desti-details-2">
                     {bookingDetails?.name}
@@ -82,8 +82,8 @@ function Payment() {
                 </div>}
               </div>}
               {<div className="d-flex align-items-center justify-content-between mb-4">
-                <p> Pickup Address:- <p className="mb-0 desti-details">{bookingDetails?.pickupLocation}</p></p>
-                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p> Drop Address:- <p className="mb-0 desti-details">{bookingDetails?.dropoffLocation}</p></p>}
+                <p> Pickup Address:- <p className="mb-0 desti-details-2 me-2">{bookingDetails?.pickupLocation}</p></p>
+                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p> Drop Address:- <p className="mb-0 desti-details-2">{bookingDetails?.dropoffLocation}</p></p>}
               </div>}
               <div className="row m-0 pb-5">
                 <div className="col-lg-6 col-md-6 col-12 ps-0">
@@ -163,42 +163,44 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12">
-            <div>
+          <div className="d-flex align-content-end flex-wrap-reverse form-group">
+            <div className=" col-md-6">
             <label htmlFor="">Coupon</label>
-            <input type="text" onChange={(e) => setTotalPayment(old => ({...old,coupon: e.target.value}))} />
-            <button onClick={handleCoupon}>Apply</button>
+            <input className="form-control" type="text" onChange={(e) => setTotalPayment(old => ({...old,coupon: e.target.value}))} />
             </div>
-          <section className="car-details fix section-padding">
-            <div className="d-flex justify-content-between">
-              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+            <button className="cstm-btn ms-2" onClick={handleCoupon}>Apply</button>
+            </div>
+          <section>
+            <div className="d-flex flex-column">
+              <div  className="payment-percentage">
                 <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(20)} />
                 <label htmlFor="">
                   20%{" "}
                   {advancePaymentOnPercentage(20)}
                 </label>
               </div>
-              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+              <div className="payment-percentage">
                 <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(40)} />
                 <label htmlFor="">
                   40%{" "}
                   {advancePaymentOnPercentage(40)}
                 </label>
               </div>
-              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+              <div className="payment-percentage">
                 <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(60)} />
                 <label htmlFor="">
                   60%{" "}
                   {advancePaymentOnPercentage(60)}
                 </label>
               </div>
-              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+              <div className="payment-percentage">
                 <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(80)} />
                 <label htmlFor="">
                    80%{" "}
                   {advancePaymentOnPercentage(80)}
                 </label>
               </div>
-              <div style={{ backgroundColor: "blue", borderRadius: "10px" }}>
+              <div className="payment-percentage">
                 <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(100)} />
                 <label htmlFor="">
                   100%{" "}
@@ -206,10 +208,10 @@ function Payment() {
                 </label>
               </div>
             </div>
-            <div>
+            <div className="mb-2 font-bold">
               Total Payment amount: {totalPayment?.amount}
             </div>
-            <button onClick={handlePayment}>
+            <button className="cstm-btn" onClick={handlePayment}>
                 Proceed to pay
             </button>
           </section>
