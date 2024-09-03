@@ -232,8 +232,8 @@ const signup = async (req, res) => {
         },
       }
     );
-    const rideId = await saveBooking({ body, user })
-    res.status(200).send({ sessionId: sessionId, booking_id: rideId, status: "TWO_STEP_AUTHENTICATION", });
+    const ride = await saveBooking({ body, user })
+    res.status(200).send({ sessionId: sessionId, booking_id: ride?.rideId, status: "TWO_STEP_AUTHENTICATION", });
 
   } catch (error) {
     console.log(error);
