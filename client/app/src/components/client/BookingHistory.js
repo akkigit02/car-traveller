@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { isSchedulabel, getDateAndTimeString } from '../../utils/format.util';
+import { useNavigate } from 'react-router-dom';
 function BookingHistory() {
-
+  const navigate=useNavigate()
   const [skip, setSkip] = useState(0)
   const [limit, setLimit] = useState(15)
   const [bookingList, setBookingList] = useState([])
@@ -46,19 +47,6 @@ function BookingHistory() {
     }
   }
 
-  const getBookingById = async (bookingId) => {
-    try {
-      setIsFetched(true)
-      const { data } = await axios({
-        url: `/api/client/booking/${bookingId}`,
-      })
-      setBookingDetails(data.bookingData)
-    } catch (error) {
-      console.log(error)
-    } finally {
-      setIsFetched(false)
-    }
-  }
   useEffect(() => {
     fetchBookingHistory()
   }, [])
@@ -97,7 +85,7 @@ function BookingHistory() {
                   <td>{item.advancePayment}</td>
                   <td>{item.bookingStatus}</td>
                   <td>
-                    <button onClick={() => getBookingById(item._id)} >view</button>
+                    <button onClick={() => navigate(`/payment/${item._id}`)} >view</button>
                     <button disabled={item.isCancelable} >reshduled</button>
                     <button disabled={item.isCancelable}>Cancel</button>
                   </td>
