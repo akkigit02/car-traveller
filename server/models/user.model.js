@@ -19,14 +19,7 @@ const userTypeSchema = new mongoose.Schema(
       addressLine: { type: String, default: "" },
       city: { type: String, default: "" },
       state: { type: String },
-      county: { type: String, default: "" },
-      zip: { type: String, default: '' },
-    },
-    permanentAddress: {
-      addressLine: { type: String, default: "" },
-      city: { type: String, default: "" },
-      state: { type: String },
-      county: { type: String, default: "" },
+      country: { type: String, default: "" },
       zip: { type: String, default: '' },
     },
     authentication: {

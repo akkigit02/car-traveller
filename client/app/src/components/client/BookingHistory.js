@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { checkTheDateDiifrence, getDateAndTimeString } from '../../utils/format.util';
+import { isSchedulabel, getDateAndTimeString } from '../../utils/format.util';
 function BookingHistory() {
 
   const [skip, setSkip] = useState(0)
@@ -25,8 +25,7 @@ function BookingHistory() {
       })
 
       const list = data.list.map(ele => {
-        console.log(checkTheDateDiifrence(ele.pickupDate, ele.pickupTime))
-        ele['isCancelable'] = checkTheDateDiifrence(ele.pickupDate, ele.pickupTime)
+        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime)
         return ele
       })
 
@@ -111,11 +110,6 @@ function BookingHistory() {
               </tbody>}
           </table>
         </InfiniteScroll>
-
-
-
-
-
       </div>
     </>
   )
