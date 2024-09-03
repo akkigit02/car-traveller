@@ -1,12 +1,12 @@
 import React from 'react'
 import Payment from '../../components/client/Payment'
 import { Navigate, Route, Routes } from 'react-router-dom'
-import AdminDashboard from '../../components/admin/Dashboard'
-import ClientHeaderBar from '../../components/ClientHeaderBar'
+import ClientHeaderBar from '../../components/client/ClientHeaderBar'
 import AvailableVehicle from '../../components/common/AvailableVehicle'
 import BookingForm from '../../components/common/BookingForm'
 import BookingHistory from '../../components/client/BookingHistory'
 import Profile from '../../components/common/Profile'
+import AdminDashboard from '../../components/admin/Dashboard'
 
 export default function ClientRoute() {
   return (

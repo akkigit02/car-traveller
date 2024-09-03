@@ -27,30 +27,28 @@ const getUserSession = async (userId) => {
 const login = async (req, res) => {
   try {
     const { body } = req;
-    const { userName, password } = body;
-    if (!userName || !password) {
-      return res.status(400).send({ message: "Email and password are required." });
-    }
-    const user = await UserModel.findOne({
+    const { userName, password, userType, phoneNumber } = body;
+
+    if (userType === 'CLIENT' && !phoneNumber)
+      return res.status(400).send({ message: "Phone Number are required." });
+    else if (userType === 'ADMIN' && (!userName || !password))
+      return res.status(400).send({ message: "Username and password are required." });
+
+    const query = userType === 'CLIENT' ? { primaryPhone: String(phoneNumber) } : {
       $or: [
         { email: String(body.userName) },
         { primaryPhone: String(body.userName) },
       ],
-    },
-      {
-        password: 1,
-        status: 1,
-        authentication: 1,
-        email: 1,
-        primaryPhone: 1,
-        modules: 1,
-      });
-    if (!user) {
-      return res.status(401).send({ message: "Incorrect username or password. Please try again." });
     }
-    const isPassMatch = await comparePassword(password, user.password);
-    if (!isPassMatch)
-      return res.status(401).send({ message: "Incorrect username or password. Please try again." });
+    const user = await UserModel.findOne(query, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1, modules: 1, });
+    if (!user) {
+      return res.status(401).send({ message: userType === 'CLIENT' ? "Incorrect phone Number" : "Incorrect username or password. Please try again." });
+    }
+    if (userType !== 'CLIENT') {
+      const isPassMatch = await comparePassword(password, user.password);
+      if (!isPassMatch)
+        return res.status(401).send({ message: "Incorrect username or password. Please try again." });
+    }
     if (user.status === "sent") {
       return res.status(403).send({ message: "Please verify your account via OTP.", status: "UNVERIFIED", });
     }
@@ -77,6 +75,7 @@ const login = async (req, res) => {
         .send({
           session: { sessionId, email: user.email, phone: user.primaryPhone },
           status: "TWO_STEP_AUTHENTICATION",
+          message: 'Otp Send Succcessfully'
         });
     }
     const userSession = await getUserSession(user._id);
