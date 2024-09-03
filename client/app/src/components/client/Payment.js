@@ -16,7 +16,7 @@ function Payment() {
     try {
       console.log("bookingId", bookingId);
       const { data } = await axios({
-        url: `/api/client/booking-details/${bookingId}`,
+        url: `/api/client/booking/${bookingId}`,
       });
       console.log(data, "-------------",data?.bookingDetails?.totalPrice);
       setBookingDetails(data?.bookingDetails);

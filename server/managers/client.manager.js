@@ -373,21 +373,6 @@ const getBookingList = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 };
-const getBookingById = async (req, res) => {
-  try {
-    const { user, params } = req
-    if (!params?.bookingId)
-      res.status(400).send({ message: 'Booking Id not found' });
-    const bookingData = await RideModel.find({ userId: user._id, _id: String(params?.bookingId) }).lean()
-    res.status(200).send({ bookingData });
-  } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
-    res.status(500).send({ message: 'Server Error' })
-  }
-};
-
-
-
 
 const getBookingByPasssengerId = async (req, res) => {
   try {
@@ -436,7 +421,7 @@ const cancelBooking = async (req, res) => {
 };
 
 
-const getBookingDeatils = async (req, res) => {
+const getBookingById = async (req, res) => {
   try {
     const bookingId = req.params.bookingId;
     const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
@@ -448,7 +433,7 @@ const getBookingDeatils = async (req, res) => {
       .lean();
     return res.status(200).send({ bookingDetails });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingDeatils', { error: error })
+    logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 };
@@ -470,11 +455,11 @@ module.exports = {
   saveBooking,
   getBookingList,
   getBookingById,
-
-  getBookingByPasssengerId,
-  cancelBooking,
   getAddressSuggestion,
   getAddressSuggestionOnLandingPage,
-  getBookingDeatils,
+
+  
+  getBookingByPasssengerId,
+  cancelBooking,
   sendPackageEnquire
 };
