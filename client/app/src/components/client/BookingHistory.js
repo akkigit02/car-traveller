@@ -61,9 +61,9 @@ function BookingHistory() {
           next={() => fetchBookingHistory(true)}
           hasMore={hasMore}
           loader={<h4>Loading...</h4>}
-          endMessage={<p>No more bookings to show.</p>}
+          endMessage={<p className='py-2'>No more bookings to show.</p>}
         >
-          <table >
+          <table className='cstm-table'>
             <thead>
               <tr>
                 <th>Name</th>
@@ -84,10 +84,10 @@ function BookingHistory() {
                   <td>{item.totalPrice}</td>
                   <td>{item.advancePayment}</td>
                   <td>{item.bookingStatus}</td>
-                  <td>
-                    <button onClick={() => navigate(`/payment/${item._id}`)} >view</button>
-                    <button disabled={item.isCancelable} >reshduled</button>
-                    <button disabled={item.isCancelable}>Cancel</button>
+                  <td className='d-flex'>
+                    <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)} ><i class="fa fa-eye" aria-hidden="true"></i></button>
+                    <button className='icon-btn me-2' disabled={item.isCancelable} ><i class="fa fa-retweet" aria-hidden="true"></i></button>
+                    <button  className='icon-btn' disabled={item.isCancelable}><i class="fa fa-trash" aria-hidden="true"></i></button>
                   </td>
                 </tr>))
                   :

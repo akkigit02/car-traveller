@@ -32,7 +32,7 @@ const Profile = () => {
 
     <form onSubmit={handleSubmit(onSubmit)}>
       <div className='row m-0'>
-      <div className="form-group col-md-6">
+      <div className="form-group col-lg-4 col-md-4 col-sm-12">
         <label>Name</label>
         <input
         className="form-control"
@@ -43,7 +43,7 @@ const Profile = () => {
         />
         {errors.name && <p>{errors.name.message}</p>}
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-lg-4 col-md-4 col-sm-12">
         <label>Email</label>
         <input
         className="form-control"
@@ -54,7 +54,7 @@ const Profile = () => {
         />
         {errors.email && <p>{errors.email.message}</p>}
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-lg-4 col-md-4 col-sm-12">
         <label>Primary Phone</label>
         <input
         className="form-control"
@@ -66,7 +66,7 @@ const Profile = () => {
         />
         {errors.primaryPhone && <p>{errors.primaryPhone.message}</p>}
       </div>
-      <div className="form-group col-md-6">
+      <div className="form-group col-lg-4 col-md-4 col-sm-12">
         <label>Secondary Phone</label>
         <input
         className="form-control"
@@ -75,7 +75,7 @@ const Profile = () => {
         }
         )} />
       </div>
-      <div className="form-group col-md-6"> 
+      <div className="form-group col-lg-4 col-md-4 col-sm-12"> 
         <label>Date of Birth</label>
         <input
         className="form-control"
@@ -87,33 +87,33 @@ const Profile = () => {
       <fieldset>
         <legend>Address</legend>
         <div className='row m-0'>
-        <div className="form-group col-md-6">
+        <div className="form-group col-lg-4 col-md-4 col-sm-12">
           <label>Address Line</label>
           <input 
           className="form-control"
            {...register('currentAddress.addressLine')} />
         </div>
-        <div className="form-group col-md-6">
+        <div className="form-group col-lg-4 col-md-4 col-sm-12">
           <label>City</label>
           <input 
           className="form-control"
            {...register('currentAddress.city')} />
         </div>
-        <div className="form-group col-md-6">
+        <div className="form-group col-lg-4 col-md-4 col-sm-12">
           <label>State</label>
           <input className="form-control" {...register('currentAddress.state')} />
         </div>
-        <div className="form-group col-md-6">
+        <div className="form-group col-lg-4 col-md-4 col-sm-12">
           <label>Country</label>
           <input className="form-control" {...register('currentAddress.country')} />
         </div>
-        <div className="form-group col-md-6">
+        <div className="form-group col-lg-4 col-md-4 col-sm-12">
           <label>Zip</label>
           <input className="form-control" {...register('currentAddress.zip')} />
         </div>
         </div>
       </fieldset>
-      <div className="form-group col-md-6">
+      <div className="form-group col-lg-4 col-md-4 col-sm-12">
         <input
         className='mx-3'
           type="checkbox"
