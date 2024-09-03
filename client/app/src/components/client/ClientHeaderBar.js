@@ -144,6 +144,11 @@ function TopNavBar() {
                   >
                     <span>Profile</span>
                   </Link>
+                  <Link
+                    to={`/booking-list`}
+                  >
+                    <span>Booking list</span>
+                  </Link>
                   <button onClick={handleLogout} className="theme-btn wow fadeInUp padding-signin-btn">
                     Logout
                   </button>
