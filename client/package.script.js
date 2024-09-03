@@ -91,7 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
       }
     };
     document.getElementById('loginBtn').addEventListener('click', () => {
-      window.location.href = 'http://127.0.0.1:3001'
+      window.location.href = 'http://127.0.0.1:3000'
   })
   
     document.querySelectorAll("[data-package]").forEach(button => {

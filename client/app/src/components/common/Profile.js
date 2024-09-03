@@ -28,10 +28,14 @@ const Profile = () => {
   }, [])
 
   return (
+    <div className='client-profile'>
+
     <form onSubmit={handleSubmit(onSubmit)}>
-      <div>
+      <div className='row m-0'>
+      <div className="form-group col-md-6">
         <label>Name</label>
         <input
+        class="form-control"
           {...register('name', {
             required: 'Name is required',
             pattern: namePattern
@@ -39,9 +43,10 @@ const Profile = () => {
         />
         {errors.name && <p>{errors.name.message}</p>}
       </div>
-      <div>
+      <div className="form-group col-md-6">
         <label>Email</label>
         <input
+        class="form-control"
           {...register('email', {
             required: 'Email is required',
             pattern: emailPattern
@@ -49,9 +54,10 @@ const Profile = () => {
         />
         {errors.email && <p>{errors.email.message}</p>}
       </div>
-      <div>
+      <div className="form-group col-md-6">
         <label>Primary Phone</label>
         <input
+        class="form-control"
           {...register('primaryPhone',
             {
               required: 'Primary Phone is required',
@@ -60,54 +66,68 @@ const Profile = () => {
         />
         {errors.primaryPhone && <p>{errors.primaryPhone.message}</p>}
       </div>
-      <div>
+      <div className="form-group col-md-6">
         <label>Secondary Phone</label>
-        <input {...register('secondaryPhone', {
+        <input
+        class="form-control"
+        {...register('secondaryPhone', {
           pattern: phoneNumberValidation
         }
         )} />
       </div>
-      <div>
+      <div className="form-group col-md-6"> 
         <label>Date of Birth</label>
-        <input type="date"
+        <input
+        class="form-control"
+         type="date"
           {...register('dateOfBirth')}
         />
       </div>
-
+      </div>
       <fieldset>
         <legend>Address</legend>
-        <div>
+        <div className='row m-0'>
+        <div className="form-group col-md-6">
           <label>Address Line</label>
-          <input {...register('currentAddress.addressLine')} />
+          <input 
+          class="form-control"
+           {...register('currentAddress.addressLine')} />
         </div>
-        <div>
+        <div className="form-group col-md-6">
           <label>City</label>
-          <input {...register('currentAddress.city')} />
+          <input 
+          class="form-control"
+           {...register('currentAddress.city')} />
         </div>
-        <div>
+        <div className="form-group col-md-6">
           <label>State</label>
-          <input {...register('currentAddress.state')} />
+          <input class="form-control" {...register('currentAddress.state')} />
         </div>
-        <div>
+        <div className="form-group col-md-6">
           <label>Country</label>
-          <input {...register('currentAddress.country')} />
+          <input class="form-control" {...register('currentAddress.country')} />
         </div>
-        <div>
+        <div className="form-group col-md-6">
           <label>Zip</label>
-          <input {...register('currentAddress.zip')} />
+          <input class="form-control" {...register('currentAddress.zip')} />
+        </div>
         </div>
       </fieldset>
-      <div>
-        <label>Enable Two-Factor Authentication</label>
+      <div className="form-group col-md-6">
         <input
+        className='mx-3'
           type="checkbox"
           id="twoFactorEnable"
           {...register('twoFactorEnable')}
-        />
+          />
+          <label>Enable Two-Factor Authentication</label>
       </div>
-      <button type='button' onClick={() => reset()}>reset</button>
-      <button type="submit">Submit</button>
+      <div className='d-flex justify-content-end'>
+      <button type='button' className='cstm-btn-trans me-2' onClick={() => reset()}>reset</button>
+      <button className='cstm-btn' type="submit">Submit</button>
+      </div>
     </form>
+    </div>
   );
 };
 

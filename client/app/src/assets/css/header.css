@@ -9,7 +9,7 @@
 }
 
 
-/* ********car list nav********* */
+/* ******** car list nav ********* */
 
 
 .offcanvas__info {
@@ -131,3 +131,12 @@
     position: relative;
     overflow: hidden;
   }
+/* ******** car list nav end ********* */
+
+
+
+/* ******** profiles ********* */
+
+.client-profile{
+  width: 100%;
+}
