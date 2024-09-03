@@ -49,11 +49,11 @@ export default function SideNavBar() {
             <span>Enquire Package</span>
           </Link>
           <Link
-            to={`/demo`}
-            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/demo` ? 'active' : ''}`}
+            to={`/referral`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/referral` ? 'active' : ''}`}
           >
             <i className="fas fa-lock fa-fw me-3"></i>
-            <span>Demo</span>
+            <span>Referral Code</span>
           </Link>
           {/* <a href="#" className="list-group-item list-group-item-action py-2 ripple">
             <i className="fas fa-chart-pie fa-fw me-3"></i>
