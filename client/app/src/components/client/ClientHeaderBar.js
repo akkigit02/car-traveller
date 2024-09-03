@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import logo from '../../assets/img/logomain.png';
+import user from '../../assets/img/user.png';
 import { useSelector } from 'react-redux';
 import { Link, useLocation } from 'react-router-dom';
 import store from '../../store';
@@ -11,6 +12,16 @@ function TopNavBar() {
   const [isOverlayOpen, setIsOverlayOpen] = useState(false);
   const [isBodyOverlayOpen, setIsBodyOverlayOpen] = useState(false);
   const userInfo = useSelector((state) => state.userInfo)
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const closeDropdown = () => {
+    setIsOpen(false);
+  };
 
   const handleSidebarToggle = () => {
     setIsOffcanvasOpen(true);
@@ -32,6 +43,21 @@ function TopNavBar() {
     localStorage.clear()
     store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: null } })
   }
+
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   return (
     <div>
@@ -139,7 +165,30 @@ function TopNavBar() {
                   </div>
                 </div>
                 {userInfo ? <>
-                  <Link
+                <div>
+
+                <div className="dropdown" ref={dropdownRef}>
+                  <button onClick={toggleDropdown} className="cstm-dropdown-toggle">
+                    <img src={user}/>
+                  </button>
+                  {isOpen && (
+                    <div className="dropdown-menu">
+                      <Link to={`/profile`} className="dropdown-item" onClick={closeDropdown}>
+                        <span>Profile</span>
+                      </Link>
+                      <Link to={`/booking-list`} className="dropdown-item" onClick={closeDropdown}>
+                        <span>Booking List</span>
+                      </Link>
+                      <button onClick={handleLogout} className="dropdown-item">
+                        Logout
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                  
+
+                  {/* <Link
                     to={`/profile`}
                   >
                     <span>Profile</span>
@@ -151,7 +200,10 @@ function TopNavBar() {
                   </Link>
                   <button onClick={handleLogout} className="theme-btn wow fadeInUp padding-signin-btn">
                     Logout
-                  </button>
+                  </button> */}
+
+
+                  </div>
                 </> :
                   <>
                     <a href={`${CLIENT_URL}${pathname === '/login' ? '/admin-login' : '/login'}`}>
