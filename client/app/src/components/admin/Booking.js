@@ -21,21 +21,6 @@ export default function BookingManagement() {
 
   const saveBooking = async (data) => {
     try {
-      if (Array.isArray(data.bookings)) {
-        data.bookings = data.bookings.map(item => ({
-          bookingType: item.bookingType,
-          clientName: item.clientName,
-          mobileNumber: item.mobileNumber,
-          pickupCity: item.pickupCity,
-          dropCity: item.dropCity,
-          pickupLocation: item.pickupLocation,
-          dropLocation: item.dropLocation,
-          bookingDate: item.bookingDate,
-          totalPrice: item.totalPrice,
-          advancePayment: item.advancePayment,
-        }));
-      }
-
       const res = await axios.post("/api/admin/bookings", data);
       setList([res.data.booking, ...list]);
       setIsOpen(false);
@@ -134,24 +119,24 @@ export default function BookingManagement() {
                 <label htmlFor="clientName">Client Name</label>
                 <input
                   type="text"
-                  {...register("clientName", { required: 'Client Name is Required' })}
+                  {...register("name", { required: 'Client Name is Required' })}
                   className="form-control"
                   placeholder="Enter client name"
                 />
-                {errors?.clientName && (
-                  <span className="text-danger">{errors.clientName.message}</span>
+                {errors?.name && (
+                  <span className="text-danger">{errors.name.message}</span>
                 )}
               </div>
               <div className="form-group col-md-6">
-                <label htmlFor="mobileNumber">Mobile Number</label>
+                <label htmlFor="primaryPhone">Mobile Number</label>
                 <input
                   type="text"
-                  {...register("mobileNumber", { required: 'Mobile Number is Required' })}
+                  {...register("primaryPhone", { required: 'Mobile Number is Required' })}
                   className="form-control"
                   placeholder="Enter mobile number"
                 />
-                {errors?.mobileNumber && (
-                  <span className="text-danger">{errors.mobileNumber.message}</span>
+                {errors?.primaryPhone && (
+                  <span className="text-danger">{errors.primaryPhone.message}</span>
                 )}
               </div>
               <div className="form-group col-md-6">
@@ -211,6 +196,17 @@ export default function BookingManagement() {
                 />
                 {errors?.bookingDate && (
                   <span className="text-danger">{errors.bookingDate.message}</span>
+                )}
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="pickupTime">Pickup Time</label>
+                <input
+                  type="time"
+                  {...register("pickupTime", { required: 'Pickup Time is Required' })}
+                  className="form-control"
+                />
+                {errors?.pickupTime && (
+                  <span className="text-danger">{errors.pickupTime.message}</span>
                 )}
               </div>
               <div className="form-group col-md-6">

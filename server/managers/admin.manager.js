@@ -119,11 +119,24 @@ const getBookingInfo = async (req,res) => {
 
 const saveBooking = async (req, res) => {
     try {
-        const { name,primaryPhone,...rideInfo } = req.body;
+        console.log(req.body)
+        const { name,primaryPhone,} = req.body;
+        const rideInfo = req.body;
         let user = await UserModel.findOne({ primaryPhone});
         if (!user) {
             user = await UserModel.create({name,primaryPhone,modules: {userType: "CLIENT"} })  
         }
+        rideInfo.userId = user._id
+        rideInfo.trip ={
+            tripType: req.body.bookingType,
+          },
+        rideInfo.bookingStatus = "completed",
+        rideInfo.rideStatus = "scheduled"
+        rideInfo.pickupDate=  {
+            date: new Date(req.body?.bookingDate).getDate(),
+            month: new Date(req.body?.bookingDate).getMonth()+1,
+            year: new Date(req.body?.bookingDate).getFullYear(),
+          }
         const booking = await RideModel.create(rideInfo);
         res.status(201).send({ message: 'Booking created successfully', booking });
     } catch (error) {
