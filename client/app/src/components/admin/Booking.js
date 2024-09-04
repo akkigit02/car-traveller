@@ -6,7 +6,6 @@ import axios from "axios";
 export default function BookingManagement() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
-  const [isEdit, setIsEdit] = useState(false);
   const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
     mode: "onChange",
   });
@@ -32,17 +31,13 @@ export default function BookingManagement() {
           pickupLocation: item.pickupLocation,
           dropLocation: item.dropLocation,
           bookingDate: item.bookingDate,
-          price: item.price,
+          totalPrice: item.totalPrice,
+          advancePayment: item.advancePayment,
         }));
       }
 
-      if (data?._id) {
-        await axios.put("/api/admin/bookings", data);
-        setList(list.map(li => (li._id === data._id ? data : li)));
-      } else {
-        const res = await axios.post("/api/admin/bookings", data);
-        setList([res.data.booking, ...list]);
-      }
+      const res = await axios.post("/api/admin/bookings", data);
+      setList([res.data.booking, ...list]);
       setIsOpen(false);
     } catch (error) {
       console.error(error);
@@ -58,44 +53,9 @@ export default function BookingManagement() {
     }
   };
 
-  const getBookingById = async (id) => {
-    try {
-      const res = await axios.get(`/api/admin/bookings/${id}`);
-      const { booking } = res.data;
-      reset(booking);
-      setValue('bookings', booking.bookings.map(item => ({
-        bookingType: item.bookingType,
-        clientName: item.clientName,
-        mobileNumber: item.mobileNumber,
-        pickupCity: item.pickupCity,
-        dropCity: item.dropCity,
-        pickupLocation: item.pickupLocation,
-        dropLocation: item.dropLocation,
-        bookingDate: item.bookingDate,
-        price: item.price,
-      })));
-      setIsOpen(true);
-      setIsEdit(true);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const closeModal = () => {
     reset({});
     setIsOpen(false);
-    setIsEdit(false);
-  };
-
-  const deleteBooking = async (id) => {
-    try {
-      if (window.confirm("Do you really want to delete!")) {
-        await axios.delete(`/api/admin/bookings/${id}`);
-        setList(list.filter(li => li._id !== id));
-      }
-    } catch (error) {
-      console.error(error);
-    }
   };
 
   return (
@@ -127,58 +87,45 @@ export default function BookingManagement() {
             <th>Pickup Location</th>
             <th>Drop Location</th>
             <th>Booking Date</th>
-            <th>Price</th>
-            <th>Action</th>
+            <th>Total Price</th>
+            <th>Advance Payment</th>
           </tr>
         </thead>
         {list.length > 0 && (
           <tbody>
             {list.map((li, index) => (
               <tr key={index}>
-                <td>{li.bookingType}</td>
-                <td>{li.clientName}</td>
-                <td>{li.mobileNumber}</td>
+                <td>{li.trip.tripType}</td>
+                <td>{li.name}</td>
+                <td>{li.userId.primaryPhone}</td>
                 <td>{li.pickupCity}</td>
                 <td>{li.dropCity}</td>
                 <td>{li.pickupLocation}</td>
-                <td>{li.dropLocation}</td>
-                <td>{new Date(li.bookingDate).toLocaleDateString()}</td>
-                <td>{li.price}</td>
-                <td className="d-flex align-items-center">
-                  <button
-                    onClick={() => getBookingById(li._id)}
-                    className="icon-btn me-2"
-                    type="button"
-                    title="Edit"
-                  >
-                    <i className="fa fa-edit"></i>
-                  </button>
-                  <button
-                    onClick={() => deleteBooking(li._id)}
-                    className="icon-btn"
-                    type="button"
-                    title="Delete"
-                  >
-                    <i className="fa fa-trash"></i>
-                  </button>
-                </td>
+                <td>{li.dropoffLocation}</td>
+                <td>{new Date(li.pickupDate).toLocaleDateString()}</td>
+                <td>{li.totalPrice}</td>
+                <td>{li.advancePayment}</td>
               </tr>
             ))}
           </tbody>
         )}
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Booking' : 'Add Booking'}>
+      <Modal isOpen={isOpen} onClose={closeModal} title="Add Booking">
         <form onSubmit={handleSubmit(saveBooking)}>
           <div className="h-100 scroll-body">
             <div className="form-row">
               <div className="form-group col-md-6">
                 <label htmlFor="bookingType">Booking Type</label>
-                <input
-                  type="text"
+                <select
                   {...register("bookingType", { required: 'Booking Type is Required' })}
                   className="form-control"
-                  placeholder="Enter booking type"
-                />
+                >
+                  <option value="">Select booking type</option>
+                  <option value="oneWay">One Way</option>
+                  <option value="hourly">Hourly</option>
+                  <option value="roundTrip">Round Trip</option>
+                  <option value="cityCab">City Cab</option>
+                </select>
                 {errors?.bookingType && (
                   <span className="text-danger">{errors.bookingType.message}</span>
                 )}
@@ -219,7 +166,7 @@ export default function BookingManagement() {
                   <span className="text-danger">{errors.pickupCity.message}</span>
                 )}
               </div>
-              <div className="form-group col-md6">
+              <div className="form-group col-md-6">
                 <label htmlFor="dropCity">Drop City</label>
                 <input
                   type="text"
@@ -256,7 +203,7 @@ export default function BookingManagement() {
                 )}
               </div>
               <div className="form-group col-md-6">
-                <label htmlFor="bookingDate">Booking Date</label>
+                <label htmlFor="bookingDate">Booking Date</label> 
                 <input
                   type="date"
                   {...register("bookingDate", { required: 'Booking Date is Required' })}
@@ -267,22 +214,34 @@ export default function BookingManagement() {
                 )}
               </div>
               <div className="form-group col-md-6">
-                <label htmlFor="price">Price</label>
+                <label htmlFor="totalPrice">Total Price</label>
                 <input
                   type="text"
-                  {...register("price", { required: 'Price is Required' })}
+                  {...register("totalPrice", { required: 'Total Price is Required' })}
                   className="form-control"
-                  placeholder="Enter price"
+                  placeholder="Enter total price"
                 />
-                {errors?.price && (
-                  <span className="text-danger">{errors.price.message}</span>
+                {errors?.totalPrice && (
+                  <span className="text-danger">{errors.totalPrice.message}</span>
+                )}
+              </div>
+              <div className="form-group col-md-6">
+                <label htmlFor="advancePayment">Advance Payment</label>
+                <input
+                  type="text"
+                  {...register("advancePayment", { required: 'Advance Payment is Required' })}
+                  className="form-control"
+                  placeholder="Enter advance payment"
+                />
+                {errors?.advancePayment && (
+                  <span className="text-danger">{errors.advancePayment.message}</span>
                 )}
               </div>
             </div>
           </div>
           <div className="text-center">
             <button type="submit" className="cstm-btn">
-              {isEdit ? 'Update' : 'Save'}
+              Save
             </button>
           </div>
         </form>

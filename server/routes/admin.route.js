@@ -16,7 +16,8 @@ router.put('/vehicle',AdminManager.updateVehicle)
 router.delete('/vehicle/:id',AdminManager.deleteVehicle)
 router.get('/vehicle/:id',AdminManager.getVehicleById)
 
-router.get('/booking',AdminManager.getBookingInfo)
+router.get('/bookings',AdminManager.getBookingInfo)
+router.post('/bookings',AdminManager.saveBooking)
 
 router.post('/package',AdminManager.savePackage)
 router.get('/package',AdminManager.getPackage)

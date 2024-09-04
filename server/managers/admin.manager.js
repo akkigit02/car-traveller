@@ -4,6 +4,7 @@ const RideModel = require('../models/ride.model')
 const PackageModel = require('../models/packages.model');
 const EnquirePackage = require('../models/enquire.package.model')
 const ReferralCodeModel = require('../models/referral.model');
+const UserModel = require('../models/user.model')
 
 
 const saveVehiclePrice = async(req, res) => {
@@ -108,13 +109,29 @@ const getVehicleById = async(req, res) => {
 
 const getBookingInfo = async (req,res) => {
     try {
-        const ride = await RideModel.find({}).populate('passengerId','firstName lastName')
-        res.status(200).send({ride})
+        const bookings = await RideModel.find({}).populate('userId','primaryPhone')
+        res.status(200).send({bookings})
     } catch (error) {
         logger.log('server/managers/admin.manager.js-> getBookingInfo', {error: error})
         res.status(500).send({ message: 'Server Error' })
     }
 }
+
+const saveBooking = async (req, res) => {
+    try {
+        const { name,primaryPhone,...rideInfo } = req.body;
+        let user = await UserModel.findOne({ primaryPhone});
+        if (!user) {
+            user = await UserModel.create({name,primaryPhone,modules: {userType: "CLIENT"} })  
+        }
+        const booking = await RideModel.create(rideInfo);
+        res.status(201).send({ message: 'Booking created successfully', booking });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> saveBooking', { error: error });
+        res.status(500).send({ message: 'Server Error' });
+    }
+};
+
 
 /*********************************Package Detail***********************************************************/
 const savePackage = async(req, res) => {
@@ -253,6 +270,7 @@ module.exports = {
     getVehicleById,
 
     getBookingInfo,
+    saveBooking,
 
     savePackage,
     getPackage,
