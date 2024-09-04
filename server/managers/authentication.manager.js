@@ -70,22 +70,10 @@ const login = async (req, res) => {
 
       // send otp
       console.log(otp);
-      return res
-        .status(200)
-        .send({
-          session: { sessionId, email: user.email, phone: user.primaryPhone },
-          status: "TWO_STEP_AUTHENTICATION",
-          message: 'Otp Send Succcessfully'
-        });
+      return res.status(200).send({ session: { sessionId, email: user.email, phone: user.primaryPhone }, status: "TWO_STEP_AUTHENTICATION", message: 'Otp Send Succcessfully' });
     }
     const userSession = await getUserSession(user._id);
-    res
-      .status(200)
-      .send({
-        message: "Login successful.",
-        session: userSession,
-        status: "LOGIN_SUCCESS",
-      });
+    res.status(200).send({ message: "Login successful.", session: userSession, status: "LOGIN_SUCCESS", });
   } catch (error) {
     console.log(error);
     res
@@ -99,97 +87,56 @@ const verifyOtp = async (req, res) => {
     const { body } = req;
     const { otp, sessionId } = body;
     if (!otp || !sessionId) {
-      return res
-        .status(400)
-        .send({ message: "OTP and session ID are required." });
+      return res.status(400).send({ message: "OTP and session ID are required." });
     }
-    const user = await UserModel.findOne(
-      { "authentication.twoFactor.sessionId": String(sessionId) },
-      { status: 1, authentication: 1, email: 1, primaryPhone: 1 }
-    );
+    const user = await UserModel.findOne({ "authentication.twoFactor.sessionId": String(sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1 });
     if (!user) {
-      return res
-        .status(401)
-        .send({
-          message:
-            "Session expired or invalid. Please resend OTP and try again.",
-        });
+      return res.status(401).send({ message: "Session expired or invalid. Please resend OTP and try again.", });
     }
-    console.log(new Date(), user?.authentication?.twoFactor?.expiresOn);
     if (new Date() > user?.authentication?.twoFactor?.expiresOn)
-      return res
-        .status(401)
-        .send({ message: "Session expired. Please resend OTP and try again." });
+      return res.status(401).send({ message: "Session expired. Please resend OTP and try again." });
     if (user?.authentication?.twoFactor?.otp !== String(otp))
-      return res
-        .status(401)
-        .send({ message: "Invalid OTP. Please try again." });
-    await UserModel.updateOne(
-      { _id: user._id },
-      {
-        $unset: {
-          "authentication.twoFactor.otp": 1,
-          "authentication.twoFactor.expiresOn": 1,
-          "authentication.twoFactor.sessionId": 1,
-        },
-      }
-    );
+      return res.status(401).send({ message: "Invalid OTP. Please try again." });
+    await UserModel.updateOne({ _id: user._id }, {
+      $unset: {
+        "authentication.twoFactor.otp": 1,
+        "authentication.twoFactor.expiresOn": 1,
+        "authentication.twoFactor.sessionId": 1,
+      },
+    });
     const userSession = await getUserSession(user._id);
-    res
-      .status(200)
-      .send({
-        message: "Login successful.",
-        session: userSession,
-        status: "LOGIN_SUCCESS",
-      });
+    res.status(200).send({ message: "Login successful.", session: userSession, status: "LOGIN_SUCCESS", });
   } catch (error) {
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
+    res.status(500).send({ message: "Something went wrong. Please try again later." });
   }
 };
+
 
 const verifySession = async (req, res) => {
   try {
     const { query } = req;
     if (!query?.token)
-      return res
-        .status(401)
-        .send({ message: "Session expired or invalid. Please login again" });
+      return res.status(401).send({ message: "Session expired or invalid. Please login again" });
     try {
       JWT.verify(query?.token, JWT_SECRET_KEY);
     } catch (error) {
-      return res
-        .status(401)
-        .send({ message: "Session expired or invalid. Please login again" });
+      return res.status(401).send({ message: "Session expired or invalid. Please login again" });
     }
     const token = JWT.decode(query.token);
     if (!token?.sessionId)
-      return res
-        .status(401)
-        .send({ message: "Session expired or invalid. Please login again" });
-    const user = await UserModel.findOne(
-      { "authentication.loginSessionId": String(token?.sessionId) },
-      { status: 1, authentication: 1, email: 1, primaryPhone: 1, name: 1 }
-    );
-    console.log(113, user);
+      return res.status(401).send({ message: "Session expired or invalid. Please login again" });
+    const user = await UserModel.findOne({ "authentication.loginSessionId": String(token?.sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1, name: 1 });
     if (!user)
-      return res
-        .status(401)
-        .send({ message: "Session expired or invalid. Please login again" });
+      return res.status(401).send({ message: "Session expired or invalid. Please login again" });
     const userSession = await getUserSession(user._id);
-    return res
-      .status(200)
-      .send({
-        message: "Login successful.",
-        session: userSession,
-        status: "LOGIN_SUCCESS",
-      });
+    return res.status(200).send({
+      message: "Login successful.",
+      session: userSession,
+      status: "LOGIN_SUCCESS",
+    });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
+    res.status(500).send({ message: "Something went wrong. Please try again later." });
   }
 };
 
@@ -293,13 +240,10 @@ const verifyPasswordResetOtp = async (req, res) => {
   try {
     const { otp, sessionId } = req.body;
     if (!otp || !sessionId) {
-      return res
-        .status(400)
-        .send({ message: "OTP and session ID are required." });
+      return res.status(400).send({ message: "OTP and session ID are required." });
     }
 
-    const user = await UserModel.findOne(
-      { "authentication.forgetOtp.resetSessionId": String(sessionId) },
+    const user = await UserModel.findOne({ "authentication.forgetOtp.resetSessionId": String(sessionId) },
       { "authentication.forgetOtp": 1 }
     );
     if (!user) {
