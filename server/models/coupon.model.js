@@ -11,7 +11,7 @@ const couponSchema = new mongoose.Schema({
     expiryDate: { type: Date, required: true },
     isActive: { type: Boolean, default: true },
     usedUser: [{ type: mongoose.Types.ObjectId }],
-    userCondition: [{ type: mongoose.Schema.Types.Mixed }]
+    userCondition: { type: Number },
 }, { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
 
 module.exports = mongoose.model('Coupon', couponSchema);

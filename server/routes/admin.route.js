@@ -27,11 +27,11 @@ router.get('/package/:id',AdminManager.getPackageById)
 
 router.get('/enquire-package',AdminManager.getEnquirePackage)
 
-router.post('/referral',AdminManager.saveReferral)
-router.get('/referral',AdminManager.getReferral)
-router.put('/referral',AdminManager.updateReferral)
-router.delete('/referral/:id',AdminManager.deleteReferral)
-router.get('/referral/:id',AdminManager.getReferralById)
+router.post('/coupons',AdminManager.saveReferral)
+router.get('/coupons',AdminManager.getReferral)
+router.put('/coupons/:id',AdminManager.updateReferral)
+router.delete('/coupons/:id',AdminManager.deleteReferral)
+router.get('/coupons/:id',AdminManager.getReferralById)
 
 
 module.exports = router

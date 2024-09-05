@@ -1,106 +1,101 @@
 import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { useForm } from "react-hook-form";
-import { VEHICLE_TYPE, FUEL_TYPE } from "../../constants/common.constants";
 import axios from "axios";
 
-export default function ReferralCode() {
+export default function CouponForm() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [list, setList] = useState([]);
+  const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
+    mode: "onChange",
+  });
+  const [isEdit, setIsEdit] = useState(false);
 
-    const [isOpen, setIsOpen] = useState(false);
-    const [list, setList] = useState([]);
-    const { register, handleSubmit, reset } = useForm({ mode: "onChange" });
-    const [isEdit, setIsEdit] = useState(false)
-  
-    useEffect(() => {
-      getVehicle();
-    }, []);
-  
-    const saveVehicle = async (data) => {
-      try {
-        if (data?._id) {
-          const res = await axios({
-            method: "put",
-            url: "/api/admin/referral",
-            data: data,
-          });
-          setList(
-            list?.map((li) => {
-              if (li._id === data._id) {
-                li = data;
-              }
-              return li;
-            })
-          );
-        } else {
-          const res = await axios({
-            method: "POST",
-            url: "/api/admin/referral",
-            data: data,
-          });
-          setList([res.data.ReferralCode, ...list]);
-        }
-        setIsOpen(false);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    const getVehicle = async () => {
-      try {
+  useEffect(() => {
+    getCoupons();
+  }, []);
+
+  const saveCoupon = async (data) => {
+    try {
+      if (data?._id) {
         const res = await axios({
-          method: "get",
-          url: "/api/admin/referral",
+          method: "put",
+          url: `/api/admin/coupons/${data._id}`,
+          data: data,
         });
-  
-        setList(res.data.ReferralCodes);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    const getVehicleById = async (id) => {
-      try {
+        setList(
+          list?.map((li) => (li._id === data._id ? data : li))
+        );
+      } else {
         const res = await axios({
-          method: "get",
-          url: `/api/admin/referral/${id}`,
+          method: "post",
+          url: "/api/admin/coupons",
+          data: data,
         });
-        reset(res.data.ReferralCode);
-        setIsOpen(true);
-        setIsEdit(true)
-      } catch (error) {
-        console.error(error);
+        setList([res.data.coupon, ...list]);
       }
-    };
-  
-    const closeModal = () => {
-      reset({});
-      setIsEdit(false)
       setIsOpen(false);
-    };
-  
-    const deleteVehicle = async (id) => {
-      try {
-        const confirmation = window.confirm("Do you really want to delete!");
-        if (!confirmation) return;
-        const res = await axios({
-          method: "delete",
-          url: "/api/admin/referral/" + id,
-        });
-        setList(list.filter((li) => li._id !== id));
-      } catch (error) {
-        console.error(error);
-      }
-    };
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getCoupons = async () => {
+    try {
+      const res = await axios({
+        method: "get",
+        url: "/api/admin/coupons",
+      });
+      console.log(res.data.coupons)
+      setList(res.data.coupons);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getCouponById = async (id) => {
+    try {
+      const res = await axios({
+        method: "get",
+        url: `/api/admin/coupons/${id}`,
+      });
+      reset(res.data.coupon);
+      setIsOpen(true);
+      setIsEdit(true);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const closeModal = () => {
+    reset({});
+    setIsEdit(false);
+    setIsOpen(false);
+  };
+
+  const deleteCoupon = async (id) => {
+    try {
+      const confirmation = window.confirm("Do you really want to delete?");
+      if (!confirmation) return;
+      const res = await axios({
+        method: "delete",
+        url: `/api/admin/coupons/${id}`,
+      });
+      setList(list.filter((li) => li._id !== id));
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div>
       <div className="d-flex justify-content-between pb-2">
         <div>
-          <p className="cstm-title">Vehicle Detail</p>
+          <p className="cstm-title">Coupons</p>
         </div>
         <div>
           <button
-          className="cstm-btn"
+            className="cstm-btn"
             onClick={() => {
               reset({});
               setIsOpen(true);
@@ -113,23 +108,25 @@ export default function ReferralCode() {
       <table className="cstm-table">
         <thead>
           <tr>
-            <th>Referral Code</th>
-            <th>Discount</th>
+            <th>Coupon Code</th>
+            <th>Discount Type</th>
+            <th>Discount Value</th>
+            <th>Active</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          {list?.length > 0 && list?.map((li, index) => (
+          {list?.length > 0 && list.map((li, index) => (
             <tr key={index}>
-              <td>
-                {li.name}
-              </td>
-              <td>{li.discount}</td>
+              <td>{li.code}</td>
+              <td>{li.discountType}</td>
+              <td>{li.discountValue}</td>
+              <td>{li.isActive ? "Active" : "Inactive"}</td>
               <td>
                 <ul className="list-inline m-0">
                   <li className="list-inline-item">
                     <button
-                      onClick={() => getVehicleById(li._id)}
+                      onClick={() => getCouponById(li._id)}
                       className="btn btn-success btn-sm rounded-0"
                       type="button"
                       data-toggle="tooltip"
@@ -141,7 +138,7 @@ export default function ReferralCode() {
                   </li>
                   <li className="list-inline-item">
                     <button
-                      onClick={() => deleteVehicle(li._id)}
+                      onClick={() => deleteCoupon(li._id)}
                       className="btn btn-danger btn-sm rounded-0"
                       type="button"
                       data-toggle="tooltip"
@@ -157,37 +154,110 @@ export default function ReferralCode() {
           ))}
         </tbody>
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Referral Code' : 'Add Referral Code'}>
-        <form onSubmit={handleSubmit(saveVehicle)}>
-          <div className="h-100 scroll-body">
-            <div className="row m-0">
-              <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputPassword4">Referral Name</label>
-                <input
-                  type="text"
-                  {...register("name")}
-                  className="cstm-select-input"
-                  placeholder="Enter referral name"
-                />
-              </div>
-            <div className="form-group col-lg-6 col-md-6 col-12">
-              <label htmlFor="inputAddress">Discount <span>%</span> </label>
-              <input
-                type="number"
-                {...register("discount")}
-                className="cstm-select-input"
-                placeholder="Enter discount"
-              />
-            </div>
-            </div>
-          </div>
-          <div className="d-flex justify-content-end border-top mt-3 pt-2">
-            <button type="submit" className="btn btn-primary">
-            {isEdit ? 'Update' : 'Add'}
-          </button>
-          </div>
-        </form>
-      </Modal>
+      <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Coupon' : 'Add Coupon'}>
+  <form onSubmit={handleSubmit(saveCoupon)}>
+    <div className="h-100 scroll-body">
+      <div className="row m-0">
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Coupon Code</label>
+          <input
+            type="text"
+            {...register("code", { required: "Coupon Code is required" })}
+            className="cstm-select-input"
+            placeholder="Enter coupon code"
+          />
+          {errors?.code && <span className="text-danger">{errors.code.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Discount Type</label>
+          <select
+            {...register("discountType", { required: "Discount Type is required" })}
+            className="cstm-select-input"
+          >
+            <option value="percentage">Percentage</option>
+            <option value="fixed">Fixed</option>
+          </select>
+          {errors?.discountType && <span className="text-danger">{errors.discountType.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Discount Value</label>
+          <input
+            type="number"
+            {...register("discountValue", { required: "Discount Value is required" })}
+            className="cstm-select-input"
+            placeholder="Enter discount value"
+          />
+          {errors?.discountValue && <span className="text-danger">{errors.discountValue.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Max Discount Amount</label>
+          <input
+            type="number"
+            {...register("maxDiscountAmount", { required: "Max Discount Amount is required" })}
+            className="cstm-select-input"
+            placeholder="Enter max discount amount"
+          />
+          {errors?.maxDiscountAmount && <span className="text-danger">{errors.maxDiscountAmount.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Min Purchase Amount</label>
+          <input
+            type="number"
+            {...register("minPurchaseAmount", { required: "Min Purchase Amount is required" })}
+            className="cstm-select-input"
+            placeholder="Enter min purchase amount"
+          />
+          {errors?.minPurchaseAmount && <span className="text-danger">{errors.minPurchaseAmount.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Start Date</label>
+          <input
+            type="date"
+            {...register("startDate", { required: "Start Date is required" })}
+            className="cstm-select-input"
+          />
+          {errors?.startDate && <span className="text-danger">{errors.startDate.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Expiry Date</label>
+          <input
+            type="date"
+            {...register("expiryDate", { required: "Expiry Date is required" })}
+            className="cstm-select-input"
+          />
+          {errors?.expiryDate && <span className="text-danger">{errors.expiryDate.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>Active</label>
+          <select
+            {...register("isActive", { required: "Active status is required" })}
+            className="cstm-select-input"
+          >
+            <option value={true}>Active</option>
+            <option value={false}>Inactive</option>
+          </select>
+          {errors?.isActive && <span className="text-danger">{errors.isActive.message}</span>}
+        </div>
+        <div className="form-group col-lg-6 col-md-6 col-12">
+          <label>User Type</label>
+          <input
+            type="number"
+            {...register("userType", { required: "User Type is required" })}
+            className="cstm-select-input"
+            placeholder="Enter user type"
+          />
+          {errors?.userType && <span className="text-danger">{errors.userType.message}</span>}
+        </div>
+      </div>
     </div>
-  )
+    <div className="d-flex justify-content-end border-top mt-3 pt-2">
+      <button type="submit" className="btn btn-primary">
+        {isEdit ? "Update" : "Add"}
+      </button>
+    </div>
+  </form>
+</Modal>
+
+    </div>
+  );
 }
