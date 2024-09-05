@@ -2,8 +2,10 @@ const ObjectId = require('mongoose').Types.ObjectId
 const CitiesModel = require("../models/cities.model");
 const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
+const CouponModel = require("../models/coupon.model");
 const UserModel = require("../models/user.model");
 const EnquirePackageModel = require("../models/enquire.package.model")
+
 const {
   estimateRouteDistance,
   dateDifference,
@@ -309,7 +311,7 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
 const saveBooking = async (req, res) => {
   try {
     const { body, user } = req;
-    console.log(body,"======-------")
+    console.log(body, "======-------")
     const isCityCab = body?.bookingDetails?.tripType === 'cityCab'
     const bookingData = {
       name: body.userDetails.name,
@@ -317,7 +319,7 @@ const saveBooking = async (req, res) => {
       userId: user._id,
       pickupDate: {
         date: new Date(body?.bookingDetails?.pickUpDate).getDate(),
-        month: new Date(body?.bookingDetails?.pickUpDate).getMonth()+1,
+        month: new Date(body?.bookingDetails?.pickUpDate).getMonth() + 1,
         year: new Date(body.bookingDetails?.pickUpDate).getFullYear(),
       },
       pickupTime: body.bookingDetails?.pickUpTime,
@@ -340,7 +342,7 @@ const saveBooking = async (req, res) => {
     if (body?.bookingDetails?.returnDate) {
       bookingData['dropDate'] = {
         date: new Date(body?.bookingDetails?.returnDate).getDate(),
-        month: new Date(body?.bookingDetails?.returnDate).getMonth()+1,
+        month: new Date(body?.bookingDetails?.returnDate).getMonth() + 1,
         year: new Date(body?.bookingDetails?.returnDate).getFullYear(),
       }
     }
@@ -360,9 +362,6 @@ const saveBooking = async (req, res) => {
   }
 }
 
-
-
-
 const getBookingList = async (req, res) => {
   try {
     const { user, query } = req
@@ -373,6 +372,66 @@ const getBookingList = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 };
+
+const getBookingById = async (req, res) => {
+  try {
+    const bookingId = req.params.bookingId;
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
+      .populate([
+        { path: 'pickUpCity', select: 'name' },
+        { path: 'dropCity', select: 'name' },
+        { path: 'vehicleId', select: 'vehicleType vehicleName' },
+      ])
+      .lean();
+    return res.status(200).send({ bookingDetails });
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+};
+
+
+const applyCopounCode = async (req, res) => {
+  try {
+    const { user, params } = req
+    const coupon = await CouponModel.findOne({ code: params.couponCode })
+    if (!coupon)
+      return res.status(400).send({ message: 'Invalid coupon or may be expired' })
+    if (!coupon?.isActive)
+      return res.status(400).send({ message: 'Invalid coupon or may be expired' })
+    if (new Date() > coupon.expiryDate)
+      return res.status(400).send({ message: 'Invalid coupon or may be expired' })
+    if (coupon?.usedUser.find(ele => String(ele) === String(user._id)))
+      return res.status(400).send({ message: 'You already use this coupon' })
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }, { totalPrice: 1 })
+    if (coupon?.minPurchaseAmount > bookingDetails.totalPrice)
+      return res.status(400).send({ message: `Booking Price should be minimum ${coupon?.minPurchaseAmount}` })
+
+    const discountAmount = (bookingDetails.totalPrice * coupon.discountValue) / 100
+    if (discountAmount > coupon.maxDiscountAmount) {
+      return res.status(200).send({
+        message: `Coupon Applied Successfully`,
+        discountDetails: {
+          discountPercent: coupon.discountValue,
+          maxDiscountAmount: coupon.maxDiscountAmount,
+          discountAmount: coupon.maxDiscountAmount
+        }
+      })
+    } else return res.status(200).send({
+      message: `Coupon Applied Successfully`,
+      discountDetails: {
+        discountPercent: coupon.discountValue,
+        discountAmount
+      }
+    })
+
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> applyCopounCode', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
+
+
 
 const getBookingByPasssengerId = async (req, res) => {
   try {
@@ -421,22 +480,7 @@ const cancelBooking = async (req, res) => {
 };
 
 
-const getBookingById = async (req, res) => {
-  try {
-    const bookingId = req.params.bookingId;
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
-      .populate([
-        { path: 'pickUpCity', select: 'name' },
-        { path: 'dropCity', select: 'name' },
-        { path: 'vehicleId', select: 'vehicleType vehicleName' },
-      ])
-      .lean();
-    return res.status(200).send({ bookingDetails });
-  } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
-    res.status(500).send({ message: 'Server Error' })
-  }
-};
+
 
 const sendPackageEnquire = async (req, res) => {
   try {
@@ -457,8 +501,9 @@ module.exports = {
   getBookingById,
   getAddressSuggestion,
   getAddressSuggestionOnLandingPage,
+  applyCopounCode,
 
-  
+
   getBookingByPasssengerId,
   cancelBooking,
   sendPackageEnquire

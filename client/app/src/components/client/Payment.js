@@ -2,15 +2,36 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
+import { toast } from "react-toastify";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
   const { bookingId } = useParams();
   const [bookingDetails, setBookingDetails] = useState({});
-  const [advancePercentage, setAdvancePercentage] = useState(null);
-  const [totalPayment, setTotalPayment] = useState({
-    coupon: '',
-    amount: null
+  const [advancePercentage, setAdvancePercentage] = useState(25)
+  const [payblePrice, setPayblePrice] = useState(0)
+  const [coupon, setCopouns] = useState({
+    code: '',
+    error: '',
+    isApply: false,
+    discountPercent: 0,
+    maxDiscountAmount: 0,
+    discountAmount: 0,
   })
+
+
+  const calculatePayablePrice = (bookingDetails) => {
+    let discountPrice = 0
+    if (coupon?.isApply) {
+      discountPrice = bookingDetails.totalPrice - coupon.discountAmount || 0
+    } else discountPrice = bookingDetails.totalPrice || 0
+    setPayblePrice((discountPrice * advancePercentage) / 100)
+  }
+
+  useEffect(() => {
+    if (bookingDetails)
+      calculatePayablePrice(bookingDetails)
+  }, [advancePercentage, coupon])
+
 
   const getBookingDetails = async () => {
     try {
@@ -18,37 +39,66 @@ function Payment() {
       const { data } = await axios({
         url: `/api/client/booking/${bookingId}`,
       });
-      console.log(data, "-------------",data?.bookingDetails?.totalPrice);
       setBookingDetails(data?.bookingDetails);
-      setTotalPayment(old => ({...old,amount: data?.bookingDetails?.totalPrice}))
+      calculatePayablePrice(data?.bookingDetails)
     } catch (error) {
       console.log(error);
+      toast.error(error?.response?.data?.message || "Something went wrong please try again!");
     }
   };
 
-  const advancePaymentOnPercentage = (percentage) => {
+  const applyCopoun = async () => {
     try {
-      const price = (parseFloat(totalPayment?.amount) / 100) * percentage;
-      return price;
+      if (!coupon.code) {
+        setCopouns(old => ({ ...old, error: 'Coupon is required' }))
+        return
+      }
+      const { data } = await axios({
+        url: `/api/client/apply-coupon/${bookingId}/${coupon.code}`,
+      })
+      if (data?.message)
+        toast.success(data?.message);
+      setCopouns((old) => ({ ...old, isApply: true, ...data.discountDetails }))
+      console.log(data)
     } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleCoupon = () => {
-
-    if(totalPayment?.coupon === 'DISCOUNT10') {
-      const price = (parseFloat(bookingDetails?.totalPrice) / 100) * 90;
-      setTotalPayment(old => ({...old,amount: price}))
-    } else {
-      setTotalPayment(old => ({ ...old, amount: parseFloat(bookingDetails?.totalPrice) || 0 }));
+      console.log(error)
+      toast.error(error?.response?.data?.message || "Something went wrong please try again!");
     }
   }
 
-  const handlePayment = () =>{
-    if(!advancePercentage) return
-    console.log(totalPayment,"====-------",advancePercentage, totalPayment.amount * (advancePercentage/100))
+  const resetCoupon = () => {
+    setCopouns({
+      code: '',
+      isApply: false,
+      discountPercent: '',
+      maxDiscountAmount: '',
+      discountAmount: '',
+    })
   }
+
+  // const advancePaymentOnPercentage = (percentage) => {
+  //   try {
+  //     const price = (parseFloat(totalPayment?.amount) / 100) * percentage;
+  //     return price;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleCoupon = () => {
+
+  //   if (totalPayment?.coupon === 'DISCOUNT10') {
+  //     const price = (parseFloat(bookingDetails?.totalPrice) / 100) * 90;
+  //     setTotalPayment(old => ({ ...old, amount: price }))
+  //   } else {
+  //     setTotalPayment(old => ({ ...old, amount: parseFloat(bookingDetails?.totalPrice) || 0 }));
+  //   }
+  // }
+
+  // const handlePayment = () => {
+  //   if (!advancePercentage) return
+  //   console.log(totalPayment, "====-------", advancePercentage, totalPayment.amount * (advancePercentage / 100))
+  // }
 
   useEffect(() => {
     if (bookingId) {
@@ -58,27 +108,27 @@ function Payment() {
   return (
     <>
       <div className="row m-0 col-reverse-sm flex-wrap">
-        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 pe-0":"col-lg-4 col-md-4 col-sm-12 pe-0 mb-5"}>
-          <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100": "car-list-sidebar mt-30 h-100"}>
+        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 pe-0" : "col-lg-4 col-md-4 col-sm-12 pe-0 mb-5"}>
+          <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100" : "car-list-sidebar mt-30 h-100"}>
             <h4 className="title">Booking Summary</h4>
-            
+
             <div className="p-3 height-300c">
-            <div className="col-lg-12 col-md-12 col-12 pe-0">
-                  <label>Name</label>
-                  <p className="mb-0 desti-details-2">
-                    {bookingDetails?.name}
-                  </p>
-                </div>
+              <div className="col-lg-12 col-md-12 col-12 pe-0">
+                <label>Name</label>
+                <p className="mb-0 desti-details-2">
+                  {bookingDetails?.name}
+                </p>
+              </div>
               {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="d-flex align-items-center justify-content-between mb-4">
                 <p className="mb-0 desti-details">
                   {bookingDetails?.pickUpCity?.name}
                 </p>
-                {['oneWay','roundTrip'].includes(bookingDetails?.trip?.tripType) && <div>
-                { bookingDetails?.dropCity?.map((item, index) => (
-                  <p key={index} className="mb-0 desti-details">
-                    {item.name}
-                  </p>
-                ))}
+                {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) && <div>
+                  {bookingDetails?.dropCity?.map((item, index) => (
+                    <p key={index} className="mb-0 desti-details">
+                      {item.name}
+                    </p>
+                  ))}
                 </div>}
               </div>}
               {<div className="d-flex align-items-center justify-content-between mb-4">
@@ -112,7 +162,7 @@ function Payment() {
                 </div>
               </div>
               <div>
-              <p>
+                <p>
                   <strong>Trip type:</strong>{" "}
                   {
                     TRIP_TYPE.find(
@@ -120,8 +170,8 @@ function Payment() {
                     )?.name
                   }
                 </p>
-                {bookingDetails?.trip?.tripType === "hourly" && 
-                    <p>
+                {bookingDetails?.trip?.tripType === "hourly" &&
+                  <p>
                     <strong>Hourly type:</strong>{" "}
                     {HOURLY_TYPE.find(li => li.value === bookingDetails?.trip?.hourlyType)?.name}
                   </p>
@@ -165,58 +215,40 @@ function Payment() {
         <div className="col-lg-8 col-md-8 col-sm-12">
           <div className="d-flex align-content-end flex-wrap-reverse form-group">
             <div className=" col-md-6">
-            <label htmlFor="">Coupon</label>
-            <input className="form-control" type="text" onChange={(e) => setTotalPayment(old => ({...old,coupon: e.target.value}))} />
+              <label htmlFor="">Coupon</label>
+              <input className="form-control" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
+                setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
+              }} />
+              {coupon.error && <p> {coupon.error}</p>}
             </div>
-            <button className="cstm-btn ms-2" onClick={handleCoupon}>Apply</button>
-            </div>
+            {!coupon.isApply ? <button className="cstm-btn ms-2" onClick={() => applyCopoun(true)}>Apply</button> :
+              <>
+                <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
+                <div>
+                  coupon discount price: {coupon.discountAmount}
+                </div>
+              </>}
+          </div>
           <section>
             <div className="d-flex flex-column">
-              <div  className="payment-percentage">
-                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(20)} />
-                <label htmlFor="">
-                  20%{" "}
-                  {advancePaymentOnPercentage(20)}
-                </label>
-              </div>
-              <div className="payment-percentage">
-                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(40)} />
-                <label htmlFor="">
-                  40%{" "}
-                  {advancePaymentOnPercentage(40)}
-                </label>
-              </div>
-              <div className="payment-percentage">
-                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(60)} />
-                <label htmlFor="">
-                  60%{" "}
-                  {advancePaymentOnPercentage(60)}
-                </label>
-              </div>
-              <div className="payment-percentage">
-                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(80)} />
-                <label htmlFor="">
-                   80%{" "}
-                  {advancePaymentOnPercentage(80)}
-                </label>
-              </div>
-              <div className="payment-percentage">
-                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(100)} />
-                <label htmlFor="">
-                  100%{" "}
-                  {advancePaymentOnPercentage(100)}
-                </label>
-              </div>
+              {[10, 25, 50, 100].map(ele => (
+                <div className="payment-percentage">
+                  <input type="radio"  name="advancePayment" value={advancePercentage} checked={advancePercentage===ele} onChange={() => setAdvancePercentage(ele)} >
+                  </input>
+                  <label>{ele === 100 ? 'Full Payment' : ele + '%'}
+                  </label>
+                </div>
+              ))}
             </div>
             <div className="mb-2 font-bold">
-              Total Payment amount: {totalPayment?.amount}
+              Total Payment amount: {payblePrice}
             </div>
-            <button className="cstm-btn" onClick={handlePayment}>
-                Proceed to pay
+            <button className="cstm-btn" >
+              Proceed to pay
             </button>
           </section>
         </div>
-      </div>
+      </div >
     </>
   );
 }
