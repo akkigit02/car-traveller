@@ -10,4 +10,6 @@ router.get('/car-list', ClientManager.getCars)
 router.post('/booking', jwtUserAuthentication, ClientManager.saveBooking)
 router.get('/booking', jwtUserAuthentication, ClientManager.getBookingList)
 router.get('/booking/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
+router.get('/rescheduled/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
+router.get('/cancel-booking/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
 module.exports = router
