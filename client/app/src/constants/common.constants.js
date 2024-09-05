@@ -10,7 +10,10 @@ const USER_ROUTE = {
 
 
 const VEHICLE_TYPE = [
-    {
+  {
+    "name": "Hatchback",
+    "value": "Hatchback"
+  },{
       "name": "SUV",
       "value": "SUV"
     },

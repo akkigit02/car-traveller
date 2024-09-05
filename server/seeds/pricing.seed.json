@@ -1,5 +1,44 @@
 [
-    {
+  {
+    "vehicleType": "Hatchback",
+    "vehicleName": "Wagon R",
+    "similar": ["Celerio"],
+    "vehicleImageUrl": "https://resize.indiatvnews.com/en/centered/newbucket/1200_675/2020/02/wagon-r-1581678064.jpg",
+    "upToKm": 150,
+    "upToCostPerKm": 12,
+    "upToCostPerHour": 120,
+    "capacity": {
+      "totalNumberOfSeats": 4,
+      "reservedNumberOfSeats": 1,
+      "description": ""
+    },
+    "acAvailable": true,
+    "baseFare": 0,
+    "costPerKm": 13,
+    "costPerHour": 180,
+    "laguageCarrierCost": 0,
+    "minimumFare": 600,
+    "additionalCharges": 0,
+    "driverAllowance": 300,
+    "hourly": [{
+      "type": "8hr80km",
+      "hour": 8,
+      "distance": 80,
+      "basePrice": 2399,
+      "costPerKm": 12,
+      "costPerHour": 120
+    },{
+      "type": "10hr100km",
+      "hour": 10,
+      "distance": 100,
+      "basePrice": 2870
+    },{
+      "type": "12hr120km",
+      "hour": 12,
+      "distance": 120,
+      "basePrice": 3199
+    }]
+},{
     "vehicleType": "Sedan",
     "vehicleName": "Hyundai Xcent",
     "similar": ["Swift Dzire"],
