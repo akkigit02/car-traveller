@@ -66,6 +66,11 @@ const getCars = async (req, res) => {
     let fromDetail = "";
     let carList = [];
     let hourlyCarDetails = []
+    if(['cityCab'].includes(search?.tripType)) {
+      cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
+    } else {
+      cars = cars.filter(vehicle => !['Hatchback'].includes(vehicle.vehicleType))
+    }
     if (search?.tripType === "oneWay") {
       let toCity = await CitiesModel.findOne({ _id: search.to }).lean();
       fromDetail = await CitiesModel.findOne({ _id: search.from }).lean();
@@ -163,14 +168,14 @@ const getCars = async (req, res) => {
     } else if (search?.tripType === 'cityCab') {
       const data = await getDistanceBetweenPlaces(search?.pickupCityCab, search?.dropCityCab)
       distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      console.log(distance, "====-------")
       const priceInfo = CITY_CAB_PRICE.find(info => info.max >= distance && info.min <= distance)
       fromDetail = { name: data.from }
       toDetail = [{ name: data.to }]
-      cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
       for (let car of cars) {
         if (['Sedan'].includes(car.vehicleType)) {
           car["totalPrice"] = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
+        } else if (['Hatchback'].includes(car.vehicleType)) {
+          car["totalPrice"] = priceInfo.hatchback.base + priceInfo.hatchback.perKm * distance
         } else {
           car["totalPrice"] = priceInfo.suv.base + priceInfo.suv.perKm * distance
         }
@@ -283,7 +288,9 @@ const getTotalPrice = async (bookingDetails) => {
       toDetail = [{ name: data.to }]
       if (['Sedan'].includes(car.vehicleType)) {
         totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
-      } else {
+      } else if (['Hatchback'].includes(car.vehicleType)) {
+        totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * distance
+      }else {
         totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
       }
     }
@@ -311,7 +318,6 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
 const saveBooking = async (req, res) => {
   try {
     const { body, user } = req;
-    console.log(body, "======-------")
     const isCityCab = body?.bookingDetails?.tripType === 'cityCab'
     const bookingData = {
       name: body.userDetails.name,

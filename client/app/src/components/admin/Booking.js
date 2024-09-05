@@ -82,7 +82,7 @@ export default function BookingManagement() {
               <tr key={index}>
                 <td>{li.trip.tripType}</td>
                 <td>{li.name}</td>
-                <td>{li.userId.primaryPhone}</td>
+                <td>{li?.userId?.primaryPhone}</td>
                 <td>{li.pickupCity}</td>
                 <td>{li.dropCity}</td>
                 <td>{li.pickupLocation}</td>
