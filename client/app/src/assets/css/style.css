@@ -63,7 +63,7 @@
     height: calc(100vh - 160px);
 }
 .cstm-calHeight{
-    height: calc(100vh - 110px);
+    height: calc(100vh - 240px);
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -610,7 +610,7 @@ background: #8bbaff8c;
     border: 1px solid #005cb5 ;
     border-radius: 4px;
     padding: 10px;
-    margin-bottom: 5px;
+    margin: 0 5px 5px 0;
     width: fit-content;
 }
 

@@ -187,15 +187,17 @@ const Profile = () => {
         </div>
       </form>
       {otpSession &&
-        <>
+        <div className='col-4'>
           <h4 className="form-title">
             Verify OTP
           </h4>
-          <div className="form-group-login">
+          <div className='d-flex'>
+          <div className=" me-2">
             <label>
-              <i class="fa fa-key"></i>
+              Enter OTP
             </label>
             <input
+            className="form-control"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter your OTP"
@@ -206,7 +208,8 @@ const Profile = () => {
               Verify
             </button>
           </div>
-        </>
+          </div>
+        </div>
       }
     </div>
   );

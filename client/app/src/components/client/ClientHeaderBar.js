@@ -158,7 +158,7 @@ function TopNavBar() {
                     <i className="fas fa-phone-alt"></i>
                   </div>
                   <div className="content">
-                    <p>Call Anytime</p>
+                    <p className='mb-0'>Call Anytime</p>
                     <h6>
                       <a href="tel:+9288009850">+91 (8800) - 9850</a>
                     </h6>

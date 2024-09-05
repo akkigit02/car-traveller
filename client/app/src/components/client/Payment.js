@@ -213,41 +213,126 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12">
+          <div className="mb-5">
+          <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p>
+          <div className="d-flex mb-3">
+              <div  className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(20)} />
+                <label htmlFor="">
+                  20%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(40)} />
+                <label htmlFor="">
+                  40%{" "}
+                  {advancePaymentOnPercentage(40)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(60)} />
+                <label htmlFor="">
+                  60%{" "}
+                  {advancePaymentOnPercentage(60)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(80)} />
+                <label htmlFor="">
+                   80%{" "}
+                  {advancePaymentOnPercentage(80)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(100)} />
+                <label htmlFor="">
+                  100%{" "}
+                  {advancePaymentOnPercentage(100)}
+                </label>
+              </div>
+            </div>
           <div className="d-flex align-content-end flex-wrap-reverse form-group">
-            <div className=" col-md-6">
-              <label htmlFor="">Coupon</label>
-              <input className="form-control" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
-                setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
-              }} />
-              {coupon.error && <p> {coupon.error}</p>}
+            <div className=" col-md-4">
+            <label htmlFor="">Coupon</label>
+            <input className="form-control" type="text" onChange={(e) => setTotalPayment(old => ({...old,coupon: e.target.value}))} />
             </div>
-            {!coupon.isApply ? <button className="cstm-btn ms-2" onClick={() => applyCopoun(true)}>Apply</button> :
-              <>
-                <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
-                <div>
-                  coupon discount price: {coupon.discountAmount}
-                </div>
-              </>}
-          </div>
-          <section>
-            <div className="d-flex flex-column">
-              {[10, 25, 50, 100].map(ele => (
-                <div className="payment-percentage">
-                  <input type="radio"  name="advancePayment" value={advancePercentage} checked={advancePercentage===ele} onChange={() => setAdvancePercentage(ele)} >
-                  </input>
-                  <label>{ele === 100 ? 'Full Payment' : ele + '%'}
-                  </label>
-                </div>
-              ))}
+            <button className="cstm-btn ms-2" onClick={handleCoupon}>Apply</button>
             </div>
+            </div>
+          <div className="d-flex flex-column align-items-end pt-5">
+            
             <div className="mb-2 font-bold">
               Total Payment amount: {payblePrice}
             </div>
             <button className="cstm-btn" >
               Proceed to pay
             </button>
-          </section>
+          </div>
         </div>
+
+
+        {/* <div className="col-lg-8 col-md-8 col-sm-12">
+          <div className="mb-5">
+          <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p>
+          <div className="d-flex mb-3">
+              <div  className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(20)} />
+                <label htmlFor="">
+                  20%{" "}
+                  {advancePaymentOnPercentage(20)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(40)} />
+                <label htmlFor="">
+                  40%{" "}
+                  {advancePaymentOnPercentage(40)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(60)} />
+                <label htmlFor="">
+                  60%{" "}
+                  {advancePaymentOnPercentage(60)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(80)} />
+                <label htmlFor="">
+                   80%{" "}
+                  {advancePaymentOnPercentage(80)}
+                </label>
+              </div>
+              <div className="payment-percentage">
+                <input type="radio" name="advancePayment" onChange={() => setAdvancePercentage(100)} />
+                <label htmlFor="">
+                  100%{" "}
+                  {advancePaymentOnPercentage(100)}
+                </label>
+              </div>
+            </div>
+          <div className="d-flex align-content-end flex-wrap-reverse form-group">
+            <div className=" col-md-4">
+            <label htmlFor="">Coupon</label>
+            <input className="form-control" type="text" onChange={(e) => setTotalPayment(old => ({...old,coupon: e.target.value}))} />
+            </div>
+            <button className="cstm-btn ms-2" onClick={handleCoupon}>Apply</button>
+            </div>
+            </div>
+          <div className="d-flex flex-column align-items-end pt-5">
+            
+            <div className="mb-2 font-bold">
+              Total Payment amount: {payblePrice}
+            </div>
+            <button className="cstm-btn" >
+              Proceed to pay
+            </button>
+          </div>
+        </div>
+
+
+         */}
       </div >
     </>
   );
