@@ -66,6 +66,23 @@ function Payment() {
     }
   }
 
+  const submitForPayment = async () => {
+    try {
+      const { data } = await axios({
+        url: '/api/client/initiate-payment',
+        method: 'POST',
+        data: {
+          bookingId,
+          coupon,
+          advancePercentage
+        }
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
   const resetCoupon = () => {
     setCopouns({
       code: '',
@@ -75,30 +92,6 @@ function Payment() {
       discountAmount: '',
     })
   }
-
-  // const advancePaymentOnPercentage = (percentage) => {
-  //   try {
-  //     const price = (parseFloat(totalPayment?.amount) / 100) * percentage;
-  //     return price;
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // const handleCoupon = () => {
-
-  //   if (totalPayment?.coupon === 'DISCOUNT10') {
-  //     const price = (parseFloat(bookingDetails?.totalPrice) / 100) * 90;
-  //     setTotalPayment(old => ({ ...old, amount: price }))
-  //   } else {
-  //     setTotalPayment(old => ({ ...old, amount: parseFloat(bookingDetails?.totalPrice) || 0 }));
-  //   }
-  // }
-
-  // const handlePayment = () => {
-  //   if (!advancePercentage) return
-  //   console.log(totalPayment, "====-------", advancePercentage, totalPayment.amount * (advancePercentage / 100))
-  // }
 
   useEffect(() => {
     if (bookingId) {
@@ -247,7 +240,7 @@ function Payment() {
             <div className="mb-2 font-bold">
               Total Payment amount: {payblePrice}
             </div>
-            <button className="cstm-btn" >
+            <button className="cstm-btn" onClick={submitForPayment}>
               Proceed to pay
             </button>
           </div>

@@ -32,14 +32,15 @@ const rideSchema = new Schema({
     year: { type: String },
   },
   totalPrice: { type: Number },
-  advancePayment: { type: String },
+  advancePercent: { type: String },
+  couponCode: { type: String },
   totalDistance: { type: Number },
   trip: {
     tripType: { type: String },
     hourlyType: { type: String }
   },
   isLaguageCarrier: { type: Boolean },
-  bookingStatus: { type: String, enum: ["pending", "completed"], default: 'pending' },
+  paymentStatus: { type: String, enum: ["pending","advanced", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
     enum: ["none", "scheduled", "inProgress", "completed", "cancelled"],

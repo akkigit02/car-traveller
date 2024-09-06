@@ -66,7 +66,7 @@ const getCars = async (req, res) => {
     let fromDetail = "";
     let carList = [];
     let hourlyCarDetails = []
-    if(['cityCab'].includes(search?.tripType)) {
+    if (['cityCab'].includes(search?.tripType)) {
       cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
     } else {
       cars = cars.filter(vehicle => !['Hatchback'].includes(vehicle.vehicleType))
@@ -290,7 +290,7 @@ const getTotalPrice = async (bookingDetails) => {
         totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
       } else if (['Hatchback'].includes(car.vehicleType)) {
         totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * distance
-      }else {
+      } else {
         totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
       }
     }
@@ -333,7 +333,7 @@ const saveBooking = async (req, res) => {
         tripType: body?.bookingDetails?.tripType,
         hourlyType: body?.bookingDetails?.hourlyType
       },
-      bookingStatus: "pending",
+      paymentStatus: "pending",
     };
 
     if (isCityCab) {
@@ -396,43 +396,81 @@ const getBookingById = async (req, res) => {
   }
 };
 
+const validateCalculateCouponCode = async (bookingDetails, coupon) => {
+
+  if (!coupon)
+    return { status: 400, message: 'Invalid coupon or may be expired' }
+  if (!coupon?.isActive)
+    return { status: 400, message: 'Invalid coupon or may be expired' }
+  if (new Date() > coupon.expiryDate)
+    return { status: 400, message: 'Invalid coupon or may be expired' }
+  if (coupon?.usedUser.find(ele => String(ele) === String(user._id)))
+    return { status: 400, message: 'You already use this coupon' }
+  if (coupon?.minPurchaseAmount > bookingDetails.totalPrice)
+    return { status: 400, message: `Booking Price should be minimum ${coupon?.minPurchaseAmount}` }
+  const discountAmount = (bookingDetails.totalPrice * coupon.discountValue) / 100
+  if (discountAmount > coupon.maxDiscountAmount) {
+    return {
+      status: 200,
+      message: `Coupon Applied Successfully`,
+      discountDetails: {
+        discountPercent: coupon.discountValue,
+        maxDiscountAmount: coupon.maxDiscountAmount,
+        discountAmount: coupon.maxDiscountAmount
+      }
+    }
+  } else return {
+    status: 200,
+    message: `Coupon Applied Successfully`,
+    discountDetails: {
+      discountPercent: coupon.discountValue,
+      discountAmount
+    }
+  }
+}
+
+
+
+
 
 const applyCopounCode = async (req, res) => {
   try {
     const { user, params } = req
     const coupon = await CouponModel.findOne({ code: params.couponCode })
-    if (!coupon)
-      return res.status(400).send({ message: 'Invalid coupon or may be expired' })
-    if (!coupon?.isActive)
-      return res.status(400).send({ message: 'Invalid coupon or may be expired' })
-    if (new Date() > coupon.expiryDate)
-      return res.status(400).send({ message: 'Invalid coupon or may be expired' })
-    if (coupon?.usedUser.find(ele => String(ele) === String(user._id)))
-      return res.status(400).send({ message: 'You already use this coupon' })
     const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }, { totalPrice: 1 })
-    if (coupon?.minPurchaseAmount > bookingDetails.totalPrice)
-      return res.status(400).send({ message: `Booking Price should be minimum ${coupon?.minPurchaseAmount}` })
-
-    const discountAmount = (bookingDetails.totalPrice * coupon.discountValue) / 100
-    if (discountAmount > coupon.maxDiscountAmount) {
-      return res.status(200).send({
-        message: `Coupon Applied Successfully`,
-        discountDetails: {
-          discountPercent: coupon.discountValue,
-          maxDiscountAmount: coupon.maxDiscountAmount,
-          discountAmount: coupon.maxDiscountAmount
-        }
-      })
-    } else return res.status(200).send({
-      message: `Coupon Applied Successfully`,
-      discountDetails: {
-        discountPercent: coupon.discountValue,
-        discountAmount
-      }
-    })
-
+    const couponValidate = await validateCalculateCouponCode(bookingDetails, coupon)
+    return res.status(couponValidate.status).send({ message: couponValidate.message, discountDetails: couponValidate?.discountDetails })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> applyCopounCode', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
+
+const initiatePayment = async (req, res) => {
+  try {
+    const { body } = req
+    let couponDetails = {}
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }, { totalPrice: 1 }).lean()
+    if (body?.coupon?.isApply) {
+      const coupon = await CouponModel.findOne({ code: body.coupon.code })
+      const couponValidate = await validateCalculateCouponCode(bookingDetails, coupon)
+      if (couponValidate.status !== 200)
+        return res.status(couponValidate.status).send({ message: couponValidate.message })
+      else
+        couponDetails = { ...couponValidate.discountDetails, couponCode: coupon.code }
+    }
+    const advancePercentage = [10, 25, 50, 100].includes(body?.advancePercentage) ? body?.advancePercentage : 100;
+    await RideModel.updateOne({ _id: new ObjectId(body.bookingId) }, {
+      $set: {
+        couponCode: couponDetails.couponCode,
+        advancePercent: advancePercentage,
+        paymentStatus: advancePercentage === 100 ? 'completed' : 'pending'
+      }
+    })
+    const payableAmount = ((bookingDetails.totalPrice - couponDetails.discountAmount) * advancePercentage) / 100
+    return res.status(200).send({ payableAmount })
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })
     res.status(500).send({ message: 'Server Error' })
   }
 }
@@ -508,9 +546,11 @@ module.exports = {
   getAddressSuggestion,
   getAddressSuggestionOnLandingPage,
   applyCopounCode,
+  initiatePayment,
 
 
   getBookingByPasssengerId,
   cancelBooking,
-  sendPackageEnquire
+  sendPackageEnquire,
+
 };
