@@ -1234,7 +1234,7 @@ span {
 
 .pickup-wrapper {
   display: flex;
-  align-items: center;
+  align-items: end;
   background-color: var(--white);
   box-shadow: var(--box-shadow);
   border-radius: 10px;
