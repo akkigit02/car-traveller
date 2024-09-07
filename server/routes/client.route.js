@@ -11,6 +11,7 @@ router.post('/booking', jwtUserAuthentication, ClientManager.saveBooking)
 router.get('/booking', jwtUserAuthentication, ClientManager.getBookingList)
 router.get('/booking/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
 router.get('/apply-coupon/:bookingId/:couponCode', jwtUserAuthentication, ClientManager.applyCopounCode)
+router.get('/cancel-booking/:bookingId', jwtUserAuthentication, ClientManager.bookingCancel)
 router.post('/initiate-payment', jwtUserAuthentication, ClientManager.initiatePayment)
 
 

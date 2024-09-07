@@ -3,8 +3,9 @@ import axios from 'axios'
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { isSchedulabel, getDateAndTimeString } from '../../utils/format.util';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 function BookingHistory() {
-  const navigate=useNavigate()
+  const navigate = useNavigate()
   const [skip, setSkip] = useState(0)
   const [limit, setLimit] = useState(15)
   const [bookingList, setBookingList] = useState([])
@@ -47,6 +48,19 @@ function BookingHistory() {
     }
   }
 
+  const cancelBooking = async (bookingId) => {
+    try {
+      const { data  } = await axios({
+        url: `/api/client/cancel-booking/${bookingId}`
+      })
+      if (data?.message)
+        toast.success(data?.message);
+    } catch (error) {
+      console.log(error)
+      toast.error(error?.response?.data?.message || "Something went wrong please try again!");
+    }
+  }
+
   useEffect(() => {
     fetchBookingHistory()
   }, [])
@@ -86,8 +100,10 @@ function BookingHistory() {
                   <td>{item.bookingStatus}</td>
                   <td className='d-flex'>
                     <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)} ><i class="fa fa-eye" aria-hidden="true"></i></button>
-                    <button className='icon-btn me-2' disabled={item.isCancelable} ><i class="fa fa-retweet" aria-hidden="true"></i></button>
-                    <button  className='icon-btn' disabled={item.isCancelable}><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    <button className='icon-btn me-2' onClick={() => cancelBooking(item._id)}
+                    // disabled={item.isCancelable}
+                    ><i class="fa fa-retweet" aria-hidden="true"></i></button>
+                    <button className='icon-btn' disabled={item.isCancelable}><i class="fa fa-trash" aria-hidden="true"></i></button>
                   </td>
                 </tr>))
                   :

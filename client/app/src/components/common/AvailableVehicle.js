@@ -14,11 +14,13 @@ export default function AvailableVehicle() {
   const [bookingDetails, setBookingDetails] = useState("");
   const [carList, setCarList] = useState([]);
   const [decodedQuery, setDecodedQuery] = useState(null);
+  const [isLoading, setIsLoading] = useState(false)
   const taxImage = require("../../assets/img/tax.png");
   const doorImage = require("../../assets/img/download");
 
   const getCarList = async () => {
     try {
+      setIsLoading(true)
       const { data } = await axios({
         url: "/api/client/car-list",
         params: { search: decodedQuery },
@@ -30,6 +32,8 @@ export default function AvailableVehicle() {
       setCarList(data.cars);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false)
     }
   };
 
@@ -72,6 +76,9 @@ export default function AvailableVehicle() {
   return (
     <>
       <div>
+        {isLoading ? <div>
+          Loading...
+        </div> :
         <div className="row m-0 flex-wrap">
           <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
@@ -129,7 +136,7 @@ export default function AvailableVehicle() {
                   }
                 >
                   {console.log(list)}
-                 <h6>{list.hour} Hours| {list.distance} Km</h6> 
+                 <h6 className="mb-0">{list.hour} Hours| {list.distance} Km</h6> 
                 </div>
               ))}
             </div>
@@ -185,9 +192,9 @@ export default function AvailableVehicle() {
                             </p>
                           </div>
                           {decodedQuery?.tripType !== 'cityCab' && !bookingDetails?.from?.isMetroCity ? <button
-                            className="border-0"
+                            className="cstm-btn-trans"
                           >
-                            <h6 className="cstm-btn-red">
+                            <h6 className="mb-0">
                               Coming Soon
                             </h6>
                           </button> :<button
@@ -258,7 +265,7 @@ export default function AvailableVehicle() {
               ))}
             </div>
           </div>
-        </div>
+        </div>}
       </div>
     </>
   );

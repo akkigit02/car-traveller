@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import axios from 'axios'
-import { emailPattern, namePattern, phoneNumberValidation } from '../../constants/Validation.constant';
+import { emailPattern, namePattern, phoneNumberShortValidation, phoneNumberValidation } from '../../constants/Validation.constant';
 import { toast } from "react-toastify";
+import { useSelector } from 'react-redux';
+import Popup from '../Popup';
 const Profile = () => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, formState: { errors, dirtyFields } } = useForm({ mode: 'onChange' });
   const [formData, setFormData] = useState()
   const [otpSession, setOtpSession] = useState()
+  const userInfo = useSelector((state) => state.userInfo)
   const [otp, setOtp] = useState("")
+
   const sendOtp = async (formData) => {
     try {
-      const { data } = await axios({
-        url: '/api/common/send-otp',
-      })
-      if (data?.message)
-        toast.error(data?.message);
-      setFormData(formData)
-      setOtpSession(data.sessionId)
+      if(dirtyFields?.primaryPhone){
+        const { data } = await axios({
+          url: '/api/common/send-otp',
+        })
+        if (data?.message)
+          toast.success(data?.message);
+        setFormData(formData)
+        setOtpSession(data.sessionId)
+      } else {
+        updateProfile(formData)
+      }
+      
     } catch (error) {
       console.log(error)
+      toast.success(error?.response?.data?.message);
     }
   };
 
-  const updateProfile = async () => {
+  const updateProfile = async (formData) => {
     try {
       const { data } = await axios({
         url: '/api/common/profile',
@@ -36,10 +46,12 @@ const Profile = () => {
         }
       })
       if (data?.message)
-        toast.error(data?.message);
+        toast.success(data?.message);
       resetProfile(formData)
+      setOtpSession()
     } catch (error) {
       console.log(error)
+      toast.error(error?.response?.data?.message);
     }
   }
 
@@ -76,38 +88,37 @@ const Profile = () => {
       <form onSubmit={handleSubmit(sendOtp)}>
         <div className='row m-0'>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
-            <label>Name</label>
+            <label>Name <span>*</span></label>
             <input
               className="form-control"
               {...register('name', {
                 required: 'Name is required',
                 pattern: namePattern
               })}
+              placeholder='Enter name'
               disabled={otpSession}
             />
             {errors.name && <p>{errors.name.message}</p>}
           </div>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
-            <label>Email</label>
+            <label>Email <span>*</span></label>
             <input
               className="form-control"
               {...register('email', {
                 required: 'Email is required',
                 pattern: emailPattern
               })}
+              placeholder='Enter email'
               disabled={otpSession}
             />
             {errors.email && <p>{errors.email.message}</p>}
           </div>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
-            <label>Primary Phone</label>
+            <label>Primary Phone <span>*</span> </label>
             <input
               className="form-control"
-              {...register('primaryPhone',
-                {
-                  required: 'Primary Phone is required',
-                  pattern: phoneNumberValidation
-                })}
+              {...register('primaryPhone',phoneNumberValidation)}
+              placeholder='Enter primary phone'
               disabled={otpSession}
             />
             {errors.primaryPhone && <p>{errors.primaryPhone.message}</p>}
@@ -116,9 +127,8 @@ const Profile = () => {
             <label>Secondary Phone</label>
             <input
               className="form-control"
-              {...register('secondaryPhone', {
-                pattern: phoneNumberValidation
-              })}
+              {...register('secondaryPhone', phoneNumberShortValidation)}
+              placeholder='Enter secondary phone'
               disabled={otpSession}
             />
           </div>
@@ -128,6 +138,7 @@ const Profile = () => {
               className="form-control"
               type="date"
               {...register('dateOfBirth')}
+              placeholder='Date of birth'
               disabled={otpSession}
             />
           </div>
@@ -148,30 +159,33 @@ const Profile = () => {
               <input
                 className="form-control"
                 {...register('currentAddress.city')}
+                placeholder='Enter city'
                 disabled={otpSession}
               />
             </div>
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>State</label>
               <input className="form-control" {...register('currentAddress.state')}
+              placeholder='Enter State'
                 disabled={otpSession}
               />
             </div>
-            <div className="form-group col-lg-4 col-md-4 col-sm-12">
+            {/* <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>Country</label>
               <input className="form-control" {...register('currentAddress.country')}
                 disabled={otpSession}
               />
-            </div>
+            </div> */}
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
-              <label>Zip</label>
+              <label>Pin code</label>
               <input className="form-control" {...register('currentAddress.zip')}
+              placeholder='Enter pin code'
                 disabled={otpSession}
               />
             </div>
           </div>
         </fieldset>
-        <div className="form-group col-lg-4 col-md-4 col-sm-12">
+        {userInfo?.modules?.userType === 'ADMIN' && <div className="form-group col-lg-4 col-md-4 col-sm-12">
           <input
             className='mx-3'
             type="checkbox"
@@ -180,37 +194,25 @@ const Profile = () => {
             disabled={otpSession}
           />
           <label>Enable Two-Factor Authentication</label>
-        </div>
+        </div>}
         <div className='d-flex justify-content-end'>
           <button type='button' className='cstm-btn-trans me-2' onClick={() => resetProfile()}>reset</button>
           <button className='cstm-btn' type="submit">Submit</button>
         </div>
       </form>
-      {otpSession &&
-        <div className='col-4'>
-          <h4 className="form-title">
-            Verify OTP
-          </h4>
-          <div className='d-flex'>
-          <div className=" me-2">
-            <label>
-              Enter OTP
-            </label>
-            <input
-            className="form-control"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              placeholder="Enter your OTP"
-            />
+      {dirtyFields?.primaryPhone && otpSession && <div>
+        <Popup isOpen={otpSession} handleClose={() => setOtpSession()}>
+          <h5>Otp <span>*</span> </h5>
+            <div>
+              <input className="cstm-input me-3"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter your OTP"
+                />
+            <button className="cstm-btn-red" onClick={()=>updateProfile(formData)}>verify</button>
           </div>
-          <div className="form-group-login form-button">
-            <button type='button' onClick={updateProfile} className="form-submit">
-              Verify
-            </button>
-          </div>
-          </div>
-        </div>
-      }
+        </Popup>
+      </div>}
     </div>
   );
 };

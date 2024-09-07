@@ -50,9 +50,19 @@
 .h-60p{
 	height: 60px;
 }
-@media screen and (min-width:350px) and (max-width:678px) {
+.header__hamburger{
+	display: none;
+}
+
+@media screen and (min-width:350px) and (max-width:768px) {
+	.header__hamburger{
+		display: block !important;
+	}
+}
+
+@media screen and (min-width:350px) and (max-width:991px) {
 	.bg-banner-car{
-		height: 120% !important;
+		height: 130vh !important;
 		}
 	.search-card{
 		bottom: 0 !important;	

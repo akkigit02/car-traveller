@@ -52,19 +52,21 @@ const sendOtp = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { user, body } = req
-    const { otp, sessionId } = body.otpDetails;
-    if (!otp || !sessionId) {
-      return res.status(400).send({ message: "OTP and session ID are required." });
+    if(user.primaryPhone!==body.primaryPhone){
+      const { otp, sessionId } = body.otpDetails;
+      if (!otp || !sessionId) {
+        return res.status(400).send({ message: "OTP and session ID are required." });
+      }
+      const userData = await UserModel.findOne({ _id: user._id, "authentication.twoFactor.sessionId": String(sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1 });
+      if (!userData) {
+        return res.status(401).send({ message: "Session expired or invalid. Please resend OTP and try again.", });
+      }
+      if (new Date() > userData?.authentication?.twoFactor?.expiresOn)
+        return res.status(401).send({ message: "Session expired. Please resend OTP and try again." });
+      if (userData?.authentication?.twoFactor?.otp !== String(otp))
+        return res.status(401).send({ message: "Invalid OTP. Please try again." });
     }
-    const userData = await UserModel.findOne({ _id: user._id, "authentication.twoFactor.sessionId": String(sessionId) }, { status: 1, authentication: 1, email: 1, primaryPhone: 1 });
-    if (!userData) {
-      return res.status(401).send({ message: "Session expired or invalid. Please resend OTP and try again.", });
-    }
-    if (new Date() > userData?.authentication?.twoFactor?.expiresOn)
-      return res.status(401).send({ message: "Session expired. Please resend OTP and try again." });
-    if (userData?.authentication?.twoFactor?.otp !== String(otp))
-      return res.status(401).send({ message: "Invalid OTP. Please try again." });
-    await UserModel.updateOne({ _id: userData._id }, {
+    await UserModel.updateOne({ _id: user._id }, {
       $set: {
         ...body,
         "authentication.twoFactor.enabled": body.twoFactorEnable,

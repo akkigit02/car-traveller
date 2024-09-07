@@ -1307,7 +1307,7 @@ span {
 }
 @media (max-width: 1399px) {
   .pickup-wrapper .pickup-items .category-oneadjust {
-    width: initial;
+    width: 100%;
   }
 }
 .pickup-wrapper .pickup-items .category-oneadjust .nice-select {
