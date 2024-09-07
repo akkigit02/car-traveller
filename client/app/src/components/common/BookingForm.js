@@ -171,7 +171,7 @@ function BookingForm() {
 
                                 <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
                                 <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
-                                <p><strong>Total Fare:</strong> {bookingDetails?.totalPrice}</p>
+                                <p><strong>Total Fare:</strong> {Math.ceil(bookingDetails?.totalPrice)}</p>
                             </div>
                             <ul>
                                 <li>Your trip comes with a kilometer limit. If you go over this limit, you'll incur additional charges for the extra distance traveled.</li>
