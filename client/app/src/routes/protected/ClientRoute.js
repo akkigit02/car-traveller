@@ -15,16 +15,16 @@ export default function ClientRoute() {
       <div className="row mx-0 mt-3">
         <div className="col-lg-12 col-md-12 col-12">
           <div className="border rounded shadow p-3 h-100">
-            <Routes>
-              <Route path={`/`} element={<Navigate to="/dashboard" />} exact />
-              <Route path={`/dashboard`} Component={AdminDashboard} exact />
-              <Route path="/car-list/:query" Component={AvailableVehicle} exact />
-              <Route path="/booking/:query" Component={BookingForm} exact />
-              <Route path={`/payment/:bookingId`} Component={Payment} exact />
-              <Route path={`/booking-list`} Component={BookingHistory} exact />
-              <Route path={`/profile`} Component={Profile} exact />
-              <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
-            </Routes>
+              <Routes>
+                <Route path={`/`} element={<Navigate to="/dashboard" />} exact />
+                <Route path={`/dashboard`} Component={AdminDashboard} exact />
+                <Route path="/car-list/:query" Component={AvailableVehicle} exact />
+                <Route path="/booking/:query" Component={BookingForm} exact />
+                <Route path={`/payment/:bookingId`} Component={Payment} exact />
+                <Route path={`/booking-list`} Component={BookingHistory} exact />
+                <Route path={`/profile`} Component={Profile} exact />
+                <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
+              </Routes>
           </div>
         </div>
       </div>

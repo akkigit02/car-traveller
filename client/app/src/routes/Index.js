@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { getTokenFromLocal, setTokenToLocal } from "../services/Authentication.service";
+import { clearLocalStorage, getTokenFromLocal, setTokenToLocal } from "../services/Authentication.service";
 import { useSelector } from "react-redux";
 import UnProtected from './UnProtected'
 import { BrowserRouter, Navigate, Routes, useNavigate } from "react-router-dom";
@@ -14,7 +14,6 @@ function Index() {
     try {
       setIsLoading(true)
       const token = getTokenFromLocal();
-      console.log(token)
       if (!token) {
         return
       }
@@ -26,8 +25,13 @@ function Index() {
             token,
           },
         });
-        setTokenToLocal(data.session.jwtToken)
-        store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: data.session } })
+        const pathName = window.location.pathname
+        if (data.session?.modules.userType !== 'CLIENT' && (pathName.includes('car-list') || pathName.includes('booking'))) {
+          clearLocalStorage()
+        } else {
+          setTokenToLocal(data.session.jwtToken)
+          store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: data.session } })
+        }
       }
     } catch (error) {
       console.log(error);
