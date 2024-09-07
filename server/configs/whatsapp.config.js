@@ -57,12 +57,13 @@ const initialize = () => {
         });
 
         client.on('qr', (qr) => {
+            console.log(qr)
             saveQrCode(qr, 'whatsapp/qr/whatsappQr.png')
         });
         authTimeout = setTimeout(() => {
             console.error('Authentication timed out. Destroying client.');
             client.destroy();
-        }, 60000); // 1 minute timeout for authentication
+        }, 300000); // 1 minute timeout for authentication
 
         client.initialize();
 
