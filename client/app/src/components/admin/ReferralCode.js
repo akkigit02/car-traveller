@@ -59,13 +59,23 @@ export default function CouponForm() {
         method: "get",
         url: `/api/admin/coupons/${id}`,
       });
-      reset(res.data.coupon);
+  
+      const couponData = res.data.coupon;
+      // Format the startDate and expiryDate to YYYY-MM-DD
+      couponData.startDate = couponData.startDate
+        ? new Date(couponData.startDate).toISOString().split("T")[0]
+        : "";
+      couponData.expiryDate = couponData.expiryDate
+        ? new Date(couponData.expiryDate).toISOString().split("T")[0]
+        : "";
+  
+      reset(couponData); // Reset the form with formatted dates
       setIsOpen(true);
       setIsEdit(true);
     } catch (error) {
       console.error(error);
     }
-  };
+  };  
 
   const closeModal = () => {
     reset({});
@@ -175,7 +185,6 @@ export default function CouponForm() {
             className="cstm-select-input"
           >
             <option value="percentage">Percentage</option>
-            <option value="fixed">Fixed</option>
           </select>
           {errors?.discountType && <span className="text-danger">{errors.discountType.message}</span>}
         </div>
@@ -200,7 +209,7 @@ export default function CouponForm() {
           {errors?.maxDiscountAmount && <span className="text-danger">{errors.maxDiscountAmount.message}</span>}
         </div>
         <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Min Purchase Amount</label>
+          <label>Min Booking Amount</label>
           <input
             type="number"
             {...register("minPurchaseAmount", { required: "Min Purchase Amount is required" })}
@@ -239,15 +248,20 @@ export default function CouponForm() {
           {errors?.isActive && <span className="text-danger">{errors.isActive.message}</span>}
         </div>
         <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>User Type</label>
-          <input
-            type="number"
-            {...register("userType", { required: "User Type is required" })}
-            className="cstm-select-input"
-            placeholder="Enter user type"
-          />
-          {errors?.userType && <span className="text-danger">{errors.userType.message}</span>}
-        </div>
+        <label>User Type</label>
+        <select
+          {...register("userType", { required: "User Type is required" })}
+          className="cstm-select-input"
+          placeholder="Select user type"
+        >
+          <option value="">Select user type</option>
+          <option value="0">For All Users</option>
+          <option value="1">For New Users</option>
+          <option value="3">For 3+ Bookings</option>
+          <option value="5">For 5+ Bookings</option>
+        </select>
+        {errors?.userType && <span className="text-danger">{errors.userType.message}</span>}
+      </div>
       </div>
     </div>
     <div className="d-flex justify-content-end border-top mt-3 pt-2">

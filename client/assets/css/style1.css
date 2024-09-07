@@ -88,6 +88,35 @@
     width: 100%;
     height: 50vh;
 }
+.bg-about {
+    position: relative;
+    background-image: url(../img/about-bg.jpg);
+    background-position: 100% 90%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    width: 100%;
+    height: 50vh;
+}
+
+.bg-about::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Black overlay with 50% opacity */
+    z-index: 1;
+}
+.bg-about-content {
+    position: relative;
+    z-index: 2; 
+    color: white; 
+    text-align: center;
+}
+
+
 .h-300{
 	height: 300px;
 }
@@ -1080,4 +1109,62 @@ h1, h2, h3, h4, h5, h6 {
 	[data-ml-modal] .modal-dialog {margin:20% auto;}
 }
 
-
+.fw-bold{
+	font-weight: 600;
+}
+.card-cstm{
+	padding:22px;
+	border-radius:7px;
+	margin:10px;
+	height:100%;
+	background-color:#fff;
+	overflow:hidden;
+	box-shadow:5px 5px 5px 5px rgb(224, 230, 237);
+	place-items:center;
+  }
+  
+  .one-cstm{
+	border-top:5px rgb(96, 190, 190) solid;
+	grid-area:one;
+  }
+  
+  .two-cstm{
+	border-top:5px rgb(220, 86, 86) solid;
+	grid-area:two;
+	
+  }
+  
+  .three-cstm{
+	border-top:5px rgb(251, 177, 80) solid;
+	grid-area:three;
+  }
+  
+  .four-cstm{
+	border-top:5px rgb(113, 162, 220) solid;
+	grid-area:four;
+  }
+  .card-cstm p{
+	color:rgb(0, 0, 0, .4);
+	width:70%;
+  }
+  
+  
+  @media (max-width: 575px){
+	.card-cstm{
+	  width:98%;
+	margin:20px auto;
+	  
+	}
+  }
+  
+  @media (max-width:
+   800px){
+	.card-cstm{
+	  width:98%;
+	margin:20px auto;
+	  
+	}
+  }
+  .line-h{
+	line-height: 1.4;
+  }

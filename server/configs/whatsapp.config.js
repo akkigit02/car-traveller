@@ -25,6 +25,7 @@ const processQueue = async () => {
 
     try {
         const { to, message } = payload;
+        if(global.whatsappClient)
         await global.whatsappClient.sendMessage(to + '@c.us', message);  // Corrected to use whatsappClient to send message
         resolve();
     } catch (error) {
@@ -56,12 +57,13 @@ const initialize = () => {
         });
 
         client.on('qr', (qr) => {
+            console.log(qr)
             saveQrCode(qr, 'whatsapp/qr/whatsappQr.png')
         });
         authTimeout = setTimeout(() => {
             console.error('Authentication timed out. Destroying client.');
             client.destroy();
-        }, 60000); // 1 minute timeout for authentication
+        }, 300000); // 1 minute timeout for authentication
 
         client.initialize();
 
