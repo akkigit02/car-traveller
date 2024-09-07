@@ -206,7 +206,7 @@ function TopNavBar() {
                   </div>
                 </> :
                   <>
-                    <a href={`${CLIENT_URL}${pathname === '/login' ? '/admin-login' : '/login'}`}>
+                    <a href={`${pathname === '/login' ? '/admin-login' : '/login'}`}>
                       <button className="theme-btn wow fadeInUp padding-signin-btn">
                         {pathname === '/login' ? 'Admin' : 'User'} Login
                       </button>
