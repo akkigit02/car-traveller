@@ -1,5 +1,7 @@
 const fileName = 'server/managers/common.manager.js'
+const path = require('path')
 const ObjectId = require('mongoose').Types.ObjectId
+const { sendMessage } = require('../configs/whatsapp.config');
 const UserModel = require("../models/user.model");
 const { generateOTP, generateSecureRandomString } = require('../utils/common.utils');
 const { verifyOtp } = require('./authentication.manager');
@@ -52,7 +54,7 @@ const sendOtp = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { user, body } = req
-    if(user.primaryPhone!==body.primaryPhone){
+    if (user.primaryPhone !== body.primaryPhone) {
       const { otp, sessionId } = body.otpDetails;
       if (!otp || !sessionId) {
         return res.status(400).send({ message: "OTP and session ID are required." });
@@ -85,8 +87,30 @@ const updateProfile = async (req, res) => {
   }
 };
 
+const sendWhatsappMessage = async (req, res) => {
+  try {
+    const { body } = req
+    await sendMessage({ to: body.to, message: body.message })
+    res.status(200).send({ message: 'Message Send SuccessFully' })
+  } catch (error) {
+    logger.log(`${fileName} -> sendWhatsappMessage`, { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
+const getWhatsappImage = async (req, res) => {
+  try {
+    const directoryPath = path.join(__dirname, '../whatsapp/qr/whatsappQr.png')
+    res.download(directoryPath)
+  } catch (error) {
+    logger.log(`${fileName} -> sendWhatsappMessage`, { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
+
 module.exports = {
   getProfile,
   sendOtp,
-  updateProfile
+  updateProfile,
+  sendWhatsappMessage,
+  getWhatsappImage
 };

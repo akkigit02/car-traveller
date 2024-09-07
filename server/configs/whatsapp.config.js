@@ -25,6 +25,7 @@ const processQueue = async () => {
 
     try {
         const { to, message } = payload;
+        if(global.whatsappClient)
         await global.whatsappClient.sendMessage(to + '@c.us', message);  // Corrected to use whatsappClient to send message
         resolve();
     } catch (error) {
