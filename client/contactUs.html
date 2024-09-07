@@ -60,10 +60,10 @@
                     <a href="package.html"> Packages </a>
                   </li>
                   <li>
-                    <a href="#">About Us</a>
+                    <a href="about.html">About Us</a>
                   </li>
                   <li>
-                    <a href="#contact">Contact</a>
+                    <a href="#">Contact</a>
                   </li>
                 </ul>
               </nav>
@@ -107,10 +107,10 @@
                       <a href="package.html"> Packages </a>
                     </li>
                     <li>
-                      <a href="#">About Us</a>
+                      <a href="about.html">About Us</a>
                     </li>
                     <li>
-                      <a href="#contact">Contact</a>
+                      <a href="#">Contact</a>
                     </li>
                   </ul>
                 </nav>
@@ -166,11 +166,10 @@
 
   <section class="bg-about position-relative">
     <div class="d-flex flex-column justify-content-center align-items-center h-100 bg-about-content">
-      <p class="font-bold h1 text-light"> About Us</p>
-      <p class="h6 text-light w-50 line-h">At DDD Cabs, we are committed to offering affordable cab services that are reliable and comfortable. 
-        Since,we’ve made it our mission to revolutionize transportation by providing seamless, hassle-free rides for all types of
-         journeys—whether commuting, traveling between cities, or heading to the airport. With a fleet of modern, well-maintained 
-         vehicles and experienced drivers, your safety and satisfaction are our top priorities.</p>
+      <p class="font-bold h1 text-light"> Contact Us</p>
+      <p class="h6 text-light w-50 line-h">We’re here to help with any questions or concerns you may have regarding our car rental 
+        services. Whether you need assistance with booking, have questions about our fleet, or require support during your rental, 
+        our dedicated team is available to provide the assistance you need.</p>
 
     </div>
   </section>
@@ -182,50 +181,41 @@
       <div class="section-title text-center">
         <img src="assets/img/sub-icon.png" alt="icon-img" class="wow fadeInUp" />
         <span class="wow fadeInUp" data-wow-delay=".2s">DDD Cabs</span>
-        <h2 class="wow fadeInUp" data-wow-delay=".4s">
-            Our Values
-        </h2>
+        <!-- <h2 class="wow fadeInUp" data-wow-delay=".4s">
+            Contact Us
+        </h2> -->
+        <p>If you have any questions or need assistance, feel free to reach out to us using the form below or by the contact details provided.</p>
+            
         </div>
       <div class="row">
-        <div class="col-xl-3 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
-          <div class="card-cstm one-cstm">
-            <h3 class="mb-2">
-                Reliability
-            </h3>
-            <p>
-                On-time, every time.
-            </p>
-          </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 wow fadeInUp p-3" data-wow-delay=".7s">
+            <h1 class="pb-2">Contact Us</h1>
+            <p class="mb-3">Feel free to reach us by email, phone, or visit our office at the address provided. We look forward to assisting you and ensuring your experience with DD Cabs is nothing short of exceptional.</p>
+            
+            <div class="contact-details">
+                <h5 class="mb-3">Our Contact Information</h5>
+                <p class="mb-2">Email: support@dddcabs.com</p>
+                <p class="mb-2">Phone: +1 (909) 040-4005</p>
+                <p class="mb-2">Address: Ganesh Krupa bldg, ground floor G/05, Talap chai Ram Nagar, kelkar cross road, ram nagar Dombivali east
+                    421201</p>
+            </div>
         </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
-          <div class="card-cstm two-cstm">
-            <h3 class="mb-2">
-                Comfort
-            </h3>
-            <p>
-                Modern vehicles and a user-friendly booking experience.  
-            </p>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
-          <div class="card-cstm three-cstm">
-            <h3 class="mb-2">
-                Safety
-            </h3>
-            <p>
-                Thorough vetting of drivers and regular vehicle maintenance.
-            </p>
-          </div>
-        </div>
-        <div class="col-xl-3 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
-          <div class="card-cstm four-cstm">
-            <h3 class="mb-2">
-                Affordability
-            </h3>
-            <p>
-                Competitive rates and transparent pricing with no hidden fees.
-            </p>
-          </div>
+        <div class="col-xl-6 col-lg-6 col-md-6 wow fadeInUp pickup-wrapper p-2" data-wow-delay=".7s">
+            <form action="your-server-endpoint" method="post" class="w-100 pickup-items">
+                <label for="name">Name:</label>
+                <input class="cstm-input" type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="phone">Phone:</label>
+                <input type="tel" id="phone" name="phone">
+
+                <label for="message">Message:</label>
+                <textarea class="cstm-textarea" id="message" name="message" rows="5" required></textarea>
+
+               <div class="d-flex justify-content-end"> <button class="theme-btn" type="submit">Send Message</button></div>
+            </form>
         </div>
         </div>
     </div>

@@ -1168,3 +1168,15 @@ h1, h2, h3, h4, h5, h6 {
   .line-h{
 	line-height: 1.4;
   }
+.cstm-textarea{
+  width: 100%;
+  outline: none;
+  border: none;
+  padding: 15px 25px;
+  color: var(--text);
+  background-color: rgb(236, 240, 244);
+  font-size: 16px;
+  text-transform: capitalize;
+  font-weight: 400;
+  border-radius: 10px !important;
+}
