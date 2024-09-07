@@ -9,6 +9,7 @@ import { setTokenToLocal } from '../../services/Authentication.service';
 import store from '../../store';
 import { useSelector } from 'react-redux';
 import { HOURLY_TYPE } from '../../constants/common.constants';
+import Popup from '../Popup';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function BookingForm() {
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
@@ -20,12 +21,20 @@ function BookingForm() {
     const [bookingDetails, setBookingDetails] = useState({})
     const [isOtpSent, setIsOtpSent] = useState(false)
     const [sessionId, setSessionId] = useState()
+
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [otp, setOtp] = useState()
     const [addressSuggestion, setAdressSugeestion] = useState({
         isOpen: false,
         type: '',
         address: []
     })
+
+
+
+  const togglePopup = () => {
+    setIsPopupOpen(!isPopupOpen);
+  };
 
 
     const verifyOtp = async () => {
@@ -319,6 +328,8 @@ function BookingForm() {
                                                         </div>
                                                     </div>}
                                                     <div className="col-lg-12 d-flex justify-content-end">
+
+                                                    <button className="cstm-btn-red" onClick={togglePopup}>popup</button>
                                                         <button className="theme-btn-2" type="submit">
                                                             Send Request
                                                         </button>
@@ -343,6 +354,25 @@ function BookingForm() {
                     </section >
                 </div >
             </div >
+
+
+
+            <div>
+                <Popup isOpen={isPopupOpen} handleClose={togglePopup}>
+                    <h2>This is a popup</h2>
+                    <div>
+                        <input className="cstm-input me-3"
+                            value={otp}
+                            onChange={(e) => setOtp(e.target.value)}
+                            placeholder="Enter your OTP"
+                        />
+                        <button className="cstm-btn-red" onClick={verifyOtp}>verify</button>
+                    </div>
+                    <div className='d-flex justify-content-end'>
+                        <button className='theme-btn-2' onClick={togglePopup}>Close</button>
+                    </div>
+                </Popup>
+                </div>
         </>
     );
 }
