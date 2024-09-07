@@ -16,4 +16,6 @@ router.post('/initiate-payment', jwtUserAuthentication, ClientManager.initiatePa
 
 // router.get('/rescheduled/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
 // router.get('/cancel-booking/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
+
+router.get('/coupons', ClientManager.getCoupons)
 module.exports = router

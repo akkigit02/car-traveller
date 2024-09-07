@@ -554,6 +554,53 @@ const sendPackageEnquire = async (req, res) => {
   }
 }
 
+const getCoupons = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const userId = req.userId;
+     
+    const count = await RideModel.countDocuments({
+      userId: userId,
+      rideStatus: 'completed'
+    });
+
+    const query = {
+      isActive: true,
+      expiryDate: { $gte: currentDate }
+    };
+
+    if (userCondition === 0) {
+      // For all users
+    } else if (userCondition === 1) {
+      // For only new users with a count of 0
+      if (count === 0) {
+        query.userCondition = {
+          $eq: 0
+        };
+      } else {
+        // If count is not 0, exclude this condition
+        query.userCondition = {
+          $exists: false
+        };
+      }
+    } else {
+      // For other cases where userCondition is less than the count
+      query.userCondition = {
+        $lt: count
+      };
+    }
+    const coupons = await CouponModel.find(query).lean();
+    console.log(coupons);
+
+    res.status(200).send({ coupons });
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> getCoupons', { error: error });
+    res.status(500).send({ message: 'Server Error' });
+  }
+}
+
+
+
 module.exports = {
   getCities,
   getCars,
@@ -568,5 +615,7 @@ module.exports = {
   getBookingByPasssengerId,
   cancelBooking,
   sendPackageEnquire,
+
+  getCoupons,
 
 };
