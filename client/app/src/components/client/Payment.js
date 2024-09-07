@@ -177,16 +177,16 @@ function Payment() {
                   {bookingDetails?.vehicleId?.vehicleType}(
                   {bookingDetails?.vehicleId?.vehicleName}) or similar
                 </p>
-                <p>
+                {/* <p>
                   <strong>Car type:</strong>{" "}
                   {bookingDetails?.vehicleId?.vehicleType}(
                   {bookingDetails?.vehicleId?.vehicleName}) or similar
-                </p>
+                </p> */}
                 <p>
                   <strong>Included:</strong> {bookingDetails?.totalDistance} Km
                 </p>
                 <p>
-                  <strong>Total Fare:</strong> {bookingDetails?.totalPrice}
+                  <strong>Total Fare:</strong> {Math.ceil(bookingDetails?.totalPrice)}
                 </p>
               </div>
               <ul>
