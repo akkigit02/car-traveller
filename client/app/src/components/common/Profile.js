@@ -4,6 +4,7 @@ import axios from 'axios'
 import { emailPattern, namePattern, phoneNumberShortValidation, phoneNumberValidation } from '../../constants/Validation.constant';
 import { toast } from "react-toastify";
 import { useSelector } from 'react-redux';
+import Popup from '../Popup';
 const Profile = () => {
   const { register, handleSubmit, reset, formState: { errors, dirtyFields } } = useForm({ mode: 'onChange' });
   const [formData, setFormData] = useState()
@@ -47,6 +48,7 @@ const Profile = () => {
       if (data?.message)
         toast.success(data?.message);
       resetProfile(formData)
+      setOtpSession()
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message);
@@ -198,31 +200,19 @@ const Profile = () => {
           <button className='cstm-btn' type="submit">Submit</button>
         </div>
       </form>
-      {dirtyFields?.primaryPhone && otpSession &&
-        <div className='col-4'>
-          <h4 className="form-title">
-            Verify OTP
-          </h4>
-          <div className='d-flex'>
-          <div className=" me-2">
-            <label>
-              Enter OTP
-            </label>
-            <input
-            className="form-control"
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              placeholder="Enter your OTP"
-            />
+      {dirtyFields?.primaryPhone && otpSession && <div>
+        <Popup isOpen={otpSession} handleClose={() => setOtpSession()}>
+          <h5>Otp <span>*</span> </h5>
+            <div>
+              <input className="cstm-input me-3"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter your OTP"
+                />
+            <button className="cstm-btn-red" onClick={()=>updateProfile(formData)}>verify</button>
           </div>
-          <div className="form-group-login form-button">
-            <button type='button' onClick={()=>updateProfile(formData)} className="form-submit">
-              Verify
-            </button>
-          </div>
-          </div>
-        </div>
-      }
+        </Popup>
+      </div>}
     </div>
   );
 };
