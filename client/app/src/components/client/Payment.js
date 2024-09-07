@@ -1,10 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
 import { toast } from "react-toastify";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
+  const navigate = useNavigate()
   const { bookingId } = useParams();
   const [bookingDetails, setBookingDetails] = useState({});
   const [advancePercentage, setAdvancePercentage] = useState(25)
@@ -59,7 +60,7 @@ function Payment() {
       if (data?.message)
         toast.success(data?.message);
       setCopouns((old) => ({ ...old, isApply: true, ...data.discountDetails }))
-      console.log(data)
+
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message || "Something went wrong please try again!");
@@ -77,6 +78,8 @@ function Payment() {
           advancePercentage
         }
       })
+      if (data?.message)
+        toast.success(data?.message);
     } catch (error) {
       console.log(error)
     }

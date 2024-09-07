@@ -12,6 +12,7 @@ const {
 } = require("../utils/calculation.util");
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
+const { initiatePhonepePayment } = require('../configs/phonepe.config');
 
 const getCities = async (req, res) => {
   try {
@@ -467,8 +468,24 @@ const initiatePayment = async (req, res) => {
         paymentStatus: advancePercentage === 100 ? 'completed' : 'pending'
       }
     })
+
+
+
+
     const payableAmount = ((bookingDetails.totalPrice - couponDetails.discountAmount) * advancePercentage) / 100
-    return res.status(200).send({ payableAmount })
+    const phonePayPayload = {
+      amount: payableAmount,
+      merchantTransactionId: new ObjectId(),
+    }
+    // await initiatePhonepePayment(phonePayPayload)
+
+    await RideModel.updateOne({ _id: new ObjectId(body.bookingId) }, {
+      $set: {
+        paymentStatus: advancePercentage === 100 ? 'completed' : 'advanced'
+      }
+    })
+
+    return res.status(200).send({ payableAmount, message: 'Booked successfull' })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })
     res.status(500).send({ message: 'Server Error' })
@@ -547,8 +564,7 @@ module.exports = {
   getAddressSuggestionOnLandingPage,
   applyCopounCode,
   initiatePayment,
-
-
+  
   getBookingByPasssengerId,
   cancelBooking,
   sendPackageEnquire,
