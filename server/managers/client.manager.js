@@ -13,6 +13,7 @@ const {
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment } = require('../configs/phonepe.config');
+const { isSchedulabel } = require('../utils/format.util');
 
 const getCities = async (req, res) => {
   try {
@@ -492,6 +493,57 @@ const initiatePayment = async (req, res) => {
   }
 }
 
+const bookingCancel = async (req, res) => {
+  try {
+    const { params } = req
+    if (!params?.bookingId)
+      return res.status(400).send({ message: 'Bokking Id required' })
+    const bokkingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) })
+    const isNotValid = isSchedulabel(bokkingDetails.pickupDate, bokkingDetails.pickupTime)
+    if (isNotValid) {
+      return res.status(400).send({ message: "Rescheduling is not allowed within 2 hours of the ride. " })
+    } else {
+      await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
+        $set: {
+          rideStatus: 'cancelled'
+        }
+      })
+    }
+    // add refund payment
+
+    return res.status(200).send({ message: 'Bokking cancel successfull' })
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> bookingCancel', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
+
+
+const bookingReshuduled = async (req, res) => {
+  try {
+    const { params } = req
+    if (!params?.bookingId)
+      return res.status(400).send({ message: 'Bokking Id required' })
+    const bokkingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) })
+    const isNotValid = isSchedulabel(bokkingDetails.pickupDate, bokkingDetails.pickupTime)
+    if (isNotValid) {
+      return res.status(400).send({ message: "Rescheduling is not allowed within 2 hours of the ride." })
+    } else {
+      await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
+        $set: {
+          rideStatus: 'cancelled'
+        }
+      })
+    }
+    // add refund payment
+    
+    return res.status(200).send({ message: 'Bokking cancel successfull' })
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> bookingReshuduled', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
+
 
 
 const getBookingByPasssengerId = async (req, res) => {
@@ -504,6 +556,7 @@ const getBookingByPasssengerId = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 };
+
 const cancelBooking = async (req, res) => {
   try {
     const rideId = req.params.id;
@@ -564,7 +617,9 @@ module.exports = {
   getAddressSuggestionOnLandingPage,
   applyCopounCode,
   initiatePayment,
-  
+  bookingCancel,
+  bookingReshuduled,
+
   getBookingByPasssengerId,
   cancelBooking,
   sendPackageEnquire,

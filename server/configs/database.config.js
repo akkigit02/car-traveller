@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/mloflo';
-const dbName =  process.env.DB_NAME;
+const dbName = process.env.DB_NAME;
+const dbUrl = `${process.env.DB_URL}/${dbName}` || `mongodb://localhost:27017/${dbName}`;
 
 mongoose
   .connect(dbUrl, {

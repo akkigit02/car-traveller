@@ -1,7 +1,9 @@
 require('dotenv').config();
 require('../configs/database.config');
-
-
+const mongoose = require('mongoose')
+const fs = require('fs');
+const path = require('path');
+const dbName = process.env.DB_NAME
 const collections = [
     'user',
     'cities',
@@ -11,6 +13,8 @@ const collections = [
 (async () => {
 
     console.log("Seed start...")
+    await mongoose.connection.dropDatabase()
+    
     for (let collection of collections) {
         let data = require(`./${collection}.seed.json`);
         let Model = require(`../models/${collection}.model`)

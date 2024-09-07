@@ -43,7 +43,7 @@ const rideSchema = new Schema({
   paymentStatus: { type: String, enum: ["pending","advanced", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
-    enum: ["none", "scheduled", "inProgress", "completed", "cancelled"],
+    enum: ["none", "scheduled", "inProgress", "completed", "cancelled",],
     default: 'none',
   },
 });
