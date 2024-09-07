@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const parentContainer = document.createElement('div');
         parentContainer.classList.add('pickup-wrapper', 'wow', 'fadeInUp')
         if (type === 'roundTrip') {
-            parentContainer.classList.add('pickup-wrapper2');
+            parentContainer.classList.add('pickup-wrapper2','flex-wrap');
         }
         const formFields = tabConfig[type];
         formFields.forEach(field => {
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     `;
                 } else {
                     wrapper.innerHTML = `
-                    <div id="toContainer" class="d-flex">
+                    <div id="toContainer" class="d-flex flex-wrap">
                     <div>
                     <label class="field-label">${field.label}</label>
                     <input name="${field.name}" id="${field.name}" placeholder="${field.placeholder}" autocomplete="off">

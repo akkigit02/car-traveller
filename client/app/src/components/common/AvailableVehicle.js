@@ -129,7 +129,7 @@ export default function AvailableVehicle() {
                   }
                 >
                   {console.log(list)}
-                 <h6>{list.hour} Hours| {list.distance} Km</h6> 
+                 <h6 className="mb-0">{list.hour} Hours| {list.distance} Km</h6> 
                 </div>
               ))}
             </div>
@@ -185,9 +185,9 @@ export default function AvailableVehicle() {
                             </p>
                           </div>
                           {decodedQuery?.tripType !== 'cityCab' && !bookingDetails?.from?.isMetroCity ? <button
-                            className="border-0"
+                            className="cstm-btn-trans"
                           >
-                            <h6 className="cstm-btn-red">
+                            <h6 className="mb-0">
                               Coming Soon
                             </h6>
                           </button> :<button

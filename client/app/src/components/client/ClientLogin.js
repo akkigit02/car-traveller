@@ -27,7 +27,7 @@ function Login() {
                 handleLoginSuccess(data)
             }
             if (data.message)
-                toast.error(data.message);
+                toast.success(data.message);
         } catch (error) {
             console.log(error?.response?.data?.message || error);
             toast.error(error?.response?.data?.message || "Something went wrong please try again!");

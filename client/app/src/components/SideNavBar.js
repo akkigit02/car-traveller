@@ -5,10 +5,6 @@ import store from "../store";
 
 export default function SideNavBar() {
   const { pathname } = useLocation();
-  const handleLogout = () => {
-    localStorage.clear()
-    store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: null } })
-  }
   return (
     <nav id="sidebarMenu" className="sidebar bg-white">
       <div className="position-sticky">
@@ -55,34 +51,6 @@ export default function SideNavBar() {
             <i className="fas fa-lock fa-fw me-3"></i>
             <span>Referral Code</span>
           </Link>
-          {/* <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-chart-pie fa-fw me-3"></i>
-            <span>SEO</span>
-          </a>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-chart-bar fa-fw me-3"></i>
-            <span>Orders</span>
-          </a>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-globe fa-fw me-3"></i>
-            <span>International</span>
-          </a>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-building fa-fw me-3"></i>
-            <span>Partners</span>
-          </a>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-calendar fa-fw me-3"></i>
-            <span>Calendar</span>
-          </a>
-          <a href="#" className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-users fa-fw me-3"></i>
-            <span>Users</span>
-          </a> */}
-          <div onClick={handleLogout} className="list-group-item list-group-item-action py-2 ripple">
-            <i className="fas fa-sign-out fa-fw me-3"></i>
-            <span>Logout</span>
-          </div>
         </div>
       </div>
     </nav>

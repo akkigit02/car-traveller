@@ -1234,7 +1234,7 @@ span {
 
 .pickup-wrapper {
   display: flex;
-  align-items: center;
+  align-items: end;
   background-color: var(--white);
   box-shadow: var(--box-shadow);
   border-radius: 10px;
@@ -1307,7 +1307,7 @@ span {
 }
 @media (max-width: 1399px) {
   .pickup-wrapper .pickup-items .category-oneadjust {
-    width: initial;
+    width: 100%;
   }
 }
 .pickup-wrapper .pickup-items .category-oneadjust .nice-select {
