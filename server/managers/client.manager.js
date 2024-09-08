@@ -373,7 +373,7 @@ const saveBooking = async (req, res) => {
 const getBookingList = async (req, res) => {
   try {
     const { user, query } = req
-    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bookingStatus: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
+    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bookingStatus: 1, trip: 1, dropDate: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error })
@@ -521,23 +521,65 @@ const bookingCancel = async (req, res) => {
 
 const bookingReshuduled = async (req, res) => {
   try {
-    const { params } = req
-    if (!params?.bookingId)
-      return res.status(400).send({ message: 'Bokking Id required' })
-    const bokkingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) })
-    const isNotValid = isSchedulabel(bokkingDetails.pickupDate, bokkingDetails.pickupTime)
+    const { params, body } = req
+    console.log(body,"=====--------000000")
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId','driverAllowance')
+    if(!bookingDetails) {
+      return res.status(400).send({ message: "Booking not found" })
+    }
+    const isNotValid = isSchedulabel(bookingDetails.pickupDate, bookingDetails.pickupTime)
     if (isNotValid) {
       return res.status(400).send({ message: "Rescheduling is not allowed within 2 hours of the ride." })
-    } else {
-      await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
-        $set: {
-          rideStatus: 'cancelled'
-        }
-      })
     }
+    let data = {
+      pickupDate: {
+        date: new Date(body.reshedulePickupDate).getDate(),
+        month: new Date(body.reshedulePickupDate).getMonth(),
+        year: new Date(body.reshedulePickupDate).getFullYear(),
+      },
+      pickupTime: body.reshedulePickupTime,
+      rideStatus: 'resheduled'
+    }
+    let oldData = {
+      pickupDate: bookingDetails?.pickupDate,
+      pickupTime: bookingDetails?.pickupTime,
+      trip: bookingDetails?.trip
+    }
+    if(bookingDetails.trip.tripType === 'roundTrip') {
+      let numberOfDay = dateDifference(body.reshedulePickupDate, body.resheduleReturnDate)
+      let pickupDate = `${bookingDetails.pickupDate.year}-${bookingDetails.pickupDate.month.padStart(2, '0')}-${bookingDetails.pickupDate.date.padStart(2, '0')}`
+      let dropDate = `${bookingDetails.dropDate.year}-${bookingDetails.dropDate.month.padStart(2, '0')}-${bookingDetails.dropDate.date.padStart(2, '0')}`
+      let oldnumberOfDay = dateDifference(pickupDate, dropDate)
+      if(oldnumberOfDay === 0) {
+        oldnumberOfDay = 1
+      }
+      let pricesAdd = (numberOfDay - oldnumberOfDay) * bookingDetails.vehicleId.driverAllowance
+      let totalPrice = bookingDetails.totalPrice + pricesAdd
+      data = {
+        ...data,
+        dropDate: {
+          date: new Date(body.resheduleReturnDate).getDate(),
+          month: new Date(body.resheduleReturnDate).getMonth(),
+          year: new Date(body.resheduleReturnDate).getFullYear(),
+        },
+        totalPrice: totalPrice
+      }
+      oldData = {
+        ...oldData,
+        dropDate: bookingDetails?.dropDate,
+        totalPrice: totalPrice
+      }
+    }
+
+
+      await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
+        $set: data,
+        $push: {activity: oldData}
+      })
+
     // add refund payment
     
-    return res.status(200).send({ message: 'Bokking cancel successfull' })
+    return res.status(200).send({ message: 'Bokking cancel successfull', booking: data })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingReshuduled', { error: error })
     res.status(500).send({ message: 'Server Error' })

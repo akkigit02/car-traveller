@@ -14,6 +14,8 @@ router.get('/apply-coupon/:bookingId/:couponCode', jwtUserAuthentication, Client
 router.get('/cancel-booking/:bookingId', jwtUserAuthentication, ClientManager.bookingCancel)
 router.post('/initiate-payment', jwtUserAuthentication, ClientManager.initiatePayment)
 
+router.post('/reshedule/:bookingId', jwtUserAuthentication, ClientManager.bookingReshuduled)
+
 
 // router.get('/rescheduled/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)
 // router.get('/cancel-booking/:bookingId', jwtUserAuthentication, ClientManager.getBookingById)

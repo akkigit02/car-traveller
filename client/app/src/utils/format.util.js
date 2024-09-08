@@ -12,7 +12,6 @@ const isSchedulabel = (dateObj, time) => {
     const diifrence = pickUpDate - curentDate
     if (diifrence < 0)
         return true
-    console.log(pickUpDate, curentDate, diifrence, (RESCHEDULE_TIME * 60 * 1000), diifrence > (RESCHEDULE_TIME * 60 * 1000))
     return diifrence < (RESCHEDULE_TIME * 60 * 1000)
 }
 const getDateAndTimeString = (dateObj, time) => {

@@ -43,11 +43,11 @@ const rideSchema = new Schema({
   paymentStatus: { type: String, enum: ["pending","advanced", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
-    enum: ["none", "scheduled", "inProgress", "completed", "cancelled",],
+    enum: ["none", "scheduled", "inProgress", "completed", "cancelled",'resheduled'],
     default: 'none',
   },
-},{ timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } }
-);
+  activity: [{type: Schema.Types.Mixed}]
+},{ timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
 
 // Create a model based on the schema
 const Ride = mongoose.model("ride", rideSchema);
