@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { isSchedulabel, getDateAndTimeString } from '../../utils/format.util';
+import { isSchedulabel, getDateAndTimeString, formatDateAndTime } from '../../utils/format.util';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import Modal from '../Modal'
+import { useForm } from 'react-hook-form';
 function BookingHistory() {
   const navigate = useNavigate()
   const [skip, setSkip] = useState(0)
@@ -11,8 +13,21 @@ function BookingHistory() {
   const [bookingList, setBookingList] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [hasMore, setHasMore] = useState(false)
-  const [bookingDetails, setBookingDetails] = useState()
-  const [isFetched, setIsFetched] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [minDate, setMinDate] = useState(null)
+  const [timeOptions, setTimeOptions] = useState([]);
+  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors } } = useForm({
+    mode: "onChange",
+  });
+
+  const submitReshedule = (data) => {
+    try {
+      console.log(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const fetchBookingHistory = async (isScroll) => {
     try {
       if (!isScroll)
@@ -31,8 +46,6 @@ function BookingHistory() {
         return ele
       })
 
-
-
       if (isScroll) {
         setBookingList(old => old.concat(list));
       }
@@ -50,7 +63,7 @@ function BookingHistory() {
 
   const cancelBooking = async (bookingId) => {
     try {
-      const { data  } = await axios({
+      const { data } = await axios({
         url: `/api/client/cancel-booking/${bookingId}`
       })
       if (data?.message)
@@ -61,11 +74,54 @@ function BookingHistory() {
     }
   }
 
+  const closeModal = () => {
+    setIsOpen(false)
+  }
+
   useEffect(() => {
     fetchBookingHistory()
   }, [])
 
+  const resheduleData = (data) => {
+    try {
+      const date = new Date()
+      let pickupDate = `${data.pickupDate.year}-${data.pickupDate.month.padStart(2, '0')}-${data.pickupDate.date.padStart(2, '0')}`
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      setMinDate(`${year}-${month}-${day}`)
 
+      setTimeOtion(pickupDate)
+      reset({
+        reshedulePickupDate: pickupDate,
+        reshedulePickupTime: data.pickupTime
+      })
+      setIsOpen(true)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const setTimeOtion = (date) => {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0); // Start at 12:00 AM
+    const timeInterval = []
+    while (start.getHours() < 24) {
+      start.setMinutes(start.getMinutes() + 15); // Add 15 minutes
+      timeInterval.push(new Date(start));
+      if (start.getHours() === 23 && start.getMinutes() === 45)
+        break;
+    }
+    setTimeOptions(timeInterval)
+  }
+
+  const handleDateChange = (e, action) => {
+    const date = new Date(e.target.value)
+    date.setHours(0, 0, 0, 0)
+    console.log(date)
+    setTimeOtion(date)
+    // setValue('reshedulePickupTime','00:15 AM')
+  }
 
   return (
     <>
@@ -100,10 +156,10 @@ function BookingHistory() {
                   <td>{item.bookingStatus}</td>
                   <td className='d-flex'>
                     <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)} ><i class="fa fa-eye" aria-hidden="true"></i></button>
-                    <button className='icon-btn me-2' onClick={() => cancelBooking(item._id)}
-                    // disabled={item.isCancelable}
+                    <button className='icon-btn me-2' onClick={() => resheduleData(item)}
+                      disabled={item.isCancelable}
                     ><i class="fa fa-retweet" aria-hidden="true"></i></button>
-                    <button className='icon-btn' disabled={item.isCancelable}><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    <button className='icon-btn' disabled={item.isCancelable} onClick={()=>cancelBooking(item._id)}><i class="fa fa-trash" aria-hidden="true"></i></button>
                   </td>
                 </tr>))
                   :
@@ -114,6 +170,57 @@ function BookingHistory() {
               </tbody>}
           </table>
         </InfiniteScroll>
+        <Modal isOpen={isOpen} onClose={closeModal} title={'Reshedule'}>
+          <form onSubmit={handleSubmit(submitReshedule)}>
+            <div className="h-100 scroll-body">
+              <div className="row m-0">
+                <div className="form-group col-lg-6 col-md-6 col-12">
+                  <label>Pickup Date</label>
+                  <input
+                    type="date"
+                    {...register("reshedulePickupDate", { required: "Date is required" })}
+                    className="cstm-select-input"
+                    placeholder="Enter coupon code"
+                    min={minDate}
+                    onChange={(e) => handleDateChange(e)}
+                  />
+                  {errors?.reshedulePickupDate && <span className="text-danger">{errors.reshedulePickupDate.message}</span>}
+                </div>
+                {
+                  <div className="form-group col-lg-6 col-md-6 col-12">
+                    <label>Return Date</label>
+                    <input
+                      type="date"
+                      {...register("resheduleReturnDate", { required: "Date is required" })}
+                      className="cstm-select-input"
+                      placeholder="Enter coupon code"
+                      min={watch('reshedulePickupDate')}
+                    />
+                    {errors?.resheduleReturnDate && <span className="text-danger">{errors.resheduleReturnDate.message}</span>}
+                  </div>
+                }
+                <div className="form-group col-lg-6 col-md-6 col-12">
+                  <label>Pickup Time</label>
+                  <select {...register('reshedulePickupTime', { required: 'Time is required' })}>
+                    {timeOptions.map((option, index) => (
+                      <>{
+                        option > new Date().setMinutes(new Date().getMinutes() + 90) && <option key={index} value={formatDateAndTime(option, 'hh:mm A')}>
+                          {formatDateAndTime(option, 'hh:mm A')}
+                        </option>}
+                      </>
+                    ))}
+                  </select>
+                  {errors?.reshedulePickupTime && <span className="text-danger">{errors.reshedulePickupTime.message}</span>}
+                </div>
+              </div>
+            </div>
+            <div className="d-flex justify-content-end border-top mt-3 pt-2">
+              <button type="submit" className="btn btn-primary">
+                Reshedule
+              </button>
+            </div>
+          </form>
+        </Modal>
       </div>
     </>
   )

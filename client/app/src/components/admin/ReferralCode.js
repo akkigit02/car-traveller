@@ -164,7 +164,7 @@ export default function CouponForm() {
           ))}
         </tbody>
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Coupon' : 'Add Coupon'}>
+  <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Coupon' : 'Add Coupon'}>
   <form onSubmit={handleSubmit(saveCoupon)}>
     <div className="h-100 scroll-body">
       <div className="row m-0">
