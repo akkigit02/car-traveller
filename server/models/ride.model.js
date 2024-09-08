@@ -46,7 +46,8 @@ const rideSchema = new Schema({
     enum: ["none", "scheduled", "inProgress", "completed", "cancelled",],
     default: 'none',
   },
-});
+},{ timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } }
+);
 
 // Create a model based on the schema
 const Ride = mongoose.model("ride", rideSchema);
