@@ -11,6 +11,8 @@ function AppTopNav() {
   const userInfo = useSelector((state) => state.userInfo)
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [isModalExpanded, setModalExpanded] = useState(false);
   
 
   const toggleDropdown = () => {
@@ -26,7 +28,23 @@ function AppTopNav() {
     store.dispatch({ type: 'SET_INTO_STORE', payload: { userInfo: null } })
   }
 
+
+  const toggleDropdown2 = () => {
+    setDropdownOpen(!isDropdownOpen);
+  };
+  const handleExpand = () => {
+    setDropdownOpen(false);
+    setTimeout(() => {
+      setModalExpanded(true);
+    }, 100); 
+  };
+
+  const closeModal = () => {
+    setModalExpanded(false);
+  };
+
   return (
+    <>
     <div className='p-3 d-flex justify-content-between align-items-center border-bottom shadow'>
         <div className='d-flex align-items-center'>
           <div className="offcanvas__logo">
@@ -34,10 +52,43 @@ function AppTopNav() {
               <img className='w-100 h-60p' src={logo} alt="logo-img" />
             </a>
           </div>
-          <Link to={`/profile`}>
+          {/* <Link to={`/profile`}>
             <p className='ms-3 mb-0'>{userInfo?.modules?.userType}</p>
-          </Link>
+          </Link> */}
         </div>
+        <div className='d-flex'>
+
+
+
+        <div className="header-cstm">
+          <div className="notification-cstm">
+            <span className="notification-cstm-icon" onClick={toggleDropdown2}>
+              &#128276;
+            </span>
+            {isDropdownOpen && (
+              <div className={`dropdown-cstm ${isDropdownOpen ? 'transitioning' : ''}`}>
+                <ul>
+                  <li>Message 1</li>
+                  <li>Message 2</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                </ul>
+                <button id="expandButton" onClick={handleExpand}>
+                  Expand
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+
+
+
         <div className="dropdown" ref={dropdownRef}>
           <button onClick={toggleDropdown} className="cstm-dropdown-toggle">
             <img src={user}/>
@@ -52,7 +103,30 @@ function AppTopNav() {
               </button>
             </div>)}
         </div>
+        </div>
     </div>
+
+    {isModalExpanded && <div className="modal-overlay-cstm"></div>}
+
+      {isModalExpanded && (
+        <div className={`modal-content-expanded ${isModalExpanded ? 'active' : ''}`}>
+          <span className="close-cstm" onClick={closeModal}>&times;</span>
+          <h2>Expanded Notification Details</h2>
+          <p>This is the expanded modal with more content...</p>
+          <ul>
+                  <li>Message 1</li>
+                  <li>Message 2</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                  <li>Message 3</li>
+                </ul>
+        </div>
+      )}
+    </>
   )
 }
 
