@@ -490,10 +490,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const ampm = hours >= 12 ? 'PM' : 'AM';
             const displayHours = hours % 12 === 0 ? 12 : hours % 12;
             const displayMinutes = minutes < 10 ? `0${minutes}` : minutes;
-            const displayTime = `${displayHours}:${displayMinutes} ${ampm}`;
+            const displayTime = `${displayHours < 10 ? '0'+displayHours : displayHours}:${displayMinutes} ${ampm}`;
             const option = document.createElement('option');
             option.value = displayTime;
             option.textContent = displayTime;
+            console.log(displayTime)
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
             }

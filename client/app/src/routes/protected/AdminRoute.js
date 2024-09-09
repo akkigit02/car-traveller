@@ -10,6 +10,7 @@ import AppTopNav from "../../components/AppTopNav";
 import EnquirePackage from "../../components/admin/EnquirePackage";
 import ReferralCode from "../../components/admin/ReferralCode";
 import Profile from "../../components/common/Profile";
+import Leads from "../../components/admin/Leads"
 
 function AdminRoute() {
   return (
@@ -37,6 +38,7 @@ function AdminRoute() {
                 <Route path={`/enquire-package`} Component={EnquirePackage} exact />
                 <Route path={`/referral`} Component={ReferralCode} exact />
                 <Route path={`/profile`} Component={Profile} exact />
+                <Route path={`/leads`} Component={Leads} exact />
                 <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
               </Routes>
             </div>

@@ -16,13 +16,33 @@ function BookingHistory() {
   const [isOpen, setIsOpen] = useState(false)
   const [minDate, setMinDate] = useState(null)
   const [timeOptions, setTimeOptions] = useState([]);
-  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors } } = useForm({
+  const [tripData, setTripData] = useState(null)
+  const { register, handleSubmit, setValue, watch, reset,formState: { errors } } = useForm({
     mode: "onChange",
   });
 
-  const submitReshedule = (data) => {
+  const submitReshedule = async (data) => {
     try {
       console.log(data)
+      const res = await axios({
+        url: '/api/client/reshedule/'+tripData._id,
+        method: 'POST',
+        data: data
+      })
+
+      setBookingList(bookingList.map((li) => {
+        if(li._id === data._id) {
+          li['pickupDate'] = res?.data?.booking?.pickupDate
+          li['pickupTime'] = res?.data?.booking?.pickupTime
+          if(data?.trip?.tripType === 'roundTrip') {
+            li['dropDate'] = res?.data?.booking?.dropDate
+          }
+        }
+        return li
+      }))
+      reset({})
+      setIsOpen(false)
+      setTripData(null)
     } catch (error) {
       console.error(error)
     }
@@ -85,17 +105,20 @@ function BookingHistory() {
   const resheduleData = (data) => {
     try {
       const date = new Date()
+      setTripData(data)
       let pickupDate = `${data.pickupDate.year}-${data.pickupDate.month.padStart(2, '0')}-${data.pickupDate.date.padStart(2, '0')}`
+      if(data.trip.tripType === 'roundTrip') {
+        let dropDate = `${data.dropDate.year}-${data.dropDate.month.padStart(2, '0')}-${data.dropDate.date.padStart(2, '0')}`
+        setValue('resheduleReturnDate',dropDate)
+      }
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
       setMinDate(`${year}-${month}-${day}`)
 
       setTimeOtion(pickupDate)
-      reset({
-        reshedulePickupDate: pickupDate,
-        reshedulePickupTime: data.pickupTime
-      })
+      setValue('reshedulePickupDate',pickupDate)
+      setValue('reshedulePickupTime',data.pickupTime)
       setIsOpen(true)
     } catch (error) {
       console.log(error)
@@ -115,12 +138,16 @@ function BookingHistory() {
     setTimeOptions(timeInterval)
   }
 
-  const handleDateChange = (e, action) => {
+  const handleDateChange = (e) => {
     const date = new Date(e.target.value)
+    setValue('reshedulePickupDate',e.target.value)
+    if(tripData?.trip?.tripType === 'roundTrip') {
+      setValue('resheduleReturnDate',e.target.value)
+    }
     date.setHours(0, 0, 0, 0)
-    console.log(date)
     setTimeOtion(date)
-    // setValue('reshedulePickupTime','00:15 AM')
+    setValue('reshedulePickupTime','00:15 AM')
+
   }
 
   return (
@@ -144,30 +171,23 @@ function BookingHistory() {
                 <th>Action</th>
               </tr>
             </thead>
-            {isLoading ? <div>
-              Loading
-            </div> :
               <tbody>
-                {bookingList.length ? bookingList?.map(item => (<tr key={item._id}>
+                {bookingList?.map(item => (<tr key={item._id}>
                   <td>{item.name}</td>
                   <td>{getDateAndTimeString(item.pickupDate, item.pickupTime)}</td>
                   <td>{item.totalPrice}</td>
                   <td>{item.advancePayment}</td>
                   <td>{item.bookingStatus}</td>
                   <td className='d-flex'>
-                    <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)} ><i class="fa fa-eye" aria-hidden="true"></i></button>
+                    <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)} ><i className="fa fa-eye" aria-hidden="true"></i></button>
                     <button className='icon-btn me-2' onClick={() => resheduleData(item)}
                       disabled={item.isCancelable}
-                    ><i class="fa fa-retweet" aria-hidden="true"></i></button>
-                    <button className='icon-btn' disabled={item.isCancelable} onClick={()=>cancelBooking(item._id)}><i class="fa fa-trash" aria-hidden="true"></i></button>
+                    ><i className="fa fa-retweet" aria-hidden="true"></i></button>
+                    <button className='icon-btn' disabled={item.isCancelable} onClick={()=>cancelBooking(item._id)}><i className="fa fa-trash" aria-hidden="true"></i></button>
                   </td>
                 </tr>))
-                  :
-                  <div>
-                    No data
-                  </div>
                 }
-              </tbody>}
+              </tbody>
           </table>
         </InfiniteScroll>
         <Modal isOpen={isOpen} onClose={closeModal} title={'Reshedule'}>
@@ -186,7 +206,7 @@ function BookingHistory() {
                   />
                   {errors?.reshedulePickupDate && <span className="text-danger">{errors.reshedulePickupDate.message}</span>}
                 </div>
-                {
+                { tripData?.trip?.tripType === 'roundTrip' &&
                   <div className="form-group col-lg-6 col-md-6 col-12">
                     <label>Return Date</label>
                     <input
