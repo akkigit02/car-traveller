@@ -48,7 +48,11 @@ const saveQrCode = async (data, fileName) => {
 
 const initialize = () => {
     try {
-        const client = new Client({ authStrategy: new LocalAuth({ dataPath: 'whatsapp' }) });
+        const client = new Client({
+            authStrategy: new LocalAuth({ dataPath: 'whatsapp' }), puppeteer: {
+                headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-extensions']
+            }
+        });
         let authTimeout
         client.once('ready', () => {
             console.log('Client is ready!');
