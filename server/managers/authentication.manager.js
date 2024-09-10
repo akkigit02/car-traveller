@@ -153,7 +153,7 @@ const signup = async (req, res) => {
     );
     if (user && user.modules.userType !== "CLIENT")
       return res.status(500).send({ message: "Phone Number already exist." });
-    else {
+    else if (!user) {
       user = await UserModel.create({
         name: body.userDetails.name,
         email: body.userDetails.email,

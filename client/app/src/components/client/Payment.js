@@ -5,7 +5,6 @@ import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.con
 import { toast } from "react-toastify";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
-  const navigate = useNavigate()
   const { bookingId } = useParams();
   const [bookingDetails, setBookingDetails] = useState({});
   const [advancePercentage, setAdvancePercentage] = useState(25)
@@ -78,8 +77,8 @@ function Payment() {
           advancePercentage
         }
       })
-      if (data?.message)
-        toast.success(data?.message);
+      if (data.paymentUrl)
+        window.location.href = data.paymentUrl
     } catch (error) {
       console.log(error)
     }

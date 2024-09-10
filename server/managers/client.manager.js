@@ -4,6 +4,7 @@ const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
 const CouponModel = require("../models/coupon.model");
 const UserModel = require("../models/user.model");
+const BillingModel = require('../models/billing.model')
 const EnquirePackageModel = require("../models/enquire.package.model")
 
 const {
@@ -12,7 +13,7 @@ const {
 } = require("../utils/calculation.util");
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
-const { initiatePhonepePayment } = require('../configs/phonepe.config');
+const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../configs/phonepe.config');
 const { isSchedulabel } = require('../utils/format.util');
 
 const getCities = async (req, res) => {
@@ -335,7 +336,7 @@ const saveBooking = async (req, res) => {
         tripType: body?.bookingDetails?.tripType,
         hourlyType: body?.bookingDetails?.hourlyType
       },
-      paymentStatus: "pending",
+      paymenrtStatus: "pending",
     };
 
     if (isCityCab) {
@@ -451,7 +452,7 @@ const applyCopounCode = async (req, res) => {
 const initiatePayment = async (req, res) => {
   try {
     const { body } = req
-    let couponDetails = {}
+    let couponDetails = { discountAmount: 0 }
     const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }, { totalPrice: 1 }).lean()
     if (body?.coupon?.isApply) {
       const coupon = await CouponModel.findOne({ code: body.coupon.code })
@@ -462,34 +463,72 @@ const initiatePayment = async (req, res) => {
         couponDetails = { ...couponValidate.discountDetails, couponCode: coupon.code }
     }
     const advancePercentage = [10, 25, 50, 100].includes(body?.advancePercentage) ? body?.advancePercentage : 100;
-    await RideModel.updateOne({ _id: new ObjectId(body.bookingId) }, {
-      $set: {
-        couponCode: couponDetails.couponCode,
-        advancePercent: advancePercentage,
-        paymentStatus: advancePercentage === 100 ? 'completed' : 'pending'
-      }
-    })
-
-
-
 
     const payableAmount = ((bookingDetails.totalPrice - couponDetails.discountAmount) * advancePercentage) / 100
     const phonePayPayload = {
       amount: payableAmount,
-      merchantTransactionId: new ObjectId(),
+      merchantTransactionId: String(new ObjectId()),
     }
-    // await initiatePhonepePayment(phonePayPayload)
-
     await RideModel.updateOne({ _id: new ObjectId(body.bookingId) }, {
       $set: {
-        paymentStatus: advancePercentage === 100 ? 'completed' : 'advanced'
+        couponCode: couponDetails.couponCode,
+        advancePercent: advancePercentage,
+        paymentStatus: 'pending',
+        payablePrice: payableAmount
       }
     })
-
-    return res.status(200).send({ payableAmount, message: 'Booked successfull' })
+    const result = await initiatePhonepePayment(phonePayPayload)
+    const billingData = {
+      merchantTransactionId: result?.data.merchantTransactionId,
+      userId: req.user._id,
+      bookingId: bookingDetails._id,
+      amount: phonePayPayload.amount,
+      currency: 'INR',
+      paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url,
+      paymentState: result.code,
+    }
+    await BillingModel.create(billingData)
+    return res.status(200).send({ paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })
     res.status(500).send({ message: 'Server Error' })
+  }
+}
+
+const changePaymentStatus = async (req, res) => {
+  try {
+    const { params } = req
+    if (!params.transactionId)
+      return res.status(400).send({ message: "Invalid Request" })
+    const billing = await BillingModel.findOne({ merchantTransactionId: String(params.transactionId), userId: req.user._id })
+    if (!billing)
+      return res.status(400).send({ message: "Invalid Request" })
+    const result = await chackStatusPhonepePayment({ merchantTransactionId: params.transactionId })
+    const billingData = {
+      paymentId: result?.data.transactionId,
+      paymentInstrument: result?.data?.paymentInstrument,
+      paymentState: result?.code,
+      gatewayResponse: result
+    }
+    await BillingModel.updateOne({ merchantTransactionId: String(billing.merchantTransactionId), userId: req.user._id }, {
+      $set: billingData
+    })
+
+    const allBills = await BillingModel.find({ _id: billing.bookingId }, { amount: 1, paymentState: 1 })
+    let toatlPayment = 0;
+    allBills.forEach((bill) => {
+      if (bill.paymentState === 'PAYMENT_SUCCESS')
+        toatlPayment += amount
+    })
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(billing.bookingId) }, { payablePrice: 1 }).lean()
+    let paymentStatus = toatlPayment === 0 ? 'pending' : toatlPayment < bookingDetails.totalPrice ? 'advanced' : 'completed'
+    await RideModel.updateOne({ _id: new ObjectId(billing.bookingId) }, {
+      $set: { paymentStatus }
+    })
+    return res.status(200).send({ message: result.message, bookingId: billing.bookingId })
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })
+    return res.status(500).send({ message: 'Server Error' })
   }
 }
 
@@ -522,9 +561,9 @@ const bookingCancel = async (req, res) => {
 const bookingReshuduled = async (req, res) => {
   try {
     const { params, body } = req
-    console.log(body,"=====--------000000")
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId','driverAllowance')
-    if(!bookingDetails) {
+    console.log(body, "=====--------000000")
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId', 'driverAllowance')
+    if (!bookingDetails) {
       return res.status(400).send({ message: "Booking not found" })
     }
     const isNotValid = isSchedulabel(bookingDetails.pickupDate, bookingDetails.pickupTime)
@@ -545,12 +584,12 @@ const bookingReshuduled = async (req, res) => {
       pickupTime: bookingDetails?.pickupTime,
       trip: bookingDetails?.trip
     }
-    if(bookingDetails.trip.tripType === 'roundTrip') {
+    if (bookingDetails.trip.tripType === 'roundTrip') {
       let numberOfDay = dateDifference(body.reshedulePickupDate, body.resheduleReturnDate)
       let pickupDate = `${bookingDetails.pickupDate.year}-${bookingDetails.pickupDate.month.padStart(2, '0')}-${bookingDetails.pickupDate.date.padStart(2, '0')}`
       let dropDate = `${bookingDetails.dropDate.year}-${bookingDetails.dropDate.month.padStart(2, '0')}-${bookingDetails.dropDate.date.padStart(2, '0')}`
       let oldnumberOfDay = dateDifference(pickupDate, dropDate)
-      if(oldnumberOfDay === 0) {
+      if (oldnumberOfDay === 0) {
         oldnumberOfDay = 1
       }
       let pricesAdd = (numberOfDay - oldnumberOfDay) * bookingDetails.vehicleId.driverAllowance
@@ -572,13 +611,13 @@ const bookingReshuduled = async (req, res) => {
     }
 
 
-      await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
-        $set: data,
-        $push: {activity: oldData}
-      })
+    await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
+      $set: data,
+      $push: { activity: oldData }
+    })
 
     // add refund payment
-    
+
     return res.status(200).send({ message: 'Bokking cancel successfull', booking: data })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingReshuduled', { error: error })
@@ -587,73 +626,11 @@ const bookingReshuduled = async (req, res) => {
 }
 
 
-
-const getBookingByPasssengerId = async (req, res) => {
-  try {
-    const passengerId = req.params.id;
-    const booking = await RideModel.find({ passengerId }).lean();
-    res.status(200).send({ booking });
-  } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingByPasssengerId', { error: error })
-    res.status(500).send({ message: 'Server Error' })
-  }
-};
-
-const cancelBooking = async (req, res) => {
-  try {
-    const rideId = req.params.id;
-    const ride = await RideModel.findOne({ _id: rideId });
-
-    if (!ride) {
-      return res.status(404).send({ message: "Ride not found" });
-    }
-
-    const { pickupDate, pickupTime, status } = ride;
-
-    if (status === "cancelled") {
-      return res.status(500).send({ message: "Ride is Already Cancelled" });
-    }
-
-    const pickupDateTime = new Date(`${pickupDate}T${pickupTime}`);
-
-    const currentTime = new Date();
-
-    const timeDifference = (pickupDateTime - currentTime) / (1000 * 60);
-
-    if (timeDifference < 90) {
-      return res.status(400).send({
-        message:
-          "Ride can only be cancelled before 90 minutes of the pickup time",
-      });
-    }
-
-    await RideModel.findOneAndUpdate({ _id: rideId }, { status: "cancelled" });
-    return res.status(200).send({ message: "Ride cancelled successfully" });
-  } catch (error) {
-    logger.log('server/managers/client.manager.js-> cancelBooking', { error: error })
-    res.status(500).send({ message: 'Server Error' })
-  }
-};
-
-
-
-
-const sendPackageEnquire = async (req, res) => {
-  try {
-    const body = req.body;
-    await EnquirePackageModel.create(body)
-    return res.status(200).send({ message: 'Enquire successfully, we will contact you immediately or later' });
-  } catch (error) {
-    logger.log('server/managers/client.manager.js-> sendPackageEnquire', { error: error })
-    res.status(500).send({ message: 'Server Error' })
-  }
-}
-
 const getCoupons = async (req, res) => {
   try {
     const currentDate = new Date();
     const userId = req.userId;
-     
+
     const count = await RideModel.countDocuments({
       userId: userId,
       rideStatus: 'completed'
@@ -708,11 +685,6 @@ module.exports = {
   initiatePayment,
   bookingCancel,
   bookingReshuduled,
-
-  getBookingByPasssengerId,
-  cancelBooking,
-  sendPackageEnquire,
-
   getCoupons,
-
+  changePaymentStatus
 };
