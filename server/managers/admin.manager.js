@@ -272,7 +272,7 @@ const getReferralById = async(req, res) => {
 const getLeads = async(req,res) =>{
     try {
         const leads = await RideModel.find({ paymentStatus: "pending" },
-            { name: 1,pickupDate: 1,createdOn: 1,isconnected:1}
+            { _id:1,name: 1,pickupDate: 1,createdOn: 1,isConnected:1}
           ).populate('userId', 'primaryPhone email').populate('pickUpCity','name').populate('dropCity','name').sort({ createdOn: -1 });
         res.status(200).send({leads})   
     } catch (error) {
@@ -280,6 +280,23 @@ const getLeads = async(req,res) =>{
        res.status(500).send({ message: 'Server Error' })  
     }
 }
+
+const confirmCall = async (req, res) => {
+    try {
+      const id = req.params.id;
+      console.log('ID:',id)
+      if (!id) {
+        return res.status(400).send({ message: 'Invalid ID' });
+      }
+      await RideModel.updateOne({ _id: id }, { isConnected: true });
+      res.status(200).send({ message: 'Lead marked as called' });
+    } catch (error) {
+      logger.log('server/managers/admin.manager.js -> confirmCall', { error: error });
+      res.status(500).send({ message: 'Server Error' });
+    }
+  };
+  
+  
 
 module.exports = {
     saveVehiclePrice,
@@ -312,6 +329,7 @@ module.exports = {
     getReferral,
     saveReferral,
     
-    getLeads
+    getLeads,
+    confirmCall
 
 }

@@ -46,7 +46,7 @@ const rideSchema = new Schema({
     enum: ["none", "scheduled", "inProgress", "completed", "cancelled",'resheduled'],
     default: 'none',
   },
-  isconnected: { type: Boolean, default: false },
+  isConnected: { type: Boolean, default: false },
   activity: [{type: Schema.Types.Mixed}]
 },{ timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
 

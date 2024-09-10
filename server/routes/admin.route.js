@@ -34,6 +34,7 @@ router.delete('/coupons/:id',AdminManager.deleteReferral)
 router.get('/coupons/:id',AdminManager.getReferralById)
 
 router.get('/leads',AdminManager.getLeads)
+router.put('/leads/:id',AdminManager.confirmCall)
 
 
 module.exports = router
