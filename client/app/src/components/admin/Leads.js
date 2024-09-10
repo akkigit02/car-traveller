@@ -38,6 +38,8 @@ export default function Leads() {
             <th>DropCity</th>
             <th>PickUpDate</th>
             <th>Requested At</th>
+            <th>Called</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -68,6 +70,10 @@ export default function Leads() {
                   ? lead.createdOn.slice(0, 10)  // Extracts the YYYY-MM-DD part
                   : "N/A"}
               </td>
+              <td style={{ backgroundColor: lead?.isConnected ? 'green' : 'red', color: 'white', textAlign: 'center' }}>
+                {lead?.isConnected ? "Yes" : "No" || "N/A"}
+              </td>
+              <td></td>
               </tr>
             ))
           ) : (

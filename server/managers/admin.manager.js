@@ -272,7 +272,7 @@ const getReferralById = async(req, res) => {
 const getLeads = async(req,res) =>{
     try {
         const leads = await RideModel.find({ paymentStatus: "pending" },
-            { name: 1,pickupDate: 1,createdOn: 1}
+            { name: 1,pickupDate: 1,createdOn: 1,isconnected:1}
           ).populate('userId', 'primaryPhone email').populate('pickUpCity','name').populate('dropCity','name').sort({ createdOn: -1 });
         res.status(200).send({leads})   
     } catch (error) {
