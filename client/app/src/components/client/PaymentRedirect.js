@@ -14,8 +14,8 @@ function PaymentRedirect() {
             })
             if (data.message)
                 toast.success(data.message)
-            if (data.bookingId)
-                navigate(`/payment/${data.bookingId}`)
+            // if (data.bookingId)
+            //     navigate(`/payment/${data.bookingId}`)
         } catch (error) {
             console.log(error)
             toast.error(error?.response?.data?.message || "Something went wrong please try again!");
