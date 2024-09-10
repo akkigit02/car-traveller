@@ -104,25 +104,30 @@ function Payment() {
     <>
       <div className="row m-0 col-reverse-sm flex-wrap">
         <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 pe-0" : "col-lg-4 col-md-4 col-sm-12 pe-0 mb-5"}>
-          <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100" : "car-list-sidebar mt-30 h-100"}>
+          <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100" : "car-list-sidebar mt-0 h-100"}>
             <h4 className="title">Booking Summary</h4>
 
             <div className="p-3 height-300c">
               <div className="col-lg-12 col-md-12 col-12 pe-0">
                 <label>Name</label>
-                <p className="mb-0 desti-details-2">
+                <p className="mb-3 desti-details-2 text-center">
                   {bookingDetails?.name}
                 </p>
               </div>
-              {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="d-flex align-items-center justify-content-between mb-4">
-                <p className="mb-0 desti-details">
+              {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className=" mb-4">
+                <p className="mb-0 destination-details">
                   {bookingDetails?.pickUpCity?.name}
                 </p>
-                {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) && <div>
+                {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) && 
+                 
+                 <div>
                   {bookingDetails?.dropCity?.map((item, index) => (
-                    <p key={index} className="mb-0 desti-details">
+                    <div>
+                       <div className='d-flex justify-content-center py-2'><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                    <p key={index} className="mb-0 destination-details">
                       {item.name}
                     </p>
+                    </div>
                   ))}
                 </div>}
               </div>}

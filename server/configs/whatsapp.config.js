@@ -39,11 +39,11 @@ const processQueue = async () => {
 }
 
 
-const saveQrCode = async (data, fileName) => {
-    if (fs.existsSync(fileName))
-        fs.unlinkSync(fileName)
-    await QRCode.toFile(fileName, data);
-}
+// const saveQrCode = async (data, fileName) => {
+//     if (fs.existsSync(fileName))
+//         fs.unlinkSync(fileName)
+//     await QRCode.toFile(fileName, data);
+// }
 
 
 const initialize = () => {
@@ -60,10 +60,10 @@ const initialize = () => {
             clearTimeout(authTimeout);
         });
 
-        client.on('qr', (qr) => {
-            console.log(qr)
-            saveQrCode(qr, 'whatsapp/qr/whatsappQr.png')
-        });
+        // client.on('qr', (qr) => {
+        //     console.log(qr)
+        //     saveQrCode(qr, 'whatsapp/qr/whatsappQr.png')
+        // });
         authTimeout = setTimeout(() => {
             console.error('Authentication timed out. Destroying client.');
             client.destroy();
@@ -105,7 +105,7 @@ const sendWhatsappMessage = async () => {
         console.error('Error sending message:', error.response ? error.response.data : error.message);
     }
 }
-saveQrCode('qr', 'whatsapp/qr/whatsappQr.png')
+// saveQrCode('qr', 'whatsapp/qr/whatsappQr.png')
 
 module.exports = {
     sendMessage,

@@ -143,13 +143,13 @@ export default function AvailableVehicle() {
             <div className="col-lg-12 cstm-calHeight">
               {carList.map((item, idx) => (
                 <div className="car-list-items mb-3" key={idx}>
-                  <div className="d-flex">
-                    <div className="car-image bg-cover">
+                  <div className="d-flex flex-column-sm">
+                    <div className="car-image bg-cover justify-content-center">
                       <img src={item.vehicleImageUrl} />
                     </div>
                     <div className="w-100 border-start">
-                      <div className="car-content d-flex justify-content-between align-items-center border-bottom">
-                        <div>
+                      <div className="car-content cstm-row d-flex justify-content-between border-bottom">
+                        <div className="col-lg-4 col-md-6 col-sm-6 mb-sm">
                           <h6>
                             <span>{item.vehicleName}</span>
                           </h6>
@@ -166,7 +166,7 @@ export default function AvailableVehicle() {
                           )}
                         </div>
 
-                        <div className="icon-items">
+                        <div className="icon-items col-lg-3 col-md-6 col-sm-6">
                           <div className="icon">
                             <img src={doorImage} alt="img" />
                           </div>
@@ -178,7 +178,7 @@ export default function AvailableVehicle() {
                             </p>
                           </div>
                         </div>
-                        <div className="d-flex justify-content-center align-items-center">
+                        <div className="d-flex car-list-button align-items-center col-lg-5 col-md-12 col-sm-12">
                           <div className=" me-3 d-flex flex-column align-items-center">
                             <p className="mb-0 pb-0">Distance: </p>
                             <p className="mb-0 pb-0 ">
@@ -225,7 +225,7 @@ export default function AvailableVehicle() {
                         </div>
                         {item?.isShowDetail && (
                           <div className="d-flex ps-2">
-                            <div className="d-flex ">
+                            <div className="d-flex flex-column-sm">
                               <div className="d-flex align-items-center">
                                 <p className="mb-0 h6 ps-2 notch_content">
                                   Excluded

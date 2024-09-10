@@ -150,10 +150,15 @@ function BookingForm() {
                 <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
                     <div className="car-list-sidebar mt-30 h-100">
                         <h4 className="title">Booking Form</h4>
-                        <div className='p-3'>
-                            <div className='d-flex align-items-center justify-content-between mb-4'>
-                                <p className='mb-0 desti-details'>{bookingDetails?.from?.name}</p>
-                                {bookingDetails?.to?.map((item, index) => (<p key={index} className='mb-0 desti-details'>{item.name}</p>))}
+                        <div className='p-3 book-form-height'>
+                            <div className='d-flex align-items-center flex-column justify-content-between mb-4'>
+                                <div className='mb-0 destination-details'>{bookingDetails?.from?.name}</div>
+                                {bookingDetails?.to?.map((item, index) => (
+                                    <div className=' w-100'>
+                                    <div className='d-flex justify-content-center py-2'><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                                    <div key={index} className='mb-0 destination-details'>{item.name}</div>
+                                    </div>
+                                    ))}
                             </div>
                             <div className='row m-0 pb-5'>
                                 <div className='col-lg-6 col-md-6 col-12 ps-0'>

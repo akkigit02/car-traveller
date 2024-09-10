@@ -30,11 +30,17 @@
 .font-20{
     font-size: 20px;
 }
+.font-30{
+    font-size: 30px;
+}
 .text-cut{
     text-decoration-line: line-through;
 }
 .bg-blue-light{
     background: var(--lightBlue);
+}
+.text-blue{
+    color: var(--theme2);
 }
 .cstm-btn-red{
     background-color: var(--theme);
@@ -257,10 +263,46 @@ a {
     .d-none-cstm{
         display: none !important;
     }
+    .cstm-calHeight{
+        height: auto !important;
+    }
+}
+@media only screen and (min-width: 350px) and (max-width: 991px) {
+.flex-column-sm{
+    flex-direction: column !important;
+}
+.car-list-items .car-image{
+    height: 100px;
+}
+.car-list-items .car-content{
+    align-items: flex-start !important;
+}
+.mb-sm{
+    margin-bottom: 12px !important;
+}
+.car-list-button{
+    justify-content: space-between !important;
+    width: 100% !important;
+}
+}
+.car-list-button{
+    justify-content: end;
+    width: auto;
 }
 
 
 
+.row>*{
+    width: auto;
+}
+.cstm-row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+.book-form-height{
+    height: calc(100vh - 354px);
+    overflow: auto;
+}
 /* ********* car-list page css *********** */
 
 
@@ -292,6 +334,7 @@ a {
     padding: 15px;
     position: relative;
     width: 100%;
+    align-items: center;
 }
 .car-list-items .car-content .star {
     margin-bottom: 10px;
@@ -535,6 +578,13 @@ background: #8bbaff8c;
     padding: 20px 30px;
     max-width: 40%;
     min-width: 40%;
+    border-radius: 8px;
+}
+.destination-details{
+    background: var(--lightBlue);
+    padding: 20px 30px;
+    width: 100%;
+    text-align: center;
     border-radius: 8px;
 }
 .desti-details-2{
