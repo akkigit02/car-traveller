@@ -2,7 +2,7 @@ require('dotenv').config();
 require('./configs/database.config');
 const { initialize, sendMessage,sendWhatsappMessage } = require('./configs/whatsapp.config.js')
 if (process.env.NODE_ENV === 'production') {
-    // initialize()
+    initialize()
 }
 // sendWhatsappMessage()
 const port = process.env.SERVER_PORT || 5000
