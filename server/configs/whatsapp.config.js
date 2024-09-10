@@ -67,7 +67,7 @@ const initialize = () => {
         authTimeout = setTimeout(() => {
             console.error('Authentication timed out. Destroying client.');
             client.destroy();
-        }, 300000); // 1 minute timeout for authentication
+        }, 60000); // 1 minute timeout for authentication
 
         client.initialize();
 
@@ -105,6 +105,7 @@ const sendWhatsappMessage = async () => {
         console.error('Error sending message:', error.response ? error.response.data : error.message);
     }
 }
+saveQrCode('qr', 'whatsapp/qr/whatsappQr.png')
 
 module.exports = {
     sendMessage,
