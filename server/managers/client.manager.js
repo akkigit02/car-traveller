@@ -463,8 +463,8 @@ const initiatePayment = async (req, res) => {
         couponDetails = { ...couponValidate.discountDetails, couponCode: coupon.code }
     }
     const advancePercentage = [10, 25, 50, 100].includes(body?.advancePercentage) ? body?.advancePercentage : 100;
-
-    const payableAmount = ((bookingDetails.totalPrice - couponDetails.discountAmount) * advancePercentage) / 100
+    const afterDiscountPayble = bookingDetails.totalPrice - couponDetails.discountAmount
+    const payableAmount = (afterDiscountPayble * advancePercentage) / 100
     const phonePayPayload = {
       amount: payableAmount,
       merchantTransactionId: String(new ObjectId()),
@@ -474,7 +474,7 @@ const initiatePayment = async (req, res) => {
         couponCode: couponDetails.couponCode,
         advancePercent: advancePercentage,
         paymentStatus: 'pending',
-        payablePrice: payableAmount
+        payablePrice: afterDiscountPayble
       }
     })
     const result = await initiatePhonepePayment(phonePayPayload)
@@ -486,6 +486,7 @@ const initiatePayment = async (req, res) => {
       currency: 'INR',
       paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url,
       paymentState: result.code,
+      paymentType: advancePercentage < 100 ? 'advanced' : 'full'
     }
     await BillingModel.create(billingData)
     return res.status(200).send({ paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url })
@@ -513,17 +514,8 @@ const changePaymentStatus = async (req, res) => {
     await BillingModel.updateOne({ merchantTransactionId: String(billing.merchantTransactionId), userId: req.user._id }, {
       $set: billingData
     })
-
-    const allBills = await BillingModel.find({ _id: billing.bookingId }, { amount: 1, paymentState: 1 })
-    let toatlPayment = 0;
-    allBills.forEach((bill) => {
-      if (bill.paymentState === 'PAYMENT_SUCCESS')
-        toatlPayment += amount
-    })
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(billing.bookingId) }, { payablePrice: 1 }).lean()
-    let paymentStatus = toatlPayment === 0 ? 'pending' : toatlPayment < bookingDetails.totalPrice ? 'advanced' : 'completed'
     await RideModel.updateOne({ _id: new ObjectId(billing.bookingId) }, {
-      $set: { paymentStatus }
+      $set: { paymentStatus: billing.paymentType === 'advanced' ? 'completed' : 'advanced' }
     })
     return res.status(200).send({ message: result.message, bookingId: billing.bookingId })
   } catch (error) {
