@@ -25,8 +25,8 @@ const processQueue = async () => {
 
     try {
         const { to, message } = payload;
-        if(global.whatsappClient)
-        await global.whatsappClient.sendMessage(to + '@c.us', message);  // Corrected to use whatsappClient to send message
+        if (global.whatsappClient)
+            await global.whatsappClient.sendMessage(to + '@c.us', message);  // Corrected to use whatsappClient to send message
         resolve();
     } catch (error) {
         reject(error);
@@ -48,7 +48,11 @@ const saveQrCode = async (data, fileName) => {
 
 const initialize = () => {
     try {
-        const client = new Client({ authStrategy: new LocalAuth({ dataPath: 'whatsapp' }) });
+        const client = new Client({
+            authStrategy: new LocalAuth({ dataPath: 'whatsapp' }), puppeteer: {
+                headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-extensions']
+            }
+        });
         let authTimeout
         client.once('ready', () => {
             console.log('Client is ready!');
@@ -63,7 +67,7 @@ const initialize = () => {
         authTimeout = setTimeout(() => {
             console.error('Authentication timed out. Destroying client.');
             client.destroy();
-        }, 300000); // 1 minute timeout for authentication
+        }, 60000); // 1 minute timeout for authentication
 
         client.initialize();
 
@@ -71,8 +75,40 @@ const initialize = () => {
         console.log(error)
     }
 }
+const axios = require('axios');
+
+
+const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN } = process.env;
+const sendWhatsappMessage = async () => {
+    try {
+        const FB_API_URL = 'https://graph.facebook.com/v20.0/381529865041952/messages';
+        const AUTH_TOKEN = GRAPH_API_TOKEN;
+        const payload = {
+            messaging_product: 'whatsapp',
+            to: '919685495640',
+            type: 'text',
+            text: {
+                body: "Heloo  How Are you"
+            },
+        };
+        const response = await axios({
+            url: FB_API_URL,
+            method: 'POST',
+            data: JSON.stringify(payload),
+            headers: {
+                'Authorization': `Bearer ${AUTH_TOKEN}`,
+                'Content-Type': 'application/json',
+            },
+        })
+        console.log('Message sent successfully:', response.data);
+    } catch (error) {
+        console.error('Error sending message:', error.response ? error.response.data : error.message);
+    }
+}
+saveQrCode('qr', 'whatsapp/qr/whatsappQr.png')
 
 module.exports = {
     sendMessage,
-    initialize
+    initialize,
+    sendWhatsappMessage
 }

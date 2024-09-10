@@ -32,6 +32,7 @@ const rideSchema = new Schema({
     year: { type: String },
   },
   totalPrice: { type: Number },
+  payablePrice: { type: Number },
   advancePercent: { type: String },
   couponCode: { type: String },
   totalDistance: { type: Number },

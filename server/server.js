@@ -1,9 +1,10 @@
 require('dotenv').config();
 require('./configs/database.config');
-const { initialize, sendMessage } = require('./configs/whatsapp.config.js')
+const { initialize, sendMessage,sendWhatsappMessage } = require('./configs/whatsapp.config.js')
 if (process.env.NODE_ENV === 'production') {
     initialize()
 }
+// sendWhatsappMessage()
 const port = process.env.SERVER_PORT || 5000
 const express = require('express');
 const cors = require('cors');
@@ -22,7 +23,6 @@ app.use(requestIp.mw());
 app.use(userAgent.express());
 app.use(cors());
 app.use('/api/', require('./routes/index.js'));
-
 app.get('*', (req, res) => {
     res.status(404).json({
         msg: 'Sorry, This route is not found on this server',
