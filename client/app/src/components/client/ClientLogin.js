@@ -68,7 +68,7 @@ function Login() {
                                 <form className="register-form" onSubmit={handleSubmit(login)}>
                                     <div className="form-group-login">
                                         <label for="your_name">
-                                            <i class="fa fa-mobile"></i>
+                                            <i class="fa fa-mobile-alt"></i>
                                         </label>
                                         <input
                                             type="text"

@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { TRIP_TYPE } from "../../constants/common.constants";
 import moment from "moment";
 import { useSelector } from "react-redux";
+import Loader from "../Loader";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 // import { icon } from "../../assets/css/icon.css";
 
@@ -82,16 +83,21 @@ export default function AvailableVehicle() {
         <div className="row m-0 flex-wrap">
           <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
-              <div className="d-flex p-3 justify-content-center mb-2 bg-blue-light">
-                <h5>
-                  {bookingDetails?.from?.name}{" "}
+              <div className=" bg-blue-light p-3 text-center fw-bold border-bottom-blue"> {bookingDetails.type || "One Way"}</div>
+              <div className="book-form-height-2">
+              <div className="d-flex p-3 justify-content-center mb-2">
+                <div className="w-100">
+                  
+                  <div className="mb-0 destination-details"> {bookingDetails?.from?.name}</div>
+                  {bookingDetails.type == "Hourly" || <div class="d-flex justify-content-center py-2"><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>}
                   {bookingDetails?.to?.map((city) => (
-                    <span> - {city.name}</span>
-                  ))}{" "}
-                  ({bookingDetails.type || "One Way"})
-                </h5>
+                    <div className="mb-0 destination-details">{city.name}</div>
+                  ))}
+                  
+                  
+                </div>
               </div>
-              <div className="p-3">
+              <div className="px-3 pb-3">
                 <div className="me-3 col-12 mb-3">
                   <p className="mb-0">Pickup Date</p>
                   <div className="highlight-data">
@@ -119,10 +125,11 @@ export default function AvailableVehicle() {
                   </a>
                 </div>
               </div>
+              </div>
             </div>
           </div>
 
-          <div className="col-lg-9 col-md-9 col-sm-12 mt-3">
+          <div className="col-lg-9 col-md-9 col-sm-12 mt-3 p-sm">
             <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
                 <div

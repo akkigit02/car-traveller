@@ -284,6 +284,12 @@ a {
     justify-content: space-between !important;
     width: 100% !important;
 }
+.p-sm{
+    padding: 0;
+}
+.h-100vh{
+    height: 100%;
+}
 }
 .car-list-button{
     justify-content: end;
@@ -300,8 +306,15 @@ a {
     flex-wrap: wrap;
   }
 .book-form-height{
-    height: calc(100vh - 354px);
+    height: calc(100vh - 308px);
     overflow: auto;
+}
+.book-form-height-2{
+    height: calc(100vh - 280px);
+    overflow: auto;
+}
+.border-bottom-blue{
+    border-bottom: 1px solid var(--border3);
 }
 /* ********* car-list page css *********** */
 
@@ -391,7 +404,7 @@ span {
     padding: 30px;
     border: 1px solid var(--border);
     border-radius: 10px;
-    margin-top: 30px;
+    /* margin-top: 30px; */
 }
 .car-details-wrapper .car-booking-items .booking-header h3 {
     font-size: 26px;

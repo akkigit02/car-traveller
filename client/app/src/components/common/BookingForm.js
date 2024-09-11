@@ -147,8 +147,8 @@ function BookingForm() {
     return (
         <>
             <div className="row m-0 col-reverse-sm flex-wrap">
-                <div className="col-lg-4 col-md-4 col-sm-12 pe-0 mb-5">
-                    <div className="car-list-sidebar mt-30 h-100">
+                <div className="col-lg-4 col-md-4 col-sm-12 pe-0">
+                    <div className="car-list-sidebar h-100">
                         <h4 className="title">Booking Form</h4>
                         <div className='p-3 book-form-height'>
                             <div className='d-flex align-items-center flex-column justify-content-between mb-4'>
