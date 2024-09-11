@@ -74,6 +74,20 @@
 	.mb-sm{
 		margin-bottom: 12px !important;
 	}
+	.search-card ul li.active{
+		padding: 15px 30px !important;
+		border: 1px solid var(--theme2);
+		border-radius: 8px !important;
+		width: 47% !important;
+		margin: 5px;
+	}
+	.search-card ul li{
+		padding: 15px 30px !important;
+		border: 1px solid var(--theme2);
+		border-radius: 8px !important;
+		width: 47% !important;
+		margin: 5px;
+	}
 }
 .side-nav .main-menu ul li{
 	padding: 20px 5px;

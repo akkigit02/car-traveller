@@ -131,8 +131,8 @@ function Payment() {
                   ))}
                 </div>}
               </div>}
-              {<div className="d-flex align-items-center justify-content-between mb-4">
-                <p> Pickup Address:- <p className="mb-0 desti-details-2 me-2">{bookingDetails?.pickupLocation}</p></p>
+              {<div className="mb-4">
+                <p> Pickup Address:- <p className="mb-0 desti-details-2">{bookingDetails?.pickupLocation}</p></p>
                 {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p> Drop Address:- <p className="mb-0 desti-details-2">{bookingDetails?.dropoffLocation}</p></p>}
               </div>}
               <div className="row m-0 pb-5">

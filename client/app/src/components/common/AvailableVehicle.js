@@ -83,7 +83,12 @@ export default function AvailableVehicle() {
         <div className="row m-0 flex-wrap">
           <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
             <div className="height-car-list mt-3 car-list-items">
-              <div className=" bg-blue-light p-3 text-center fw-bold border-bottom-blue"> {bookingDetails.type || "One Way"}</div>
+              <div className=" bg-blue d-flex justify-content-between  text-center fw-bold text-light brd_radius-t">
+                <span className="p-3"> {bookingDetails.type || "One Way"}</span>
+                <a href={CLIENT_URL}>
+                    <div className="bg-red p-3 brd_radius-tr text-white"><i class="far fa-edit pe-2"></i>Modify</div>
+                </a>
+              </div>
               <div className="book-form-height-2">
               <div className="d-flex p-3 justify-content-center mb-2">
                 <div className="w-100">
@@ -119,21 +124,21 @@ export default function AvailableVehicle() {
                   </div>
                 </div>
 
-                <div className="d-flex justify-content-end">
+                {/* <div className="d-flex justify-content-end">
                   <a href={CLIENT_URL}>
                     <button className="cstm-btn-red">Change</button>
                   </a>
-                </div>
+                </div> */}
               </div>
               </div>
             </div>
           </div>
 
           <div className="col-lg-9 col-md-9 col-sm-12 mt-3 p-sm">
-            <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
+            {bookingDetails?.hourlyDetails?.length > 0 && <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
               {bookingDetails?.hourlyDetails?.map((list, idx) => (
                 <div
-                  className={`text-center w-100 ${decodedQuery?.hourlyType === list.type ? 'bg-active' : ''}`}
+                  className={`text-center w-100 ${decodedQuery?.hourlyType === list.type ? 'bg-active-blue' : ''}`}
                   key={"key_" + idx}
                   onClick={() =>
                     setDecodedQuery({
@@ -146,7 +151,7 @@ export default function AvailableVehicle() {
                  <h6 className="mb-0">{list.hour} Hours| {list.distance} Km</h6> 
                 </div>
               ))}
-            </div>
+            </div>}
             <div className="col-lg-12 cstm-calHeight">
               {carList.map((item, idx) => (
                 <div className="car-list-items mb-3" key={idx}>

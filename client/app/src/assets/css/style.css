@@ -39,8 +39,20 @@
 .bg-blue-light{
     background: var(--lightBlue);
 }
+.bg-blue{
+    background: var(--theme2);
+}
+.bg-red{
+    background: var(--theme);
+}
 .text-blue{
     color: var(--theme2);
+}
+.brd_radius-t{
+    border-radius: 8px 8px 0 0;
+}
+.brd_radius-tr{
+    border-radius: 0px 8px 0 0;
 }
 .cstm-btn-red{
     background-color: var(--theme);
@@ -383,6 +395,9 @@ span {
 .bg-active {
     background-color: var(--theme);
 }
+.bg-active-blue {
+    background-color: #68a5ff8c;
+}
 
 
 /* ********* sign up page css *********** */
@@ -545,7 +560,7 @@ input {
     background-color: var(--bg);
 }
 .hour-nav > div:hover{
-background: #8bbaff8c;
+background: #68a5ff8c;
 }
 .hour-nav > div{
     cursor: pointer;
