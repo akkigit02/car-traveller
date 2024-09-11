@@ -1,12 +1,186 @@
-import React, { useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { useSelector } from "react-redux";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import Chart from "react-apexcharts";
+import { MONTH_NAME } from "../../constants/common.constants";
 
-export default function AdminDashboard() {
+const Dashboard = () => {
+  // Data for the pie charts
+  const [rideCount, setRideCount] = useState([0,0,0])
+  const [revenues, setRevenues]  = useState({
+    series: [{ name: "Revenue", data: [] }],
+    options: { chart: { type: "bar" }, xaxis: { categories: [] } }
+  })
+  const [carTypeRevenue, setCarTypeRevenue] = useState({
+    series: [{ name: "Revenue", data: [] }],
+    options: { chart: { type: "bar" }, xaxis: { categories: [] } }
+  })
+  const [yearFilter, setYearFilter] = useState(String(new Date().getFullYear()))
+  const [yearCarFilter, setYearCarFilter] = useState(String(new Date().getFullYear()))
+  const [bookingList, setBookingList] = useState([])
+  const [lead, setLead] = useState([])
+
+  const getBookingList = async () => {
+    try {
+      const {data} = await axios({
+        method: 'GET',
+        url: '/api/admin/booking-count',
+      })
+      setRideCount([data.rideCounts.upcomingRides,data.rideCounts.todayRides,data.rideCounts.pastRides])
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getBookingRevenue = async () => {
+    try {
+      const {data} = await axios({
+        method: 'GET',
+        url: '/api/admin/booking-revenue',
+        params: {
+          year: yearFilter
+        }
+      })
+      setRevenues({
+        series: [{name: "Revenue", data: data.revenue}],
+        options: { chart: { type: "bar" }, xaxis: { categories: data.monthly } }
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const getBookingRevenueByCar = async () => {
+    try {
+      const {data} = await axios({
+        method: 'GET',
+        url: '/api/admin/car-revenue',
+        params: {
+          year: '2024'
+        }
+      })
+      setCarTypeRevenue({
+        series: [{name: "Revenue", data: data.revenue}],
+        options: { chart: { type: "bar" }, xaxis: { categories: data.carTypes } }
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const getRecentBooking = async () => {
+    try {
+      const { data } = await axios({
+        method: 'GET',
+        url: '/api/admin/recent-booking'
+      })
+      setBookingList(data?.rideBooking)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const getRecentLead = async () => {
+    try {
+      const { data } = await axios({
+        method: 'GET',
+        url: '/api/admin/recent-lead'
+      })
+      setLead(data?.rideBooking)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  useEffect(() => {
+    getBookingRevenueByCar()
+  },[yearCarFilter])
+
+  useEffect(() => {
+    getRecentBooking()
+    getBookingList()
+    getRecentLead()
+  },[])
+  useEffect(() => {
+    getBookingRevenue()
+  },[yearFilter])
 
   return (
-    <div>
-      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Amet iure impedit quis quibusdam, debitis nostrum modi unde quasi voluptatibus repellendus laudantium, consequuntur exercitationem ab ex dignissimos magnam? Perferendis reiciendis ipsa dolorem harum rerum, quas ex maxime corporis molestias iste eum vero inventore odit aut vel praesentium placeat perspiciatis? Assumenda dolore, aspernatur aut veritatis corporis enim non perferendis, reiciendis reprehenderit, sit perspiciatis maxime beatae aliquam possimus dolores cum eos doloremque ea quisquam vel nemo cumque error. Ratione officia ab ipsum consequatur corrupti nam! Nostrum autem eum placeat, eligendi nisi quo quam debitis amet error. Odit temporibus repellendus aliquam! Vitae quo dolorum itaque dicta animi at voluptate voluptatem, sit, nemo rerum, officiis rem eius tempora error totam reprehenderit similique veritatis est soluta alias exercitationem ut? Optio maxime labore accusamus sint, sequi illum voluptate unde omnis quia officia molestiae alias ratione ad fugit minus veniam velit cumque! Facere modi sed dolores voluptatibus, sequi similique itaque nihil eaque magni incidunt quia placeat officiis molestiae autem iusto nobis ex voluptatum ad est ea alias iure atque. Necessitatibus eveniet quia eligendi ut dignissimos ducimus corporis, cupiditate cumque, molestiae impedit esse laboriosam! Repellat amet dignissimos tempora, voluptatem tempore similique, laudantium iusto accusantium excepturi nostrum, a recusandae. Quas, quos facere recusandae accusamus ducimus numquam saepe deserunt voluptatem soluta iusto sed consequatur, ut aspernatur maxime nostrum illo tempora sapiente nihil magnam fugiat veritatis quisquam! Consequuntur neque explicabo, eius similique minus ipsam quisquam quos. Rem ab id laborum quas iusto ad pariatur minima eum laboriosam soluta inventore, dolore dolorem odio facere optio, accusantium corporis suscipit aliquid, aspernatur dolor maiores ea at. Velit vel ipsa ipsam! Maiores officia quas molestias quam harum quis minima vel iste ipsum doloremque similique, porro sint consequatur eius nemo inventore reprehenderit architecto perferendis? Amet, tempora voluptatibus eveniet fugit molestias temporibus omnis, doloremque labore aspernatur a soluta!
+    <div className="dashboard-container">
+      <div className="dashboard-grid">
+        {/* Booking */}
+        <div className="chart-container">
+          <Chart options={{ labels: ["Upcoming", "Today", "Past"] }} series={rideCount} type="pie" width="100%" />
+        </div>
+
+        <div className="chart-container">
+        <div>
+          <select name="year" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+            {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={"year"+i}>{((new Date().getFullYear() + 1) - i)}</option>))}
+          </select>
+          </div>
+          <Chart options={revenues.options} series={revenues.series} type="bar" height={350} />
+        </div>
+
+        <div className="chart-container">
+        <div>
+          <select name="year" value={yearCarFilter} onChange={(e) => setYearCarFilter(e.target.value)}>
+            {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={i}>{((new Date().getFullYear() + 1) - i)}</option>))}
+          </select>
+          </div>
+          <Chart options={carTypeRevenue.options} series={carTypeRevenue.series} type="bar" height={350} />
+        </div>
+
+        {/* Table */}
+        <div className="table-container">
+          Client
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Pickup Date</th>
+                <th>Vehicle Type</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookingList.map((row, i) => (
+                <tr key={"new"+i}>
+                  <td>{row?.userId?.name}</td>
+                  <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
+                  <td>{row?.vehicleId?.vehicleType}</td>
+                  <td>{row.totalPrice}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="table-container">
+          Lead
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Pickup Date</th>
+                <th>Vehicle Type</th>
+                <th>Total Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              {lead.map((row, i) => (
+                <tr key={"new"+i}>
+                  <td>{row?.userId?.name}</td>
+                  <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
+                  <td>{row?.vehicleId?.vehicleType}</td>
+                  <td>{row.totalPrice}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Dashboard;
+

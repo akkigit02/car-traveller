@@ -77,7 +77,23 @@ const CITY_CAB_PRICE = [
       suv: { base: 1300, perKm: 18, min: 2560, max: 2722 }
     }
   ];
-  
+  const MONTH_NAME = {
+    "01": "Jan",
+    "02": "Feb",
+    "03": "March",
+    "04": "April",
+    "05": "May",
+    "06": "June",
+    "07": "July",
+    "08": "Aug",
+    "09": "Sept",
+    "10": "Oct",
+    "11": "Nov",
+    "12": "Dec"
+  };
+
+  const MONTH_NUMBER = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
 
 
 module.exports = {
@@ -85,5 +101,7 @@ module.exports = {
     ADMIN,
     DRIVER,
     CLIENT,
-    CITY_CAB_PRICE
+    CITY_CAB_PRICE,
+    MONTH_NAME,
+    MONTH_NUMBER
 }

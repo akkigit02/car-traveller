@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const AdminManager = require('../managers/admin.manager')
+const DashboardManager = require('../managers/dashboard.manager')
 router.get('/driver', (req, res) => {
 
 })
@@ -35,6 +36,14 @@ router.get('/coupons/:id',AdminManager.getReferralById)
 
 router.get('/leads',AdminManager.getLeads)
 router.put('/leads/:id',AdminManager.confirmCall)
+
+router.get('/booking-count', DashboardManager.getBookingCount)
+router.get('/booking-revenue', DashboardManager.getBookingRevenues)
+
+router.get('/car-revenue', DashboardManager.getBookingRevenuesByCarType)
+
+router.get('/recent-booking', DashboardManager.getRecentBooking)
+router.get('/recent-lead', DashboardManager.getRecentLead)
 
 
 module.exports = router

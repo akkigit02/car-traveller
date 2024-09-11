@@ -27,6 +27,10 @@ const VEHICLE_TYPE = [
     value: "Innova",
   },
   {
+    name: "Innova Crysta",
+    value: "Innova_Crysta",
+  },
+  {
     name: "Traveller",
     value: "Traveller",
   },
@@ -112,10 +116,26 @@ const HOURLY_TYPE = [
   },
 ];
 
+const MONTH_NAME = [
+  { month: "01", name: "Jan" },
+  { month: "02", name: "Feb" },
+  { month: "03", name: "March" },
+  { month: "04", name: "April" },
+  { month: "05", name: "May" },
+  { month: "06", name: "June" },
+  { month: "07", name: "July" },
+  { month: "08", name: "Aug" },
+  { month: "09", name: "Sept" },
+  { month: "10", name: "Oct" },
+  { month: "11", name: "Nov" },
+  { month: "12", name: "Dec" }
+];
+
 module.exports = {
   USER_ROUTE,
   VEHICLE_TYPE,
   FUEL_TYPE,
   TRIP_TYPE,
   HOURLY_TYPE,
+  MONTH_NAME
 };
