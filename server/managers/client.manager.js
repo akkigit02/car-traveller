@@ -125,7 +125,6 @@ const getCars = async (req, res) => {
         const toCity = await CitiesModel.findOne({
           _id: cityIds[i + 1],
         }).lean();
-        // if(i+1 < cityIds.length - 1)
         toDetail.push(toCity)
         const dist = estimateRouteDistance(
           fromCity.latitude,
@@ -139,9 +138,8 @@ const getCars = async (req, res) => {
       }
       distance = totalDistance;
       let numberOfDay = dateDifference(search.pickUpDate, search.returnDate);
-      if (numberOfDay == 0) numberOfDay = 1
       for (let car of cars) {
-        if (distance <= numberOfDay * 300) {
+        if (distance <= numberOfDay * 250) {
           car["totalPrice"] =
             numberOfDay * 300 * car.costPerKm +
             numberOfDay * car.driverAllowance;
@@ -150,7 +148,7 @@ const getCars = async (req, res) => {
           car["totalPrice"] =
             distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
 
-          car['showDistance'] = numberOfDay * 300
+          car['showDistance'] = distance.toFixed(2)
         }
         carList.push(car);
       }
@@ -267,9 +265,8 @@ const getTotalPrice = async (bookingDetails) => {
         bookingDetails?.pickUpDate,
         bookingDetails?.returnDate
       );
-      if (numberOfDay == 0) numberOfDay = 1;
 
-      if (distance <= numberOfDay * 300) {
+      if (distance <= numberOfDay * 250) {
         totalPrice =
           numberOfDay * 300 * car.costPerKm + numberOfDay * car.driverAllowance;
       } else {
@@ -581,9 +578,6 @@ const bookingReshuduled = async (req, res) => {
       let pickupDate = `${bookingDetails.pickupDate.year}-${bookingDetails.pickupDate.month.padStart(2, '0')}-${bookingDetails.pickupDate.date.padStart(2, '0')}`
       let dropDate = `${bookingDetails.dropDate.year}-${bookingDetails.dropDate.month.padStart(2, '0')}-${bookingDetails.dropDate.date.padStart(2, '0')}`
       let oldnumberOfDay = dateDifference(pickupDate, dropDate)
-      if (oldnumberOfDay === 0) {
-        oldnumberOfDay = 1
-      }
       let pricesAdd = (numberOfDay - oldnumberOfDay) * bookingDetails.vehicleId.driverAllowance
       let totalPrice = bookingDetails.totalPrice + pricesAdd
       data = {

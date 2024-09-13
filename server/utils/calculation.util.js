@@ -40,7 +40,7 @@ function haversine(lat1, lon1, lat2, lon2) {
     // Convert time difference from milliseconds to days
     const dayDiff = timeDiff / (1000 * 60 * 60 * 24);
   
-    return dayDiff;
+    return dayDiff + 1;
   }
 
 
