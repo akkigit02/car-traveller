@@ -94,7 +94,7 @@ function AppTopNav() {
             <img src={user}/>
           </button>
           {isOpen && (
-            <div className="dropdown-menu">
+            <div className="dropdown-menu right-0">
               <Link to={`/profile`} className="dropdown-item" onClick={closeDropdown}>
                 <span>Profile</span>
               </Link>

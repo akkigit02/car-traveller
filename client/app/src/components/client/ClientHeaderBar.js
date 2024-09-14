@@ -157,7 +157,7 @@ function TopNavBar() {
                   </div>
                   <div className="content">
                     <p className='mb-0'>Call Anytime</p>
-                    <h6><a href="tel:+919090404005">+91 (909) 040 4005</a></h6>
+                    <h6><a href="tel:+919090404005">+91 9090 404005</a></h6>
                   </div>
                 </div>
                 {userInfo ? <>
@@ -168,7 +168,7 @@ function TopNavBar() {
                     <img src={user}/>
                   </button>
                   {isOpen && (
-                    <div className="dropdown-menu">
+                    <div className="dropdown-menu right-0">
                       <Link to={`/profile`} className="dropdown-item" onClick={closeDropdown}>
                         <span>Profile</span>
                       </Link>

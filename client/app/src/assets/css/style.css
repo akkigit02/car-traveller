@@ -354,6 +354,9 @@ a {
     color: red;
     font-size: 0.9em;
 }
+.right-0{
+    right: 0;
+}
 .scroll-body {
     max-height: calc(100vh - 300px);
     min-height: calc(100vh - 580px);
