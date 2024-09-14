@@ -23,8 +23,8 @@ function AdminRoute() {
               <SideNavBar />
             </div>
           </div>
-          <div className="col-lg-10 col-md-10 col-12">
-            <div className="border rounded shadow p-3 h-100">
+          <div className="col-lg-10 col-md-10 col-12 page-height-admin">
+            <div className="border rounded shadow p-3">
               <Routes>
                 <Route path={`/`} element={<Navigate to="/dashboard" />} exact />
                 <Route path={`/dashboard`} Component={AdminDashboard} exact />

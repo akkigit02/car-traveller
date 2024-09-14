@@ -173,7 +173,7 @@ export default function VehiclePricing() {
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={'add vehicle'}>
         <form onSubmit={handleSubmit(saveVehicle)}>
-          <div className="h-100 scroll-body">
+          <div className="scroll-body">
             <div className="row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputState">Vehicle Type</label>

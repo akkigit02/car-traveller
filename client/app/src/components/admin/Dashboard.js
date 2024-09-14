@@ -114,7 +114,7 @@ const Dashboard = () => {
 
         <div className="chart-container">
         <div>
-          <select name="year" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+          <select className="select-input" name="year" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
             {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={"year"+i}>{((new Date().getFullYear() + 1) - i)}</option>))}
           </select>
           </div>
@@ -123,7 +123,7 @@ const Dashboard = () => {
 
         <div className="chart-container">
         <div>
-          <select name="year" value={yearCarFilter} onChange={(e) => setYearCarFilter(e.target.value)}>
+          <select className="select-input" name="year" value={yearCarFilter} onChange={(e) => setYearCarFilter(e.target.value)}>
             {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={i}>{((new Date().getFullYear() + 1) - i)}</option>))}
           </select>
           </div>
@@ -133,7 +133,7 @@ const Dashboard = () => {
         {/* Table */}
         <div className="table-container">
           Client
-          <table className="dashboard-table">
+          <table className="cstm-table">
             <thead>
               <tr>
                 <th>Name</th>

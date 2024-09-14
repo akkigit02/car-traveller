@@ -122,7 +122,29 @@
 .header-1 .container-fluid {
     padding: 0 60px;
 }
-
+@media only screen and (max-width: 1399px) {
+    .header-1 .container-fluid {
+      padding: 0 40px;
+    }
+  }
+  @media only screen and (max-width: 991px) {
+    .header-1 .container-fluid {
+      padding: 0 30px;
+    }
+  }
+  @media only screen and (max-width: 575px) {
+    .header-1 .container-fluid {
+      padding: 0 15px;
+    }
+  }
+.page-height{
+    height: calc(100vh - 160px);
+    overflow-y: auto;
+}
+.page-height-admin{
+    height: calc(100vh - 160px);
+    overflow-y: auto;
+}
 .header-main .main-menu ul li{
 position: relative;
 list-style: none;
@@ -302,6 +324,61 @@ a {
 .h-100vh{
     height: 100%;
 }
+.book-form-height-2{
+    height: auto !important;
+}
+.pe-sm{
+    padding-left: 0 !important;
+}
+.book-form-height{
+    height: auto !important;
+}
+.container-login{
+    margin: 0 auto !important;
+}
+.dashboard-grid{
+    display: flex !important;
+    flex-direction: column !important;
+}
+.side-nav-h{
+    height: auto !important;
+}
+.page-height-admin{
+    height:auto !important;
+}
+
+
+}
+
+.error{
+    color: red;
+    font-size: 0.9em;
+}
+.scroll-body {
+    height: calc(100vh - 300px);
+    overflow-y: auto;
+}
+
+.inputStyle  {
+    width: 40px;
+    height: 50px;
+    outline: none;
+    text-align: center;
+    color: var(--text);
+    background-color: var(--bg);
+    align-items: center;
+    font-size: 24px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+
+.select-input{
+    border-radius: 4px;
+    padding: 8px 15px;
+    width: 100%;
+    border-color: #ccc;
+    outline: none;
 }
 .car-list-button{
     justify-content: end;

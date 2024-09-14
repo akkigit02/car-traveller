@@ -13,7 +13,7 @@ export default function ClientRoute() {
   return (
     <main className="position-relative h-100vh">
       <ClientHeaderBar />
-      <div className="row mx-0 mt-3">
+      <div className="row mx-0 mt-3 page-height">
         <div className="col-lg-12 col-md-12 col-12">
           <div className="border rounded shadow p-3 h-100">
             <Routes>

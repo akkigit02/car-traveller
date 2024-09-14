@@ -46,7 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const formContainer = document.getElementById('formContainer');
         formContainer.innerHTML = '';
         const parentContainer = document.createElement('div');
-        parentContainer.classList.add('pickup-wrapper', 'wow', 'fadeInUp')
+        parentContainer.classList.add('pickup-wrapper', 'wow', 'fadeInUp-cstm')
         if (type === 'roundTrip') {
             parentContainer.classList.add('pickup-wrapper2','flex-wrap');
         }
