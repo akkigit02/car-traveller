@@ -90,7 +90,7 @@ const Profile = () => {
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Name <span>*</span></label>
             <input
-              className="form-control"
+              className="cstm-select-input"
               {...register('name', {
                 required: 'Name is required',
                 pattern: namePattern
@@ -103,7 +103,7 @@ const Profile = () => {
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Email <span>*</span></label>
             <input
-              className="form-control"
+              className="cstm-select-input"
               {...register('email', {
                 required: 'Email is required',
                 pattern: emailPattern
@@ -116,7 +116,7 @@ const Profile = () => {
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Primary Phone <span>*</span> </label>
             <input
-              className="form-control"
+              className="cstm-select-input"
               {...register('primaryPhone',phoneNumberValidation)}
               placeholder='Enter primary phone'
               disabled={otpSession}
@@ -126,7 +126,7 @@ const Profile = () => {
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Secondary Phone</label>
             <input
-              className="form-control"
+              className="cstm-select-input"
               {...register('secondaryPhone', phoneNumberShortValidation)}
               placeholder='Enter secondary phone'
               disabled={otpSession}
@@ -135,7 +135,7 @@ const Profile = () => {
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label for="session-date">Date of Birth</label>
             <input
-              className="form-control"
+              className="cstm-select-input"
               type="date"
               id="session-date" name="session-date"
               {...register('dateOfBirth')}
@@ -150,7 +150,7 @@ const Profile = () => {
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>Address Line</label>
               <input
-                className="form-control"
+                className="cstm-select-input"
                 {...register('currentAddress.addressLine')}
                 disabled={otpSession}
               />
@@ -158,7 +158,7 @@ const Profile = () => {
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>City</label>
               <input
-                className="form-control"
+                className="cstm-select-input"
                 {...register('currentAddress.city')}
                 placeholder='Enter city'
                 disabled={otpSession}
@@ -166,20 +166,20 @@ const Profile = () => {
             </div>
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>State</label>
-              <input className="form-control" {...register('currentAddress.state')}
+              <input className="cstm-select-input" {...register('currentAddress.state')}
               placeholder='Enter State'
                 disabled={otpSession}
               />
             </div>
             {/* <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>Country</label>
-              <input className="form-control" {...register('currentAddress.country')}
+              <input className="cstm-select-input" {...register('currentAddress.country')}
                 disabled={otpSession}
               />
             </div> */}
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>Pin code</label>
-              <input className="form-control" {...register('currentAddress.zip')}
+              <input className="cstm-select-input" {...register('currentAddress.zip')}
               placeholder='Enter pin code'
                 disabled={otpSession}
               />

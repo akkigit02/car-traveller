@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import Modal from '../Modal';
 import ConfirmationModal from '../common/ConfirmationModal'; // Import the ConfirmationModal component
 import { useForm } from 'react-hook-form';
+import Tooltip from '../Tooltip';
 
 function BookingHistory() {
   const navigate = useNavigate();
@@ -176,20 +177,23 @@ function BookingHistory() {
   return (
     <>
       <div>
-        <div className="mb-3">
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+        <div className='d-flex align-items-center justify-content-between'>
+          <h4>Booking List</h4>
+        <div className="mb-3 col-3">
+          <select className="cstm-select-input" value={filter} onChange={(e) => setFilter(e.target.value)}>
             <option value="all">All</option>
             <option value="past">Past</option>
             <option value="today">Today</option>
             <option value="upcoming">Upcoming</option>
           </select>
         </div>
+        </div>
 
         <InfiniteScroll
           dataLength={bookingList.length}
           next={() => fetchBookingHistory(true, filter)}
           hasMore={hasMore}
-          loader={<h4>Loading...</h4>}
+          loader={<h6>Loading...</h6>}
           endMessage={<p className='py-2'>No more bookings to show.</p>}
         >
           <table className='cstm-table'>
@@ -212,9 +216,12 @@ function BookingHistory() {
                   <td>{item.advancePayment}</td>
                   <td>{item.bookingStatus}</td>
                   <td className='d-flex'>
+                    <Tooltip message={'View Details'} direction='bottom'>
                     <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)}>
                       <i className="fa fa-eye" aria-hidden="true"></i>
                     </button>
+                    </Tooltip>
+                    <Tooltip message={'Reschedule'} direction='bottom'>
                     <button
                       className='icon-btn me-2'
                       onClick={() => resheduleData(item)}
@@ -222,6 +229,8 @@ function BookingHistory() {
                     >
                       <i className="fa fa-retweet" aria-hidden="true"></i>
                     </button>
+                    </Tooltip>
+                    <Tooltip message={'Cancel'} direction='bottom'>
                     <button
                       className='icon-btn'
                       disabled={item.isCancelable}
@@ -229,6 +238,7 @@ function BookingHistory() {
                     >
                       <i className="fa fa-trash" aria-hidden="true"></i>
                     </button>
+                    </Tooltip>
                   </td>
                 </tr>
               ))}
@@ -267,7 +277,7 @@ function BookingHistory() {
                 }
                 <div className="form-group col-lg-6 col-md-6 col-12">
                   <label>Pickup Time</label>
-                  <select {...register('reshedulePickupTime', { required: 'Time is required' })}>
+                  <select className="cstm-select-input" {...register('reshedulePickupTime', { required: 'Time is required' })}>
                     {timeOptions.map((option, index) => (
                       option > new Date().setMinutes(new Date().getMinutes() + 90) && (
                         <option key={index} value={formatDateAndTime(option, 'hh:mm A')}>

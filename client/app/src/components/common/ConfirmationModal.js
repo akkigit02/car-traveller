@@ -1,19 +1,22 @@
 import React from 'react';
+import '../../assets/css/popups.css';
 
 function ConfirmationModal({ isOpen, onClose, onConfirm, message }) {
   if (!isOpen) return null;
 
   return (
-    <div className="confirmation-modal">
-      <div className="modal-content">
+    <div className="popup-overlay1">
+      <div className="popup-content">
         <h4>Confirmation</h4>
-        <p>{message}</p>
+        <p className='py-3'>{message}</p>
         <div className="modal-actions">
-          <button className="btn btn-secondary" onClick={onClose}>Cancel</button>
-          <button className="btn btn-primary" onClick={onConfirm}>Confirm</button>
+          <button className="cstm-btn-trans me-2" onClick={onClose}>Cancel</button>
+          <button className="cstm-btn" onClick={onConfirm}>Confirm</button>
         </div>
       </div>
     </div>
+
+
   );
 }
 

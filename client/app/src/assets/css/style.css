@@ -355,7 +355,8 @@ a {
     font-size: 0.9em;
 }
 .scroll-body {
-    height: calc(100vh - 300px);
+    max-height: calc(100vh - 300px);
+    min-height: calc(100vh - 580px);
     overflow-y: auto;
 }
 

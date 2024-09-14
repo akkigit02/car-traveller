@@ -48,7 +48,7 @@
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  pointer-events: none;
+  /* pointer-events: none; */
 }
 
 .popup-content {
@@ -69,4 +69,9 @@
   border: none;
   font-size: 24px;
   cursor: pointer;
+}
+.modal-actions{
+  display: flex;
+  align-items: center;
+  justify-content: end;
 }
