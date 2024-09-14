@@ -370,12 +370,69 @@ const saveBooking = async (req, res) => {
 
 const getBookingList = async (req, res) => {
   try {
-    const { user, query } = req
-    const bookingList = await RideModel.find({ userId: user._id }, { name: 1, totalPrice: 1, advancePayment: 1, pickupDate: 1, pickupTime: 1, bookingStatus: 1, trip: 1, dropDate: 1 }).sort({ createdOn: 1 }).skip(0).limit(15).lean()
-    res.status(200).send({ list: bookingList });
+      const { user, query } = req;
+      const { filter = 'all', skip = 0, limit = 15 } = query;
+
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const currentMonth = today.getMonth() + 1; // Months are 0-based in JS, so add 1
+      const currentDay = today.getDate();
+
+      // Build the match query based on the filter
+      let matchQuery = {};
+
+      switch (filter) {
+          case 'past':
+              matchQuery = {
+                  $or: [
+                      { "pickupDate.year": { $lt: currentYear } },
+                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": { $lt: currentMonth } }] },
+                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $lt: currentDay } }] }
+                  ]
+              };
+              break;
+          case 'today':
+              matchQuery = {
+                  "pickupDate.year": currentYear,
+                  "pickupDate.month": currentMonth,
+                  "pickupDate.date": currentDay
+              };
+              break;
+          case 'upcoming':
+              matchQuery = {
+                  $or: [
+                      { "pickupDate.year": { $gt: currentYear } },
+                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": { $gt: currentMonth } }] },
+                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $gt: currentDay } }] }
+                  ]
+              };
+              break;
+          default:
+              // No additional filtering for 'all'
+              matchQuery = {};
+              break;
+      }
+
+      // Fetch the bookings with filtering, pagination, and sorting
+      const bookingList = await RideModel.find({ userId: user._id, ...matchQuery }, {
+          name: 1,
+          totalPrice: 1,
+          advancePayment: 1,
+          pickupDate: 1,
+          pickupTime: 1,
+          bookingStatus: 1,
+          trip: 1,
+          dropDate: 1
+      })
+      .sort({ createdOn: 1 })
+      .skip(parseInt(skip, 10))
+      .limit(parseInt(limit, 10))
+      .lean();
+
+      res.status(200).send({ list: bookingList });
   } catch (error) {
-    logger.log('server/managers/client.manager.js-> getBookingList', { error: error })
-    res.status(500).send({ message: 'Server Error' })
+      logger.log('server/managers/client.manager.js-> getBookingList', { error: error });
+      res.status(500).send({ message: 'Server Error' });
   }
 };
 
