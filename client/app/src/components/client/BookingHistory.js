@@ -195,9 +195,10 @@ function BookingHistory() {
             <div className="scroll-body">
               <div className="row m-0">
                 <div className="form-group col-lg-6 col-md-6 col-12">
-                  <label>Pickup Date</label>
+                  <label for="session-date">Pickup Date</label>
                   <input
                     type="date"
+                    id="session-date" name="session-date"
                     {...register("reshedulePickupDate", { required: "Date is required" })}
                     className="cstm-select-input"
                     placeholder="Enter coupon code"
@@ -208,9 +209,10 @@ function BookingHistory() {
                 </div>
                 { tripData?.trip?.tripType === 'roundTrip' &&
                   <div className="form-group col-lg-6 col-md-6 col-12">
-                    <label>Return Date</label>
+                    <label for="session-date">Return Date</label>
                     <input
                       type="date"
+                      id="session-date" name="session-date"
                       {...register("resheduleReturnDate", { required: "Date is required" })}
                       className="cstm-select-input"
                       placeholder="Enter coupon code"

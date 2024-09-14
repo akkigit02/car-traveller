@@ -7,6 +7,7 @@ import Tooltip from "../Tooltip";
 
 export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isViewOpen, setIsViewOpen] = useState(false);
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [vehicleTypes, setVehicleTypes] = useState(VEHICLE_TYPE)
@@ -95,6 +96,14 @@ export default function VehiclePricing() {
     setIsEdit(false);
   };
 
+  const openViewModal = () => {
+    setIsViewOpen(true);
+  };
+
+  const closeViewModal = () => {
+    setIsViewOpen(false);
+  };
+
   const deleteVehiclePrice = async (id) => {
     const isConfirmed = window.confirm("Do you really want to delete?");
     if (!isConfirmed) return;
@@ -135,18 +144,9 @@ export default function VehiclePricing() {
             <th className="">Image</th>
             <th className="">Type</th>
             <th className="">Name</th>
-            <th className="">Similar</th>
             <th className="">Minimum Fare</th>
             <th className="">Cost per km</th>
             <th className="">Cost per hour</th>
-            <th className="">Luggage Carrier Cost</th>
-            <th className="">Additional Charges</th>
-            <th className="">Discount</th>
-            <th className="">Up to Cost per Km</th>
-            <th className="">Up to Cost per Hour</th>
-            <th className="">Capacity</th>
-            <th className="">AC Available</th>
-            <th className="">Driver Allowance</th>
             <th className="">Action</th>
           </tr>
         </thead>
@@ -159,18 +159,9 @@ export default function VehiclePricing() {
                 </td>
                 <td>{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</td>
                 <td>{li.vehicleName}</td>
-                <td>{li?.similar?.join()}</td>
                 <td>{li.minimumFare}</td>
                 <td>{li.costPerKm}</td>
                 <td>{li.costPerHour}</td>
-                <td>{li.laguageCarrierCost}</td>
-                <td>{li.additionalCharges}</td>
-                <td>{li.discount}</td>
-                <td>{li.upToCostPerKm}</td>
-                <td>{li.upToCostPerHour}</td>
-                <td>{`Seats: ${li.capacity.totalNumberOfSeats}, Reserved: ${li.capacity.reservedNumberOfSeats}`}</td>
-                <td>{li.acAvailable ? "Yes" : "No"}</td>
-                <td>{li.driverAllowance}</td>
                 <td className="d-flex align-items-center">
                  <Tooltip message={'Edit'} direction="bottom">
                   <button
@@ -183,6 +174,7 @@ export default function VehiclePricing() {
                   <Tooltip message={'View More'} direction="bottom">
                   <button
                     // onClick={() => deleteVehiclePrice(li._id)}
+                    onClick={openViewModal}
                     className="icon-btn me-2"
                     type="button"
                   >
@@ -460,6 +452,44 @@ export default function VehiclePricing() {
           </button>
           </div>
         </form>
+      </Modal>
+      <Modal isOpen={isViewOpen} onClose={closeViewModal} width={'w-auto'} title="View More Data">
+      <div className="scroll-body">
+      <table className="cstm-table">
+        <thead>
+          <tr>
+          <th className="">Similar</th>
+            <th className="">Luggage Carrier Cost</th>
+            <th className="">Additional Charges</th>
+            <th className="">Discount</th>
+            <th className="">Up to Cost per Km</th>
+            <th className="">Up to Cost per Hour</th>
+            <th className="">Capacity</th>
+            <th className="">AC Available</th>
+            <th className="">Driver Allowance</th>
+          </tr>
+        </thead>
+        {list.length > 0 && (
+          <tbody>
+            {list.map((li, index) => (
+              <tr key={index}>
+                
+                <td>{li?.similar?.join()}</td>
+                <td>{li.laguageCarrierCost}</td>
+                <td>{li.additionalCharges}</td>
+                <td>{li.discount}</td>
+                <td>{li.upToCostPerKm}</td>
+                <td>{li.upToCostPerHour}</td>
+                <td>{`Seats: ${li.capacity.totalNumberOfSeats}, Reserved: ${li.capacity.reservedNumberOfSeats}`}</td>
+                <td>{li.acAvailable ? "Yes" : "No"}</td>
+                <td>{li.driverAllowance}</td>
+                
+              </tr>
+            ))}
+          </tbody>
+        )}
+      </table>
+      </div>
       </Modal>
     </div>
   );

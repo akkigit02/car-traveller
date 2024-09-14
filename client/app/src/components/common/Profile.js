@@ -133,10 +133,11 @@ const Profile = () => {
             />
           </div>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
-            <label>Date of Birth</label>
+            <label for="session-date">Date of Birth</label>
             <input
               className="form-control"
               type="date"
+              id="session-date" name="session-date"
               {...register('dateOfBirth')}
               placeholder='Date of birth'
               disabled={otpSession}

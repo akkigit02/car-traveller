@@ -85,7 +85,7 @@ export default function BookingManagement() {
                 <td>{li.name}</td>
                 <td>{li?.userId?.primaryPhone}</td>
                 <td>{li.pickupCity}</td>
-                <td>{li.dropCity}</td>
+                <td className="text-break">{li.dropCity}</td>
                 <td>{li.pickupLocation}</td>
                 <td>{li.dropoffLocation}</td>
                 <td>{new Date(li.pickupDate).toLocaleDateString()}</td>
@@ -189,9 +189,10 @@ export default function BookingManagement() {
                 )}
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="bookingDate">Booking Date</label> 
+                <label for="session-date" htmlFor="bookingDate">Booking Date</label> 
                 <input
                   type="date"
+                  id="session-date" name="session-date"
                   {...register("bookingDate", { required: 'Booking Date is Required' })}
                   className="cstm-select-input"
                 />
