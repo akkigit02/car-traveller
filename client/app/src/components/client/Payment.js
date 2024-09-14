@@ -39,6 +39,7 @@ function Payment() {
       const { data } = await axios({
         url: `/api/client/booking/${bookingId}`,
       });
+      console.log(data,"====------")
       setBookingDetails(data?.bookingDetails);
       calculatePayablePrice(data?.bookingDetails)
     } catch (error) {
@@ -213,7 +214,8 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12">
-          {bookingDetails?.paymetStatus === 'pending' &&
+          {console.log(bookingDetails?.paymetStatus === 'pending')}
+          {bookingDetails?.paymentStatus === 'pending' &&
             <>
               <div className="mb-5">
                 <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p>
@@ -257,7 +259,7 @@ function Payment() {
               </div>
             </>
           }
-          {bookingDetails.paymentStatus === 'advanced' && bookingDetails.bookingStatus !== 'cancelled' &&
+          {bookingDetails?.paymentStatus === 'advanced' && bookingDetails?.bookingStatus !== 'cancelled' &&
             <div className="mb-5">
               <div className="d-flex mb-3">
 
