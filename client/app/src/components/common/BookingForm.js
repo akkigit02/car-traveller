@@ -24,6 +24,7 @@ function BookingForm() {
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [otp, setOtp] = useState()
+    // const [otp, setOtp] = useState(Array(6).fill(""));
     const [addressSuggestion, setAdressSugeestion] = useState({
         isOpen: false,
         type: '',
@@ -36,6 +37,33 @@ function BookingForm() {
     setIsPopupOpen(false);
     setIsOtpSent(false)
   };
+
+//   const handleChange = (e, index) => {
+//     const value = e.target.value;
+//     const newOtp = [...otp];
+//     if (/^\d*$/.test(value)) {
+//       newOtp[index] = value;
+//       setOtp(newOtp);
+//       if (value.length === 1 && index < 5) {
+//         document.getElementById(`otp-input-${index + 1}`).focus();
+//       }
+//     }
+//   };
+//   const handleKeyDown = (e, index) => {
+//     if (e.key === "Backspace" && otp[index] === "") {
+//       if (index > 0) {
+//         document.getElementById(`otp-input-${index - 1}`).focus();
+//         const newOtp = [...otp];
+//         newOtp[index - 1] = "";
+//         setOtp(newOtp);
+//       }
+//     } else if (e.key === "Backspace") {
+//       const newOtp = [...otp];
+//       newOtp[index] = "";
+//       setOtp(newOtp);
+//     }
+//   };
+
 
 
     const verifyOtp = async () => {
@@ -146,7 +174,7 @@ function BookingForm() {
 
     return (
         <>
-            <div className="row m-0 col-reverse-sm flex-wrap">
+            <div className="row m-0 col-reverse-sm flex-wrap mt-3">
                 <div className="col-lg-4 col-md-4 col-sm-12 pe-0">
                     <div className="car-list-sidebar h-100">
                         <h4 className="title">Booking Form</h4>
@@ -169,7 +197,7 @@ function BookingForm() {
                                     <label>Return Date</label>
                                     <p className='mb-0 desti-details-2'>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
                                 </div>}
-                                <div className='col-lg-6 col-md-6 col-12 pe-0'>
+                                <div className='col-lg-6 col-md-6 col-12 pe-0 pe-sm'>
                                     <label>Time</label>
                                     <p className='mb-0 desti-details-2'>{bookingDetails?.pickUpTime}</p>
                                 </div>
@@ -235,7 +263,7 @@ function BookingForm() {
                                                                 placeholder="Enter First name"
                                                             />
                                                             {errors?.name?.message && (
-                                                                <span>{errors?.name?.message}</span>
+                                                                <span className='error'>{errors?.name?.message}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -252,7 +280,7 @@ function BookingForm() {
                                                                 placeholder="Enter Email "
                                                             />
                                                             {errors?.email?.message && (
-                                                                <span>{errors?.email?.message}</span>
+                                                                <span className='error'>{errors?.email?.message}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -276,7 +304,7 @@ function BookingForm() {
                                                                     placeholder="Enter Phone Number"
                                                                 />
                                                                 {errors?.phoneNumber?.message && (
-                                                                    <span>{errors?.phoneNumber?.message}</span>
+                                                                    <span className='error'>{errors?.phoneNumber?.message}</span>
                                                                 )}
                                                             </div>
                                                         </div>
@@ -304,7 +332,7 @@ function BookingForm() {
                                                                     {addressSuggestion.address.map(ele => (<li onClick={() => setValue('pickupAddress', ele)}><p className='mb-0'>{ele}</p></li>))}
                                                                 </ul>}
                                                             {errors?.pickupAddress?.message && (
-                                                                <span>{errors?.pickupAddress?.message}</span>
+                                                                <span className='error'>{errors?.pickupAddress?.message}</span>
                                                             )}
                                                         </div>
                                                     </div>}
@@ -331,7 +359,7 @@ function BookingForm() {
                                                                     {addressSuggestion.address.map(ele => (<li onClick={() => setValue('dropAddress', ele)}><p className='mb-0'>{ele}</p></li>))}
                                                                 </ul>}
                                                             {errors?.dropAddress?.message && (
-                                                                <span>{errors?.dropAddress?.message}</span>
+                                                                <span className='error'>{errors?.dropAddress?.message}</span>
                                                             )}
                                                         </div>
                                                     </div>}
@@ -352,15 +380,28 @@ function BookingForm() {
             </div >
             {isOtpSent && <div>
                 <Popup isOpen={isPopupOpen} handleClose={togglePopup}>
-                    <h2>Otp <span>*</span> </h2>
-                    <div>
+                    <h5 className='border-bottom pb-2'>Otp <span>*</span> </h5>
+                    <div className='py-3 text-center'>
                         <input className="cstm-input me-3"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                             placeholder="Enter your OTP"
                         />
-                        <button className="cstm-btn-red" onClick={verifyOtp}>verify</button>
+                       {/* {otp.map((digit, index) => (
+                            <input
+                            key={index}
+                            id={`otp-input-${index}`}
+                            className="inputStyle"
+                            value={digit}
+                            onChange={(e) => handleChange(e, index)}
+                            onKeyDown={(e) => handleKeyDown(e, index)}
+                            maxLength={1}
+                            placeholder=" "
+                             type="text"
+                            />
+                        ))} */}
                     </div>
+                      <div className='d-flex justify-content-end'> <button className="cstm-btn-red" onClick={verifyOtp}>verify</button></div> 
                 </Popup>
             </div>}
         </>

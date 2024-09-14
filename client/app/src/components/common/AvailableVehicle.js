@@ -95,8 +95,16 @@ export default function AvailableVehicle() {
                   
                   <div className="mb-0 destination-details"> {bookingDetails?.from?.name}</div>
                   {bookingDetails.type == "Hourly" || <div class="d-flex justify-content-center py-2"><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>}
-                  {bookingDetails?.to?.map((city) => (
-                    <div className="mb-0 destination-details">{city.name}</div>
+                  {/* {bookingDetails?.to?.map((city) => (
+                    <div className="mb-0 destination-details mb-2">{city.name}</div>
+                  ))} */}
+                  {bookingDetails?.to?.map((city, index) => (
+                    <div key={index}>
+                      <div className="mb-0 destination-details mb-2">{city.name}</div>
+                      {bookingDetails?.to?.length > 1 && index > 0 && index < bookingDetails?.to?.length - 1 && (
+                        <div class="d-flex justify-content-center py-2"><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                      )}
+                    </div>
                   ))}
                   
                   

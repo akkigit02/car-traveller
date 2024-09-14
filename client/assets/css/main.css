@@ -2917,17 +2917,17 @@ span {
 .header-1 .container-fluid {
   padding: 0 60px;
 }
-@media (max-width: 1399px) {
+@media only screen and (max-width: 1399px) {
   .header-1 .container-fluid {
     padding: 0 40px;
   }
 }
-@media (max-width: 991px) {
+@media only screen and (max-width: 991px) {
   .header-1 .container-fluid {
     padding: 0 30px;
   }
 }
-@media (max-width: 575px) {
+@media only screen and (max-width: 575px) {
   .header-1 .container-fluid {
     padding: 0 15px;
   }

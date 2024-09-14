@@ -6,7 +6,7 @@ import { setTokenToLocal } from "../../services/Authentication.service";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "../../assets/css/authentication.css"; // Ensure CSS is imported
-import vImg from "../../assets/img/loginimg.png";
+// import vImg from "../../assets/img/loginimg.png";
 import logo from "../../assets/img/logomain.png";
 import OtpVerify from "../common/OtpVerify";
 
@@ -51,11 +51,11 @@ function Login() {
             <section className="sign-in">
                 <div className="container-login">
                     <div className="signin-content">
-                        <div className="signin-image">
+                        {/* <div className="signin-image">
                             <figure>
                                 <img className="w-100 h-100 mt-3" src={vImg} alt="logo-img" />
                             </figure>
-                        </div>
+                        </div> */}
 
                         <div className="signin-form">
                             <div className="w-100 d-flex justify-content-center">

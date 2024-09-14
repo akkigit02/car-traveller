@@ -173,7 +173,7 @@ export default function VehiclePricing() {
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={'add vehicle'}>
         <form onSubmit={handleSubmit(saveVehicle)}>
-          <div className="h-100 scroll-body">
+          <div className="scroll-body">
             <div className="row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputState">Vehicle Type</label>
@@ -266,9 +266,10 @@ export default function VehiclePricing() {
 
             <div className="row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Registration Date</label>
+                <label for="session-date" htmlFor="inputCity">Registration Date</label>
                 <input
                   type="date"
+                  id="session-date" name="session-date"
                   {...register("registrationDate")}
                   className="cstm-select-input"
                   placeholder="Enter additional cost"
@@ -276,18 +277,20 @@ export default function VehiclePricing() {
               </div>
             
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Policy Number</label>
+                <label for="session-date" htmlFor="inputCity">Policy Number</label>
                 <input
                   type="date"
+                  id="session-date" name="session-date"
                   {...register("insurance.policyNumber")}
                   className="cstm-select-input"
                   placeholder="Enter additional cost"
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Insurance Expiration</label>
+                <label for="session-date" htmlFor="inputCity">Insurance Expiration</label>
                 <input
                   type="date"
+                  id="session-date" name="session-date"
                   {...register("insurance.expiryDate")}
                   className="cstm-select-input"
                   placeholder="Enter additional cost"

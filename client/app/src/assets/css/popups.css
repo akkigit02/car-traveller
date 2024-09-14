@@ -18,6 +18,9 @@
     max-width: 90%;
     background: #fff;
   }
+  .w-auto{
+    width: auto;
+  }
 .form-group{
     margin-bottom: 15px;
 }

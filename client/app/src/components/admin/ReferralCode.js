@@ -166,7 +166,7 @@ export default function CouponForm() {
       </table>
   <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Coupon' : 'Add Coupon'}>
   <form onSubmit={handleSubmit(saveCoupon)}>
-    <div className="h-100 scroll-body">
+    <div className="scroll-body">
       <div className="row m-0">
         <div className="form-group col-lg-6 col-md-6 col-12">
           <label>Coupon Code</label>
@@ -219,18 +219,20 @@ export default function CouponForm() {
           {errors?.minPurchaseAmount && <span className="text-danger">{errors.minPurchaseAmount.message}</span>}
         </div>
         <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Start Date</label>
+          <label for="session-date">Start Date</label>
           <input
             type="date"
+            id="session-date" name="session-date"
             {...register("startDate", { required: "Start Date is required" })}
             className="cstm-select-input"
           />
           {errors?.startDate && <span className="text-danger">{errors.startDate.message}</span>}
         </div>
         <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Expiry Date</label>
+          <label for="session-date">Expiry Date</label>
           <input
             type="date"
+            id="session-date" name="session-date"
             {...register("expiryDate", { required: "Expiry Date is required" })}
             className="cstm-select-input"
           />

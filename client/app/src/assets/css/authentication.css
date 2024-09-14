@@ -118,15 +118,22 @@ h2{
 
 .sign-in{
 
-    background: #f8f8f8;
+    /* background: #f8f8f8; */
+    /* background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../img/loginbg.png); */
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../img/carBg.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
     height: 100vh;
     display: flex;
     align-items: center;
+    justify-content: end;
 }
 .container-login{
-    width: 900px;
+    /* width: 900px; */
     background: #fff;
-    margin: 0 auto;
+    margin: 0 70px;
+    /* margin: 0 auto; */
     box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
     -webkit-box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
@@ -139,25 +146,27 @@ h2{
     -ms-border-radius: 20px;
 }
 .signin-content{
-    padding-top: 67px;
-    padding-bottom: 87px;
+    /* padding-top: 67px;
+    padding-bottom: 87px; */
+    padding: 40px;
     display: flex;
 }
 .signin-image{
-    margin-left: 110px;
+    /* margin-left: 110px;
     margin-right: 20px;
-    margin-top: 10px;
+    margin-top: 10px; */
     display: flex;
     align-items: center;
-    width: 50%;
+    /* width: 50%; */
+    width: 100%;
 
     /* border-right: 1px solid #d8d8d8; */
     overflow: hidden;
 }
 .signin-form{
-    margin-right: 90px;
+    /* margin-right: 90px;
     margin-left: 50px;
-    width: 50%;
+    width: 50%; */
     overflow: hidden;
 }
 figure{
