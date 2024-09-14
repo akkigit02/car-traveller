@@ -140,7 +140,6 @@ function BookingForm() {
 
     useEffect(() => {
         if (userInfo) {
-            console.log(userInfo)
             reset({ name: userInfo.name, email: userInfo.email, phoneNumber: userInfo.primaryPhone }, { keepDefaultValues: true })
         }
         if (query) {
@@ -182,9 +181,9 @@ function BookingForm() {
                             <div className='d-flex align-items-center flex-column justify-content-between mb-4'>
                                 <div className='mb-0 destination-details'>{bookingDetails?.from?.name}</div>
                                 {bookingDetails?.to?.map((item, index) => (
-                                    <div className=' w-100'>
-                                    <div className='d-flex justify-content-center py-2'><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
-                                    <div key={index} className='mb-0 destination-details'>{item.name}</div>
+                                    <div className=' w-100' key={index} >
+                                    <div className='d-flex justify-content-center py-2'><i className="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                                    <div className='mb-0 destination-details'>{item.name}</div>
                                     </div>
                                     ))}
                             </div>
@@ -329,7 +328,7 @@ function BookingForm() {
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'pickupAddress' &&
                                                                 <ul className='suggestion-list'>
-                                                                    {addressSuggestion.address.map(ele => (<li onClick={() => setValue('pickupAddress', ele)}><p className='mb-0'>{ele}</p></li>))}
+                                                                    {addressSuggestion.address.map((ele, idx) => (<li onClick={() => setValue('pickupAddress', ele)} key={"add"+idx}><p className='mb-0'>{ele}</p></li>))}
                                                                 </ul>}
                                                             {errors?.pickupAddress?.message && (
                                                                 <span className='error'>{errors?.pickupAddress?.message}</span>
@@ -356,7 +355,7 @@ function BookingForm() {
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'dropAddress' &&
                                                                 <ul className='suggestion-list'>
-                                                                    {addressSuggestion.address.map(ele => (<li onClick={() => setValue('dropAddress', ele)}><p className='mb-0'>{ele}</p></li>))}
+                                                                    {addressSuggestion.address.map((ele, idx) => (<li onClick={() => setValue('dropAddress', ele)} key={"address"+idx} ><p className='mb-0'>{ele}</p></li>))}
                                                                 </ul>}
                                                             {errors?.dropAddress?.message && (
                                                                 <span className='error'>{errors?.dropAddress?.message}</span>
@@ -380,26 +379,13 @@ function BookingForm() {
             </div >
             {isOtpSent && <div>
                 <Popup isOpen={isPopupOpen} handleClose={togglePopup}>
-                    <h5 className='border-bottom pb-2'>Otp <span>*</span> </h5>
+                    <h5 className='border-bottom pb-2'>OTP <span>*</span> </h5>
                     <div className='py-3 text-center'>
                         <input className="cstm-input me-3"
                             value={otp}
                             onChange={(e) => setOtp(e.target.value)}
                             placeholder="Enter your OTP"
                         />
-                       {/* {otp.map((digit, index) => (
-                            <input
-                            key={index}
-                            id={`otp-input-${index}`}
-                            className="inputStyle"
-                            value={digit}
-                            onChange={(e) => handleChange(e, index)}
-                            onKeyDown={(e) => handleKeyDown(e, index)}
-                            maxLength={1}
-                            placeholder=" "
-                             type="text"
-                            />
-                        ))} */}
                     </div>
                       <div className='d-flex justify-content-end'> <button className="cstm-btn-red" onClick={verifyOtp}>verify</button></div> 
                 </Popup>

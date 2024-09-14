@@ -78,7 +78,7 @@ export default function AvailableVehicle() {
     <>
       <div>
         {isLoading ? <div>
-          Loading...
+          <Loader />
         </div> :
         <div className="row m-0 flex-wrap">
           <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
@@ -86,7 +86,7 @@ export default function AvailableVehicle() {
               <div className=" bg-blue d-flex justify-content-between  text-center fw-bold text-light brd_radius-t">
                 <span className="p-3"> {bookingDetails.type || "One Way"}</span>
                 <a href={CLIENT_URL}>
-                    <div className="bg-red p-3 brd_radius-tr text-white"><i class="far fa-edit pe-2"></i>Modify</div>
+                    <div className="bg-red p-3 brd_radius-tr text-white"><i className="far fa-edit pe-2"></i>Modify</div>
                 </a>
               </div>
               <div className="book-form-height-2">
@@ -94,7 +94,7 @@ export default function AvailableVehicle() {
                 <div className="w-100">
                   
                   <div className="mb-0 destination-details"> {bookingDetails?.from?.name}</div>
-                  {bookingDetails.type == "Hourly" || <div class="d-flex justify-content-center py-2"><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>}
+                  {bookingDetails.type == "Hourly" || <div className="d-flex justify-content-center py-2"><i className="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>}
                   {/* {bookingDetails?.to?.map((city) => (
                     <div className="mb-0 destination-details mb-2">{city.name}</div>
                   ))} */}
@@ -102,7 +102,7 @@ export default function AvailableVehicle() {
                     <div key={index}>
                       <div className="mb-0 destination-details mb-2">{city.name}</div>
                       {bookingDetails?.to?.length > 1 && index > 0 && index < bookingDetails?.to?.length - 1 && (
-                        <div class="d-flex justify-content-center py-2"><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                        <div className="d-flex justify-content-center py-2"><i className="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
                       )}
                     </div>
                   ))}
