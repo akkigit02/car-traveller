@@ -855,3 +855,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     position: absolute;
     background: transparent;
 }
+.icon-btn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none; 
+  }

@@ -223,7 +223,7 @@ function BookingHistory() {
                     </Tooltip>
                     <Tooltip message={'Reschedule'} direction='bottom'>
                     <button
-                      className='icon-btn me-2'
+                      className={`icon-btn me-2 ${item.isCancelable ? 'disabled' : ''}`}
                       onClick={() => resheduleData(item)}
                       disabled={item.isCancelable}
                     >
@@ -232,11 +232,11 @@ function BookingHistory() {
                     </Tooltip>
                     <Tooltip message={'Cancel'} direction='bottom'>
                     <button
-                      className='icon-btn'
+                      className={`icon-btn ${item.isCancelable ? 'disabled' : ''}`}
                       disabled={item.isCancelable}
                       onClick={() => handleCancelClick(item._id)}
                     >
-                      <i className="fa fa-trash" aria-hidden="true"></i>
+                      <i className="fa fa-times" aria-hidden="true"></i>
                     </button>
                     </Tooltip>
                   </td>
