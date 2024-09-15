@@ -93,7 +93,6 @@ function BookingHistory() {
 
   const cancelBooking = async (bookingId) => {
     try {
-      console.log(reason,"==---------")
       if(!reason?.length) {
         setReasonError('Reason is required')
         return;
@@ -129,15 +128,15 @@ function BookingHistory() {
     }
   };
 
-  const closeModal = () => {
-    setIsOpen(false);
-  };
-
+  
   const closeConfirmationModal = () => {
     setConfirmationOpen(false);
     setSelectedBookingId(null);
   };
-
+  
+  const closeModal = () => {
+    setIsOpen(false);
+  };
   useEffect(() => {
     fetchBookingHistory(false, filter);
   }, [filter]);
