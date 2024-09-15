@@ -62,12 +62,23 @@ export default function VehiclePricing() {
         method: "get",
         url: `/api/admin/vehicle/${id}`,
       });
-      reset(res.data.price);
+  
+      // Format dates for the form
+      const formattedData = {
+        ...res.data.price,
+        registrationDate: formatDateToDDMMYYYY(res.data.price.registrationDate),
+        puc: formatDateToDDMMYYYY(res.data.price.puc),
+        insuranceExpiryDate: formatDateToDDMMYYYY(res.data.price.insuranceExpiryDate),
+        roadTax: formatDateToDDMMYYYY(res.data.price.roadTax),
+      };
+  
+      reset(formattedData);
       setIsOpen(true);
     } catch (error) {
       console.error(error);
     }
   };
+  
 
   const closeModal = () => {
     reset({});
@@ -87,6 +98,15 @@ export default function VehiclePricing() {
       console.error(error);
     }
   };
+
+  function formatDateToDDMMYYYY(dateString) {
+    const date = new Date(dateString);
+  const year = date.getUTCFullYear();
+  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+  const day = String(date.getUTCDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+  }
 
   return (
     <div>
@@ -116,9 +136,10 @@ export default function VehiclePricing() {
             <th>Mileage</th>
             <th>No of Seat</th>
             <th>Laguage Carrier</th>
-            <th>Registration Date</th>
+            <th>Fitness Date</th>
             <th>Insurance Valide To</th>
-            <th>Policy Number</th>
+            <th>PUC</th>
+            <th>Road Tax</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -134,11 +155,12 @@ export default function VehiclePricing() {
                 {FUEL_TYPE?.find((item) => item.value === li.fuelType)?.name}
               </td>
               <td>{li.mileage}</td>
-              <td>{li.capacity.numberOfSeat}</td>
-              <td>{li.capacity.laguage}</td>
-              <td>{li.registrationDate}</td>
-              <td>{li.insurance.policyNumber}</td>
-              <td>{li.insurance.expiryDate}</td>
+              <td>{li.capacity.totalNumberOfSeats}</td>
+              <td>{li.capacity.luggage ? "Yes": "No"}</td>
+              <td>{formatDateToDDMMYYYY(li.registrationDate)}</td>
+              <td>{formatDateToDDMMYYYY(li.puc)}</td>
+              <td>{formatDateToDDMMYYYY(li.insuranceExpiryDate)}</td>
+              <td>{formatDateToDDMMYYYY(li.roadTax)}</td>
               <td>
                 <ul className="list-inline m-0">
                   <li className="list-inline-item">
@@ -171,7 +193,7 @@ export default function VehiclePricing() {
           ))}
         </tbody>
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal} title={'add vehicle'}>
+      <Modal isOpen={isOpen} onClose={closeModal} title={'Add Vehicle'}>
         <form onSubmit={handleSubmit(saveVehicle)}>
           <div className="scroll-body">
             <div className="row m-0">
@@ -192,7 +214,7 @@ export default function VehiclePricing() {
                   type="number"
                   {...register("modelName")}
                   className="cstm-select-input"
-                  placeholder="Enter minimum fare"
+                  placeholder="Enter Model Name"
                 />
               </div>
             <div className="form-group col-lg-6 col-md-6 col-12">
@@ -202,16 +224,16 @@ export default function VehiclePricing() {
                 {...register("registrationNumber")}
                 className="cstm-select-input"
                 id="inputAddress"
-                placeholder="Enter Cost per km"
+                placeholder="Enter Registration Number"
               />
             </div>
             <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputState">Fuel Type</label>
               <select {...register("fuelType")} className="cstm-select-input">
                 <option value={""}>Choose Type</option>
-                {FUEL_TYPE?.map((vehicle, index) => (
-                  <option key={index} value={vehicle.value}>
-                    {vehicle.name}
+                {FUEL_TYPE?.map((fuel, index) => (
+                  <option key={index} value={fuel.value}>
+                    {fuel.name}
                   </option>
                 ))}
               </select>
@@ -222,26 +244,26 @@ export default function VehiclePricing() {
                   type="number"
                   {...register("mileage")}
                   className="cstm-select-input"
-                  placeholder="Carrier laguage cost"
+                  placeholder="Enter Mileage"
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Number of seat</label>
                 <input
                   type="number"
-                  {...register("capacity.numberOfSeat")}
+                  {...register("capacity.totalNumberOfSeats")}
                   className="cstm-select-input"
-                  placeholder="Enter additional cost"
+                  placeholder="Number of seat"
                 />
               </div>
             </div>
             
               <div className="form-group col-lg-12 col-md-12 col-12">
-                <label htmlFor="inputCity">Language Carrier</label>
+                <label htmlFor="inputCity">Luggage Carrier</label>
                 <div className="form-check">
                   <input
                     type="radio"
-                    {...register("capacity.language")}
+                    {...register("capacity.luggage")}
                     className="form-check-input"
                     id="languageYes"
                     value="yes"
@@ -266,24 +288,24 @@ export default function VehiclePricing() {
 
             <div className="row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label for="session-date" htmlFor="inputCity">Registration Date</label>
+                <label for="session-date" htmlFor="inputCity">Fitness Date</label>
                 <input
                   type="date"
                   id="session-date" name="session-date"
                   {...register("registrationDate")}
                   className="cstm-select-input"
-                  placeholder="Enter additional cost"
+                  placeholder="Enter Fitness Date"
                 />
               </div>
             
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label for="session-date" htmlFor="inputCity">Policy Number</label>
+                <label for="session-date" htmlFor="inputCity">PUC</label>
                 <input
                   type="date"
                   id="session-date" name="session-date"
-                  {...register("insurance.policyNumber")}
+                  {...register("puc")}
                   className="cstm-select-input"
-                  placeholder="Enter additional cost"
+                  placeholder="Enter PUC Date"
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
@@ -291,9 +313,19 @@ export default function VehiclePricing() {
                 <input
                   type="date"
                   id="session-date" name="session-date"
-                  {...register("insurance.expiryDate")}
+                  {...register("insuranceExpiryDate")}
                   className="cstm-select-input"
-                  placeholder="Enter additional cost"
+                  placeholder="Insurance Expiration Date"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label for="session-date" htmlFor="inputCity">Road Tax</label>
+                <input
+                  type="date"
+                  id="session-date" name="session-date"
+                  {...register("roadTax")}
+                  className="cstm-select-input"
+                  placeholder="Road Tax Date"
                 />
               </div>
             </div>

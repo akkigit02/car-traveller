@@ -81,7 +81,7 @@ const FUEL_TYPE = [
     name: "CNG",
     value: "cng",
   },
-][("oneWay", "local", "roundTrip", "airport")];
+];
 const TRIP_TYPE = [
   {
     name: "One Way",
