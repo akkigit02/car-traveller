@@ -70,6 +70,7 @@ export default function VehiclePricing() {
         puc: formatDateToDDMMYYYY(res.data.price.puc),
         insuranceExpiryDate: formatDateToDDMMYYYY(res.data.price.insuranceExpiryDate),
         roadTax: formatDateToDDMMYYYY(res.data.price.roadTax),
+        maintenanceDate:formatDateToDDMMYYYY(res.data.price.maintenanceDate),
       };
   
       reset(formattedData);
@@ -140,6 +141,8 @@ export default function VehiclePricing() {
             <th>Insurance Valide To</th>
             <th>PUC</th>
             <th>Road Tax</th>
+            <th>Maintenance Date</th>
+            <th>Maintenance Reason</th>
             <th>Action</th>
           </tr>
         </thead>
@@ -161,6 +164,9 @@ export default function VehiclePricing() {
               <td>{formatDateToDDMMYYYY(li.puc)}</td>
               <td>{formatDateToDDMMYYYY(li.insuranceExpiryDate)}</td>
               <td>{formatDateToDDMMYYYY(li.roadTax)}</td>
+              <td>{formatDateToDDMMYYYY(li.maintenanceDate)}</td>
+              <td>{li.maintenanceReason}</td>
+              <td></td>
               <td>
                 <ul className="list-inline m-0">
                   <li className="list-inline-item">
@@ -326,6 +332,26 @@ export default function VehiclePricing() {
                   {...register("roadTax")}
                   className="cstm-select-input"
                   placeholder="Road Tax Date"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label for="session-date" htmlFor="inputCity">Maintenance Date</label>
+                <input
+                  type="date"
+                  id="session-date" name="session-date"
+                  {...register("maintenanceDate")}
+                  className="cstm-select-input"
+                  placeholder="Maintenance Date Date"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label for="session-date" htmlFor="inputCity">Maintenance Reason</label>
+                <input
+                  type="text"
+                  id="session-date" name="session-date"
+                  {...register("maintenanceReason")}
+                  className="cstm-select-input"
+                  placeholder="Maintenance Reason"
                 />
               </div>
             </div>

@@ -29,6 +29,8 @@ const vehicleSchema = new mongoose.Schema({
     firstName: { type: String },
     lastName: { type: String },
   },
+  maintenanceDate:{type:Date},
+  maintenanceReason:{type: String}
 });
 
 module.exports = mongoose.model("vehicle", vehicleSchema); 
