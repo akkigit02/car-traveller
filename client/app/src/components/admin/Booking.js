@@ -2,10 +2,19 @@ import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
+import { getDateAndTimeString, isSchedulabel } from "../../utils/format.util";
+import { TRIP_TYPE } from "../../constants/common.constants";
+import Tooltip from "../Tooltip";
+import { toast } from 'react-toastify';
 
 export default function BookingManagement() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
+  const [previewData, setPreviewData] = useState(null)
+  const [reason, setReason] = useState('')
+  const [reasonError, setReasonError] = useState('')
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null); // For confirmation
   const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
     mode: "onChange",
   });
@@ -32,7 +41,11 @@ export default function BookingManagement() {
   const getBookings = async () => {
     try {
       const res = await axios.get("/api/admin/bookings");
-      setList(res.data.bookings);
+      const list = res.data.bookings.map(ele => {
+        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime);
+        return ele;
+      });
+      setList(list);
     } catch (error) {
       console.error(error);
     }
@@ -41,6 +54,50 @@ export default function BookingManagement() {
   const closeModal = () => {
     reset({});
     setIsOpen(false);
+    setPreviewData(null)
+  };
+
+  const cancelBooking = async (bookingId) => {
+    try {
+      if(!reason?.length) {
+        setReasonError('Reason is required')
+        return;
+      }
+
+      if(reason?.length < 50) {
+        setReasonError('Minimum 50 character.')
+        return;
+      }
+      const { data } = await axios.put(`/api/client/cancel-booking/${bookingId}`,{reason});
+
+      setConfirmationOpen(false);
+      setSelectedBookingId(null);
+      setReasonError('')
+      setReason('')
+      
+      if (data?.message)
+        toast.success(data?.message);
+    } catch (error) {
+      console.log(error);
+      toast.error(error?.response?.data?.message || "Something went wrong please try again!");
+    }
+  };
+
+  const handleCancelClick = (bookingId) => {
+    setSelectedBookingId(bookingId);
+    setConfirmationOpen(true);
+  };
+
+  const confirmCancel = async () => {
+    if (selectedBookingId) {
+      await cancelBooking(selectedBookingId);
+    }
+  };
+
+  
+  const closeConfirmationModal = () => {
+    setConfirmationOpen(false);
+    setSelectedBookingId(null);
   };
 
   return (
@@ -65,32 +122,47 @@ export default function BookingManagement() {
       <table className="cstm-table table">
         <thead>
           <tr>
-            <th>Booking Type</th>
             <th>Client Name</th>
+            <th>Booking Type</th>
             <th>Mobile Number</th>
-            <th>Pickup City</th>
-            <th>Drop City</th>
-            <th>Pickup Location</th>
-            <th>Drop Location</th>
             <th>Booking Date</th>
             <th>Total Price</th>
             <th>Advance Payment</th>
+            <th>Action</th>
           </tr>
         </thead>
         {list.length > 0 && (
           <tbody>
             {list.map((li, index) => (
               <tr key={index}>
-                <td>{li.trip.tripType}</td>
                 <td>{li.name}</td>
+                <td>{TRIP_TYPE.find(ele => ele.value === li.trip.tripType)?.name}</td>
                 <td>{li?.userId?.primaryPhone}</td>
-                <td>{li.pickupCity}</td>
-                <td className="text-break">{li.dropCity}</td>
-                <td>{li.pickupLocation}</td>
-                <td>{li.dropoffLocation}</td>
-                <td>{new Date(li.pickupDate).toLocaleDateString()}</td>
+                <td>{getDateAndTimeString(li.pickupDate)}</td>
                 <td>{li.totalPrice}</td>
                 <td>{li.advancePayment}</td>
+                <td className="d-flex align-items-center">
+                  <Tooltip message={'View More'} direction="bottom">
+                  <button
+                    // onClick={() => deleteVehiclePrice(li._id)}
+                    onClick={() => setPreviewData(li)}
+                    className="icon-btn me-2"
+                    type="button"
+                  >
+                    <i className="fa fa-eye"></i>
+                  </button>
+                  </Tooltip>
+                  <Tooltip message={'Cancel'} direction='bottom'>
+                    <button
+                      className={`icon-btn ${li.isCancelable ? 'disabled' : ''}`}
+                      disabled={li.isCancelable}
+                      onClick={() => handleCancelClick(li._id)}
+                    >
+                      <i className="fa fa-times" aria-hidden="true"></i>
+                    </button>
+                    </Tooltip>
+
+                </td>
               </tr>
             ))}
           </tbody>
@@ -244,6 +316,75 @@ export default function BookingManagement() {
           </div>
         </form>
       </Modal>
+
+      {previewData && <Modal isOpen={previewData} onClose={closeModal} title="Booking Detail">
+        <div>
+        <div>
+            <label>Client Name</label>
+            <div>
+              {previewData.name}
+            </div>
+          </div>
+          <div>
+            <label>Pickup Date</label>
+            <div>
+              {getDateAndTimeString(previewData.pickupDate)}
+            </div>
+          </div>
+          {previewData?.trip?.tripType !== 'cityCab' && <div>
+            <label>Pickup City</label>
+            <div>
+              {previewData?.pickUpCity}
+            </div>
+          </div>}
+          <div>
+            <label>Pickup Address</label>
+            <div>
+              {previewData?.pickupLocation}
+            </div>
+          </div>
+          <div>
+            <label>Drop Address</label>
+            <div>
+              {previewData?.dropoffLocation}
+            </div>
+          </div>
+          <div>
+            <label>Total Amount</label>
+            <div>
+              {previewData?.totalPrice}
+            </div>
+          </div>
+          <div>
+            <label>Advance Amount</label>
+            <div>
+              {previewData?.advancePayment}
+            </div>
+          </div>
+        </div>
+      </Modal>}
+
+      {confirmationOpen && <Modal isOpen={confirmationOpen} onClose={closeConfirmationModal} title={'Cancel Booking'}>
+          <div className="row m-0">
+            <div className="form-group col-lg-6 col-md-6 col-12">
+              <label for="session-date">Reason</label>
+              <input
+                type="text"
+                className="cstm-select-input"
+                onChange={(e) => setReason(e.target.value)}
+              />
+              {reasonError?.length > 0 && <span className="text-danger">{reasonError}</span>}
+            </div>
+          </div>
+          <div className="d-flex justify-content-end border-top mt-3 pt-2">
+            <button type="button" className="btn btn-primary" onClick={closeConfirmationModal}>
+                Cancel
+            </button>
+            <button type="button" className="btn btn-primary" onClick={() => confirmCancel()}>
+                Confirm
+            </button>
+          </div>
+        </Modal>}
     </div>
   );
 }

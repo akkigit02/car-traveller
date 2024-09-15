@@ -11,7 +11,7 @@ export default function VehiclePricing() {
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [vehicleTypes, setVehicleTypes] = useState(VEHICLE_TYPE)
-  const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, control, watch,formState: { errors } } = useForm({
     mode: "onChange",
   });
 
@@ -27,7 +27,7 @@ export default function VehiclePricing() {
 
   useEffect(() => {
     getVehiclePrice();
-  }, []);
+  }, [isOpen]);
 
   const saveVehiclePrice = async (data) => {
     try {
@@ -65,14 +65,16 @@ export default function VehiclePricing() {
       const filteredList = VEHICLE_TYPE.filter(
         (vehicle) => !res.data.price.some(dbVehicle => dbVehicle.vehicleType === vehicle.value)
       );
-      setVehicleTypes(filteredList)
+      const list = isEdit ? VEHICLE_TYPE : filteredList
+      setVehicleTypes(list)
     } catch (error) {
       console.error(error);
     }
   };
-
   const getVehiclePriceById = async (id) => {
     try {
+      setIsEdit(true);
+      setIsOpen(true);
       const res = await axios.get(`/api/admin/vehicle-price/${id}`);
       const { price } = res.data;
       reset(price);
@@ -83,8 +85,6 @@ export default function VehiclePricing() {
         distance: item.distance,
         basePrice: item.basePrice,
       })));
-      setIsOpen(true);
-      setIsEdit(true);
     } catch (error) {
       console.error(error);
     }
@@ -153,7 +153,7 @@ export default function VehiclePricing() {
         {list.length > 0 && (
           <tbody>
             {list.map((li, index) => (
-              <tr key={index}>
+              <tr key={"list"+index}>
                 <td>
                   <img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle"/>
                 </td>
@@ -196,16 +196,17 @@ export default function VehiclePricing() {
           </tbody>
         )}
       </table>
-      <Modal isOpen={isOpen} onClose={closeModal} title={'Add Price'}>
+      <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ?  'Edit Price': 'Add Price'}>
         <form onSubmit={handleSubmit(saveVehiclePrice)}>
           <div className="scroll-body">
             <div className="form-row row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputState">Vehicle Type</label>
-                <select {...register("vehicleType", { required: 'Vehicle Type is Required' })} className="cstm-select-input">
+                {watch('vehicleType')}
+                <select {...register("vehicleType", { required: 'Vehicle Type is Required' })} disabled={isEdit} className="cstm-select-input">
                   <option value="">Choose Type</option>
                   {vehicleTypes.map((vehicle, index) => (
-                    <option key={index} value={vehicle.value}>
+                    <option key={"vehicle"+index} value={vehicle.value}>
                       {vehicle.name}
                     </option>
                   ))}
@@ -231,7 +232,7 @@ export default function VehiclePricing() {
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label>Similar</label>
                 {fields.map((item, index) => (
-                  <div key={item.id} className="d-flex align-items-center mb-2">
+                  <div key={"simi"+item.id} className="d-flex align-items-center mb-2">
                     <input
                       type="text"
                       {...register(`similar.${index}.value`, { required: 'This field is required' })}
@@ -384,7 +385,7 @@ export default function VehiclePricing() {
               <div className="form-group col-lg-12 col-md-12 col-12">
                 <label>Hourly Rates</label>
                 {HOURLY_DEFAULT.map((item, index) => (
-                  <div key={item.id} className="d-flex align-items-center mb-2 row  ">
+                  <div key={"hour"+item.id} className="d-flex align-items-center mb-2 row  ">
                     <input
                       type="text"
                       {...register(`hourly.${index}.type`)}

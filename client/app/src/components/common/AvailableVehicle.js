@@ -45,6 +45,8 @@ export default function AvailableVehicle() {
       if (decodedData?.tripType === "hourly") {
         decodedData["hourlyType"] = "8hr80km";
       }
+
+      console.log(decodedData,"======-------")
       setDecodedQuery(decodedData);
     } else window.location.href = CLIENT_URL;
   }, []);
