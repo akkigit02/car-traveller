@@ -45,5 +45,7 @@ router.get('/car-revenue', DashboardManager.getBookingRevenuesByCarType)
 router.get('/recent-booking', DashboardManager.getRecentBooking)
 router.get('/recent-lead', DashboardManager.getRecentLead)
 
+router.get('/users',AdminManager.getUsers)
+router.get('/users/:id',AdminManager.getUserById)
 
 module.exports = router

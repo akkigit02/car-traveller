@@ -296,6 +296,25 @@ const confirmCall = async (req, res) => {
     }
   };
   
+  const getUsers = async (req, res) => {
+    try {
+      const users = await UserModel.find({ 'modules.userType': { $ne: 'ADMIN' } });
+      res.status(200).json({ users });
+    } catch (error) {
+      logger.log('server/managers/admin.manager.js -> getUsers', { error: error });
+      res.status(500).send({ message: 'Server Error' });
+    }
+  };
+
+  const getUserById = async(req,res) => {
+    try {
+        const user = await UserModel.findById(req.params.id);
+        res.status(200).json({ user });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> getUsers', { error: error });
+      res.status(500).send({ message: 'Server Error' });
+    }
+  }
   
 
 module.exports = {
@@ -330,6 +349,9 @@ module.exports = {
     saveReferral,
     
     getLeads,
-    confirmCall
+    confirmCall,
+
+    getUsers,
+    getUserById
 
 }

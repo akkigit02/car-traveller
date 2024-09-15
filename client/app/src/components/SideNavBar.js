@@ -58,6 +58,13 @@ export default function SideNavBar() {
             <i className="fas fa-lock fa-fw me-3"></i>
             <span>Leads</span>
           </Link>
+          <Link
+            to={`/users`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/users` ? 'active' : ''}`}
+          >
+            <i className="fas fa-lock fa-fw me-3"></i>
+            <span>User</span>
+          </Link>
         </div>
       </div>
     </nav>
