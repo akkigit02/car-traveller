@@ -324,8 +324,8 @@ const saveBooking = async (req, res) => {
       vehicleId: body.bookingDetails?.vehicleId,
       userId: user._id,
       pickupDate: {
-        date: new Date(body?.bookingDetails?.pickUpDate).getDate(),
-        month: new Date(body?.bookingDetails?.pickUpDate).getMonth() + 1,
+        date: String(new Date(body?.bookingDetails?.pickUpDate).getDate()).padStart(2, '0'),
+        month: String(new Date(body?.bookingDetails?.pickUpDate).getMonth() + 1).padStart(2, '0'),
         year: new Date(body.bookingDetails?.pickUpDate).getFullYear(),
       },
       pickupTime: body.bookingDetails?.pickUpTime,
@@ -347,8 +347,8 @@ const saveBooking = async (req, res) => {
     }
     if (body?.bookingDetails?.returnDate) {
       bookingData['dropDate'] = {
-        date: new Date(body?.bookingDetails?.returnDate).getDate(),
-        month: new Date(body?.bookingDetails?.returnDate).getMonth() + 1,
+        date: String(new Date(body?.bookingDetails?.returnDate).getDate()).padStart(2, '0'),
+        month: String(new Date(body?.bookingDetails?.returnDate).getMonth() + 1).padStart(2, '0'),
         year: new Date(body?.bookingDetails?.returnDate).getFullYear(),
       }
     }
@@ -580,9 +580,9 @@ const changePaymentStatus = async (req, res) => {
 
 const bookingCancel = async (req, res) => {
   try {
-    const { params } = req
+    const { params, body } = req
     if (!params?.bookingId)
-      return res.status(400).send({ message: 'Bokking Id required' })
+      return res.status(400).send({ message: 'Booking Id required' })
     const bokkingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) })
     const isNotValid = isSchedulabel(bokkingDetails.pickupDate, bokkingDetails.pickupTime)
     if (isNotValid) {
@@ -590,13 +590,14 @@ const bookingCancel = async (req, res) => {
     } else {
       await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
         $set: {
-          rideStatus: 'cancelled'
+          rideStatus: 'cancelled',
+          reason: body?.reason
         }
       })
     }
     // add refund payment
 
-    return res.status(200).send({ message: 'Bokking cancel successfull' })
+    return res.status(200).send({ message: 'Booking cancel successfull' })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingCancel', { error: error })
     res.status(500).send({ message: 'Server Error' })
@@ -607,7 +608,6 @@ const bookingCancel = async (req, res) => {
 const bookingReshuduled = async (req, res) => {
   try {
     const { params, body } = req
-    console.log(body, "=====--------000000")
     const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId', 'driverAllowance')
     if (!bookingDetails) {
       return res.status(400).send({ message: "Booking not found" })

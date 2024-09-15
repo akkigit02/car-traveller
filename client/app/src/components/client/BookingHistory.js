@@ -23,6 +23,8 @@ function BookingHistory() {
   const [tripData, setTripData] = useState(null);
   const [selectedBookingId, setSelectedBookingId] = useState(null); // For confirmation
   const [filter, setFilter] = useState('all');
+  const [reason, setReason] = useState('')
+  const [reasonError, setReasonError] = useState('')
 
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
     mode: "onChange",
@@ -91,7 +93,23 @@ function BookingHistory() {
 
   const cancelBooking = async (bookingId) => {
     try {
-      const { data } = await axios.put(`/api/client/cancel-booking/${bookingId}`);
+      console.log(reason,"==---------")
+      if(!reason?.length) {
+        setReasonError('Reason is required')
+        return;
+      }
+
+      if(reason?.length < 50) {
+        setReasonError('Minimum 50 character.')
+        return;
+      }
+      const { data } = await axios.put(`/api/client/cancel-booking/${bookingId}`,{reason});
+
+      setConfirmationOpen(false);
+      setSelectedBookingId(null);
+      setReasonError('')
+      setReason('')
+      
       if (data?.message)
         toast.success(data?.message);
     } catch (error) {
@@ -108,8 +126,6 @@ function BookingHistory() {
   const confirmCancel = async () => {
     if (selectedBookingId) {
       await cancelBooking(selectedBookingId);
-      setConfirmationOpen(false);
-      setSelectedBookingId(null);
     }
   };
 
@@ -297,13 +313,33 @@ function BookingHistory() {
             </div>
           </form>
         </Modal>
-
-        <ConfirmationModal
+        <Modal isOpen={confirmationOpen} onClose={closeConfirmationModal} title={'Cancel Booking'}>
+          <div className="row m-0">
+            <div className="form-group col-lg-6 col-md-6 col-12">
+              <label for="session-date">Reason</label>
+              <input
+                type="text"
+                className="cstm-select-input"
+                onChange={(e) => setReason(e.target.value)}
+              />
+              {reasonError?.length > 0 && <span className="text-danger">{reasonError}</span>}
+            </div>
+          </div>
+          <div className="d-flex justify-content-end border-top mt-3 pt-2">
+            <button type="button" className="btn btn-primary" onClick={closeConfirmationModal}>
+                Cancel
+            </button>
+            <button type="button" className="btn btn-primary" onClick={() => confirmCancel()}>
+                Confirm
+            </button>
+          </div>
+        </Modal>
+        {/* <ConfirmationModal
           isOpen={confirmationOpen}
           onClose={closeConfirmationModal}
           onConfirm={confirmCancel}
           message="Are you sure you want to cancel this booking?"
-        />
+        /> */}
       </div>
     </>
   );

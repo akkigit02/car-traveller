@@ -3,7 +3,6 @@ import AdminDashboard from "../../components/admin/Dashboard";
 import React from "react";
 import SideNavBar from "../../components/SideNavBar";
 import VehiclePricing from "../../components/admin/VehiclePricing";
-import Demo from "../../components/admin/Demo";
 import Vehicle from "../../components/admin/Vehicle";
 import Booking from "../../components/admin/Booking";
 import AppTopNav from "../../components/AppTopNav";

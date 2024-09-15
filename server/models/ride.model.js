@@ -41,15 +41,16 @@ const rideSchema = new Schema({
     hourlyType: { type: String }
   },
   isLaguageCarrier: { type: Boolean },
-  paymentStatus: { type: String, enum: ["pending","advanced", "completed"], default: 'pending' },
+  paymentStatus: { type: String, enum: ["pending", "advanced", "completed"], default: 'pending' },
   rideStatus: {
     type: String,
-    enum: ["none", "scheduled", "inProgress", "completed", "cancelled",'resheduled'],
+    enum: ["none", "scheduled", "inProgress", "completed", "cancelled", 'resheduled'],
     default: 'none',
   },
+  reason: { type: String },
   isConnected: { type: Boolean, default: false },
-  activity: [{type: Schema.Types.Mixed}]
-},{ timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
+  activity: [{ type: Schema.Types.Mixed }]
+}, { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
 
 // Create a model based on the schema
 const Ride = mongoose.model("ride", rideSchema);
