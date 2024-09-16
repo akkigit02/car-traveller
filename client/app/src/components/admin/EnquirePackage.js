@@ -41,7 +41,7 @@ export default function EnquirePackage() {
           </tr>
         </thead>
         <tbody>
-          {list.length > 0 && list?.map((li, index) => (
+          {list.length > 0 ?  list?.map((li, index) => (
             <tr key={index}>
               <td>{li.name}</td>
               <td>{li.email}</td>
@@ -50,7 +50,16 @@ export default function EnquirePackage() {
               <td>{li.date}</td>
               <td>---</td>
             </tr>
-          ))}
+          ))
+            :
+          // <tr className='no-data'><div className='no-data-content'>sdd</div></tr>
+          <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          
+          }
         </tbody>
       </table>
     </div>

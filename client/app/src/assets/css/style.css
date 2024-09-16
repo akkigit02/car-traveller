@@ -860,3 +860,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     cursor: not-allowed;
     pointer-events: none; 
   }
+  .mxh-300{
+    max-height: 300px;
+  }
+  .no-data{
+    text-align: center;
+  vertical-align: middle;
+    height: calc(100vh - 300px);
+  }
+  .no-data-content{
+    background-image: url(../img/nodata.png);
+    height: 100px;
+    width: 120px;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }

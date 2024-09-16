@@ -167,6 +167,9 @@
     display: flex;
     justify-content: center;
 }
+.search-card ul li span{
+	text-align: center;
+}
 .search-card ul li:first-child{
    border-radius: 6px 0 0 6px;
 }

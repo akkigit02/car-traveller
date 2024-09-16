@@ -318,47 +318,47 @@ export default function BookingManagement() {
       </Modal>
 
       {previewData && <Modal isOpen={previewData} onClose={closeModal} title="Booking Detail">
-        <div>
-        <div>
+        <div className="row m-0">
+        <div className="col-lg-6 col-md-6 col-12">
             <label>Client Name</label>
-            <div>
+            <div className="mb-0 desti-details-2">
               {previewData.name}
             </div>
           </div>
-          <div>
+          <div className="col-lg-6 col-md-6 col-12">
             <label>Pickup Date</label>
-            <div>
+            <div className="mb-0 desti-details-2">
               {getDateAndTimeString(previewData.pickupDate)}
             </div>
           </div>
-          {previewData?.trip?.tripType !== 'cityCab' && <div>
+          {previewData?.trip?.tripType !== 'cityCab' && <div className="col-lg-6 col-md-6 col-12">
             <label>Pickup City</label>
-            <div>
+            <div className="mb-0 desti-details-2">
               {previewData?.pickUpCity}
             </div>
           </div>}
-          <div>
+          <div className="col-lg-6 col-md-6 col-12">
             <label>Pickup Address</label>
-            <div>
+            <div className="mb-0 desti-details-2">
               {previewData?.pickupLocation}
             </div>
           </div>
-          <div>
+          <div className="col-lg-6 col-md-6 col-12">
             <label>Drop Address</label>
-            <div>
-              {previewData?.dropoffLocation}
+            <div className="mb-0 desti-details-2">
+              {previewData?.dropoffLocation ? <> {previewData?.dropoffLocation} </> :'-'}
             </div>
           </div>
-          <div>
+          <div className="col-lg-6 col-md-6 col-12">
             <label>Total Amount</label>
-            <div>
+            <div className="mb-0 desti-details-2">
               {previewData?.totalPrice}
             </div>
           </div>
-          <div>
+          <div className="col-lg-6 col-md-6 col-12">
             <label>Advance Amount</label>
-            <div>
-              {previewData?.advancePayment}
+            <div className="mb-0 desti-details-2">
+             {previewData?.advancePayment ? <> {previewData?.advancePayment} </> :'-'}
             </div>
           </div>
         </div>
@@ -366,21 +366,21 @@ export default function BookingManagement() {
 
       {confirmationOpen && <Modal isOpen={confirmationOpen} onClose={closeConfirmationModal} title={'Cancel Booking'}>
           <div className="row m-0">
-            <div className="form-group col-lg-6 col-md-6 col-12">
+            <div className="form-group col-lg-12 col-md-12 col-12">
               <label for="session-date">Reason</label>
-              <input
-                type="text"
-                className="cstm-select-input"
+              <textarea
+                type="textarea"
+                className="cstm-select-input mxh-300"
                 onChange={(e) => setReason(e.target.value)}
               />
               {reasonError?.length > 0 && <span className="text-danger">{reasonError}</span>}
             </div>
           </div>
           <div className="d-flex justify-content-end border-top mt-3 pt-2">
-            <button type="button" className="btn btn-primary" onClick={closeConfirmationModal}>
+            <button type="button" className="cstm-btn-trans me-2" onClick={closeConfirmationModal}>
                 Cancel
             </button>
-            <button type="button" className="btn btn-primary" onClick={() => confirmCancel()}>
+            <button type="button" className="cstm-btn" onClick={() => confirmCancel()}>
                 Confirm
             </button>
           </div>
