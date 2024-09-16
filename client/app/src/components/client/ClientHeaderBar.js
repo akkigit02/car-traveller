@@ -101,7 +101,7 @@ function TopNavBar() {
               <div className="icon-items">
                 <div className="content">
                   <p>Call Anytime</p>
-                  <h6><a href="tel:+919090404005">+91 (909) 040 4005</a></h6>
+                  <h6><a href="tel:+919090404005">+91 9090 404005</a></h6>
                 </div>
               </div>
             </div>

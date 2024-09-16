@@ -1252,7 +1252,7 @@ span {
     justify-content: initial;
   }
 }
-@media (max-width: 1399px) {
+@media (max-width: 1040px) {
   .pickup-wrapper .pickup-items {
     width: 100%;
   }
@@ -3005,7 +3005,7 @@ span {
   align-items: center;
   gap: 15px;
 }
-@media (max-width: 1399px) {
+@media (max-width: 768px) {
   .header-1 .header-main .header-right .icon-items {
     display: none;
   }

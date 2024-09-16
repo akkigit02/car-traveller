@@ -871,7 +871,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   .no-data-content{
     background-image: url(../img/nodata.png);
     height: 100px;
-    width: 120px;
+    width: 110px;
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

@@ -3,6 +3,7 @@ import Modal from "../Modal";
 import { useForm } from "react-hook-form";
 import { VEHICLE_TYPE, FUEL_TYPE } from "../../constants/common.constants";
 import axios from "axios";
+import Tooltip from "../Tooltip";
 
 export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
@@ -166,13 +167,12 @@ export default function VehiclePricing() {
               <td>{formatDateToDDMMYYYY(li.roadTax)}</td>
               <td>{formatDateToDDMMYYYY(li.maintenanceDate)}</td>
               <td>{li.maintenanceReason}</td>
-              <td></td>
               <td>
-                <ul className="list-inline m-0">
-                  <li className="list-inline-item">
+                <div className="d-flex align-items-center ">
+                  <Tooltip message={'Edit'} direction="bottom">         
                     <button
                       onClick={() => getVehicleById(li._id)}
-                      className="btn btn-success btn-sm rounded-0"
+                      className="icon-btn me-2"
                       type="button"
                       data-toggle="tooltip"
                       data-placement="top"
@@ -180,11 +180,11 @@ export default function VehiclePricing() {
                     >
                       <i className="fa fa-edit"></i>
                     </button>
-                  </li>
-                  <li className="list-inline-item">
+                    </Tooltip>
+                    <Tooltip message={'Delete'} direction="bottom">
                     <button
                       onClick={() => deleteVehicle(li._id)}
-                      className="btn btn-danger btn-sm rounded-0"
+                      className="icon-btn"
                       type="button"
                       data-toggle="tooltip"
                       data-placement="top"
@@ -192,8 +192,8 @@ export default function VehiclePricing() {
                     >
                       <i className="fa fa-trash"></i>
                     </button>
-                  </li>
-                </ul>
+                    </Tooltip>
+                </div>
               </td>
             </tr>
           ))}
