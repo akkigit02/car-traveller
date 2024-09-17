@@ -18,6 +18,7 @@ function Payment() {
     discountAmount: 0,
   })
 
+  const carImg = require('../../assets/img/Group.png');
 
   const calculatePayablePrice = (bookingDetails) => {
     let discountPrice = 0
@@ -39,7 +40,7 @@ function Payment() {
       const { data } = await axios({
         url: `/api/client/booking/${bookingId}`,
       });
-      console.log(data,"====------")
+      console.log(data, "====------")
       setBookingDetails(data?.bookingDetails);
       calculatePayablePrice(data?.bookingDetails)
     } catch (error) {
@@ -119,18 +120,18 @@ function Payment() {
                 <p className="mb-0 destination-details">
                   {bookingDetails?.pickUpCity?.name}
                 </p>
-                {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) && 
-                 
-                 <div>
-                  {bookingDetails?.dropCity?.map((item, index) => (
-                    <div>
-                       <div className='d-flex justify-content-center py-2'><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
-                    <p key={index} className="mb-0 destination-details">
-                      {item.name}
-                    </p>
-                    </div>
-                  ))}
-                </div>}
+                {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) &&
+
+                  <div>
+                    {bookingDetails?.dropCity?.map((item, index) => (
+                      <div>
+                        <div className='d-flex justify-content-center py-2'><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                        <p key={index} className="mb-0 destination-details">
+                          {item.name}
+                        </p>
+                      </div>
+                    ))}
+                  </div>}
               </div>}
               {<div className="mb-4">
                 <p> Pickup Address:- <p className="mb-0 desti-details-2">{bookingDetails?.pickupLocation}</p></p>
@@ -217,9 +218,64 @@ function Payment() {
           {console.log(bookingDetails?.paymetStatus === 'pending')}
           {bookingDetails?.paymentStatus === 'pending' &&
             <>
-              <div className="mb-5">
-                <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p>
-                <div className="d-flex mb-3">
+              <div className="mb-3">
+                {/* <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p> */}
+                <div className="row m-0">
+                  <div className="col-lg-4 col-md-4 col-12 d-flex align-items-center">
+                    <img className="w-100" src={carImg} alt="car-book" />
+                  </div>
+                  <div className="col-lg-8 col-md-8 col-12">
+                    <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
+                    <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
+                      payment gateways, ensuring a smooth and secure transaction process for the customer.</p>
+                    <div className="row m-0">
+                      {[10, 25, 50, 100].map(ele => (
+                        // <div className="col-lg-6 col-md-6 col-12 pe-0">
+                        //   <div className="payment-percentage">
+                        //     <input type="radio" name="advancePayment" value={advancePercentage} checked={advancePercentage === ele} onChange={() => setAdvancePercentage(ele)} >
+                        //     </input>
+                        //     <label className="ps-2">{ele === 100 ? 'Full Payment' : ele + '%'}
+                        //     </label>
+                        //   </div>
+                        // </div>
+                        <div className="col-lg-6 col-md-6 col-12 pe-0">
+                          <div className={`payment-percentage ${advancePercentage === ele ? 'active' : ''}`}>
+                            <label className="d-flex align-items-center p-4">
+                              <input
+                                type="radio"
+                                name="advancePayment"
+                                value={ele} // Update value to match `ele` (not `advancePercentage`)
+                                checked={advancePercentage === ele}
+                                onChange={() => setAdvancePercentage(ele)}
+                              />
+                              <span className="ps-2">{ele === 100 ? 'Full Payment' : ele + '%'}</span>
+                            </label>
+                          </div>
+                        </div>
+
+
+                      ))}
+                    </div>
+                    <div className="d-flex align-items-end justify-content-end pt-2">
+                      <div className="col-md-9">
+                        <label htmlFor="">Coupon</label>
+                        <input className="cstm-select-input" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
+                          setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
+                        }} />
+                        {coupon.error && <p> {coupon.error}</p>}
+                      </div>
+                      {!coupon.isApply ?
+                        <button className="cstm-btn-trans ms-2" onClick={() => applyCopoun(true)}>Apply</button> :
+                        <>
+                          <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
+                        </>}
+                    </div>
+                    {coupon.isApply && <div className="d-flex justify-content-end pt-2">
+                      coupon discount price: {coupon.discountAmount}
+                    </div>}
+                  </div>
+                </div>
+                {/* <div className="d-flex mb-3">
                   {[10, 25, 50, 100].map(ele => (
                     <div className="payment-percentage">
                       <input type="radio" name="advancePayment" value={advancePercentage} checked={advancePercentage === ele} onChange={() => setAdvancePercentage(ele)} >
@@ -228,9 +284,9 @@ function Payment() {
                       </label>
                     </div>
                   ))}
-                </div>
+                </div> */}
 
-                <div className="d-flex align-content-end flex-wrap-reverse form-group">
+                {/* <div className="d-flex align-content-end flex-wrap-reverse form-group">
                   <div className=" col-md-4">
                     <label htmlFor="">Coupon</label>
                     <input className="form-control" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
@@ -245,14 +301,14 @@ function Payment() {
                         coupon discount price: {coupon.discountAmount}
                       </div>
                     </>}
-                </div>
+                </div> */}
               </div>
-              <div className="d-flex flex-column align-items-end pt-5">
+              <div className="d-flex flex-column align-items-end border-top pt-2">
                 <div className="mb-2 font-bold">
-                  Total Payment amount: {payblePrice}
+                  Total Payment amount:<span className="font-22"> &#x20b9;  {payblePrice}</span>
                 </div>
               </div>
-              <div className="d-flex flex-column align-items-end pt-5">
+              <div className="d-flex flex-column align-items-end mb-sm">
                 <button className="cstm-btn" onClick={submitForPayment}>
                   Proceed to pay
                 </button>
@@ -266,7 +322,7 @@ function Payment() {
               </div>
               <div className="d-flex flex-column align-items-end pt-5">
                 <div className="mb-2 font-bold">
-                  Pending Payment amount: {bookingDetails?.payablePrice - ((bookingDetails?.payablePrice * bookingDetails.advancePercent) /100 )}
+                  Pending Payment amount: {bookingDetails?.payablePrice - ((bookingDetails?.payablePrice * bookingDetails.advancePercent) / 100)}
                 </div>
               </div>
               <div className="d-flex flex-column align-items-end pt-5">
