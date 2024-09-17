@@ -11,7 +11,7 @@ import PaymentRedirect from '../../components/client/PaymentRedirect'
 
 export default function ClientRoute() {
   return (
-    <main className="position-relative h-100vh">
+    <main className="position-relative h-100vh-client">
       <ClientHeaderBar />
       <div className="row mx-0 mt-3 page-height">
         <div className="col-lg-12 col-md-12 col-12">

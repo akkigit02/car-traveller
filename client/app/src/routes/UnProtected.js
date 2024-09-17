@@ -19,6 +19,9 @@ function UnProtected() {
         <Route path="/booking/:query" Component={BookingForm} exact />
         <Route path="/*" element={<Navigate to='/login' />} exact />
       </Routes>
+      <footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0">
+        <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
+      </footer>
     </>
 
   )

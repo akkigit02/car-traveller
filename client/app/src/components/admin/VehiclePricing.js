@@ -150,9 +150,8 @@ export default function VehiclePricing() {
             <th className="">Action</th>
           </tr>
         </thead>
-        {list.length > 0 && (
           <tbody>
-            {list.map((li, index) => (
+            {list.length > 0 ? list.map((li, index) => (
               <tr key={"list"+index}>
                 <td>
                   <img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle"/>
@@ -192,9 +191,14 @@ export default function VehiclePricing() {
                   </Tooltip>
                 </td>
               </tr>
-            ))}
+            )):
+            <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          }
           </tbody>
-        )}
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ?  'Edit Price': 'Add Price'}>
         <form onSubmit={handleSubmit(saveVehiclePrice)}>
@@ -470,9 +474,8 @@ export default function VehiclePricing() {
             <th className="">Driver Allowance</th>
           </tr>
         </thead>
-        {list.length > 0 && (
           <tbody>
-            {list.map((li, index) => (
+            {list.length > 0 ? list.map((li, index) => (
               <tr key={index}>
                 
                 <td>{li?.similar?.join()}</td>
@@ -486,9 +489,14 @@ export default function VehiclePricing() {
                 <td>{li.driverAllowance}</td>
                 
               </tr>
-            ))}
+            )):
+            <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          }
           </tbody>
-        )}
       </table>
       </div>
       </Modal>

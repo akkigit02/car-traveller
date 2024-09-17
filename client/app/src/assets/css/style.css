@@ -84,7 +84,7 @@
     height: calc(100vh - 160px);
 }
 .cstm-calHeight{
-    height: calc(100vh - 240px);
+    height: calc(100vh - 155px);
     overflow-y: auto;
     padding-right: 10px;
 }
@@ -402,11 +402,14 @@ a {
     flex-wrap: wrap;
   }
 .book-form-height{
-    height: calc(100vh - 308px);
+    height: calc(100vh - 250px);
     overflow: auto;
 }
+.h-100vh-client{
+    height: 100vh;
+}
 .book-form-height-2{
-    height: calc(100vh - 280px);
+    height: calc(100vh - 210px);
     overflow: auto;
 }
 .border-bottom-blue{

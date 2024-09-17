@@ -148,7 +148,7 @@ export default function VehiclePricing() {
           </tr>
         </thead>
         <tbody>
-          {list?.map((li, index) => (
+          {list.length > 0 ? list?.map((li, index) => (
             <tr key={index}>
               <td>
                 {VEHICLE_TYPE?.find((item) => item.value === li.type)?.name}
@@ -196,7 +196,13 @@ export default function VehiclePricing() {
                 </div>
               </td>
             </tr>
-          ))}
+          )):
+          <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          }
         </tbody>
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={'Add Vehicle'}>

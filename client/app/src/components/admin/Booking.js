@@ -131,9 +131,9 @@ export default function BookingManagement() {
             <th>Action</th>
           </tr>
         </thead>
-        {list.length > 0 && (
+        
           <tbody>
-            {list.map((li, index) => (
+          {list.length > 0 ? list.map((li, index) => (
               <tr key={index}>
                 <td>{li.name}</td>
                 <td>{TRIP_TYPE.find(ele => ele.value === li.trip.tripType)?.name}</td>
@@ -164,9 +164,15 @@ export default function BookingManagement() {
 
                 </td>
               </tr>
-            ))}
+            )):
+            <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          }
           </tbody>
-        )}
+        
       </table></div>
       <Modal isOpen={isOpen} onClose={closeModal} title="Add Booking">
         <form onSubmit={handleSubmit(saveBooking)}>
