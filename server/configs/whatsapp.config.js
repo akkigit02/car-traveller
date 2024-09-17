@@ -102,9 +102,13 @@ const sendWhatsappMessage = async ({ to, message }) => {
         })
         console.log('Message sent successfully:', response.data);
     } catch (error) {
-        console.error('Error sending message:', error.response ? error.response.data : error.message);
+        console.error('Error sending message:',  error);
     }
 }
+// (async ()=>{
+//     await sendWhatsappMessage({to:'917500568681',message:"testing"})
+
+// })()
 // saveQrCode('qr', 'whatsapp/qr/whatsappQr.png')
 module.exports = {
     sendMessage,
