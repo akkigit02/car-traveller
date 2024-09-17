@@ -89,10 +89,11 @@ const sendWhatsappMessage = async ({ to, message }) => {
             content_type: 'text',
             text: message
         };
+        console.log(payload, AUTH_TOKEN)
         const response = await axios({
             url: WHATSAPP_API_URL,
             method: 'POST',
-            data: JSON.stringify(payload),
+            data: payload,
             headers: {
                 'Authkey': AUTH_TOKEN,
                 'accept': 'application/json',
