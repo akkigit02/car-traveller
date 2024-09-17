@@ -1,10 +1,9 @@
 const fileName = 'server/managers/common.manager.js'
 const path = require('path')
 const ObjectId = require('mongoose').Types.ObjectId
-const { sendMessage } = require('../configs/whatsapp.config');
+const { sendWhatsappMessage } = require('../configs/whatsapp.config');
 const UserModel = require("../models/user.model");
 const { generateOTP, generateSecureRandomString } = require('../utils/common.utils');
-const { verifyOtp } = require('./authentication.manager');
 
 const getProfile = async (req, res) => {
   try {
@@ -87,10 +86,10 @@ const updateProfile = async (req, res) => {
   }
 };
 
-const sendWhatsappMessage = async (req, res) => {
+const sendMessage = async (req, res) => {
   try {
     const { body } = req
-    await sendMessage({ to: body.to, message: body.message })
+    await sendWhatsappMessage({ to: body.to, message: body.message })
     res.status(200).send({ message: 'Message Send SuccessFully' })
   } catch (error) {
     logger.log(`${fileName} -> sendWhatsappMessage`, { error: error })
@@ -111,6 +110,6 @@ module.exports = {
   getProfile,
   sendOtp,
   updateProfile,
-  sendWhatsappMessage,
-  getWhatsappImage
+  getWhatsappImage,
+  sendMessage
 };

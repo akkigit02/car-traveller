@@ -78,26 +78,25 @@ const initialize = () => {
 const axios = require('axios');
 
 
-const { WEBHOOK_VERIFY_TOKEN, GRAPH_API_TOKEN } = process.env;
-const sendWhatsappMessage = async () => {
+const { WHATSAPP_API_TOKEN, WHATSAPP_NUMBER } = process.env;
+const sendWhatsappMessage = async ({ to, message }) => {
     try {
-        const FB_API_URL = 'https://graph.facebook.com/v20.0/381529865041952/messages';
-        const AUTH_TOKEN = GRAPH_API_TOKEN;
+        const WHATSAPP_API_URL = 'https://control.msg91.com/api/v5/whatsapp/whatsapp-outbound-message';
+        const AUTH_TOKEN = WHATSAPP_API_TOKEN;
         const payload = {
-            messaging_product: 'whatsapp',
-            to: '919685495640',
-            type: 'text',
-            text: {
-                body: "Heloo  How Are you"
-            },
+            integrated_number: WHATSAPP_NUMBER,
+            recipient_number: to,
+            content_type: 'text',
+            text: message
         };
         const response = await axios({
-            url: FB_API_URL,
+            url: WHATSAPP_API_URL,
             method: 'POST',
             data: JSON.stringify(payload),
             headers: {
-                'Authorization': `Bearer ${AUTH_TOKEN}`,
-                'Content-Type': 'application/json',
+                'Authkey': AUTH_TOKEN,
+                'accept': 'application/json',
+                'content-type': 'application/json'
             },
         })
         console.log('Message sent successfully:', response.data);
@@ -106,7 +105,6 @@ const sendWhatsappMessage = async () => {
     }
 }
 // saveQrCode('qr', 'whatsapp/qr/whatsappQr.png')
-
 module.exports = {
     sendMessage,
     initialize,
