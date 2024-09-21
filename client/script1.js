@@ -371,7 +371,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 let data = await response.json();
-                console.log(data)
                 suggestions = data.address
             } else {
                 response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {

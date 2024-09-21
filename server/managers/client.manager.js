@@ -15,6 +15,7 @@ const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/G
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../configs/phonepe.config');
 const { isSchedulabel } = require('../utils/format.util');
+const { getTotalPrice } = require('../services/calculation.service');
 
 const getCities = async (req, res) => {
   try {
@@ -209,95 +210,6 @@ const getCars = async (req, res) => {
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getCars', { error: error })
     res.status(500).send({ message: 'Server Error' })
-  }
-};
-
-const getTotalPrice = async (bookingDetails) => {
-  try {
-    let totalPrice = 0;
-    let distance = 0;
-    let toDetail = [];
-    let fromDetail = "";
-    const car = await PricingModel.findOne({
-      _id: bookingDetails?.vehicleId,
-    }).lean();
-    if (bookingDetails?.tripType === "oneWay") {
-      let toCity = await CitiesModel.findOne({ _id: bookingDetails.to }).lean();
-      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-      distance = estimateRouteDistance(
-        fromDetail.latitude,
-        fromDetail.longitude,
-        toCity.latitude,
-        toCity.longitude,
-        1.25
-      );
-      toDetail.push(toCity);
-      let metroCityPrice = 1
-      if (!toCity?.isMetroCity) metroCityPrice = 1.75
-
-      totalPrice = distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
-    } else if (bookingDetails?.tripType === "roundTrip") {
-      let cityIds = bookingDetails?.to?.map((vehicle) => vehicle._id);
-      cityIds.unshift(bookingDetails?.from?._id);
-      let totalDistance = 0;
-      for (let i = 0; i < cityIds.length - 1; i++) {
-        const fromCity = await CitiesModel.findOne({ _id: cityIds[i] }).lean();
-        if (i == 0) {
-          fromDetail = fromCity;
-        }
-        const toCity = await CitiesModel.findOne({
-          _id: cityIds[i + 1],
-        }).lean();
-        // if(i+1 < cityIds.length - 1)
-        toDetail.push(toCity);
-        const dist = estimateRouteDistance(
-          fromCity.latitude,
-          fromCity.longitude,
-          toCity.latitude,
-          toCity.longitude,
-          1.25
-        );
-
-        totalDistance += dist;
-      }
-      distance = totalDistance;
-      let numberOfDay = dateDifference(
-        bookingDetails?.pickUpDate,
-        bookingDetails?.returnDate
-      );
-
-      if (distance <= numberOfDay * 250) {
-        totalPrice =
-          numberOfDay * 300 * car.costPerKm + numberOfDay * car.driverAllowance;
-      } else {
-        totalPrice =
-          distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
-      }
-    } else if (bookingDetails?.tripType === "hourly") {
-      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-      let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
-      if (hourlyData) {
-        totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
-        distance = hourlyData?.distance
-      }
-    } else if (bookingDetails?.tripType === 'cityCab') {
-      const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
-      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
-      fromDetail = { name: data.from }
-      toDetail = [{ name: data.to }]
-      if (['Sedan'].includes(car.vehicleType)) {
-        totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
-      } else if (['Hatchback'].includes(car.vehicleType)) {
-        totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * distance
-      } else {
-        totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
-      }
-    }
-
-    return { totalPrice, toDetail, distance: distance?.toFixed(2) };
-  } catch (error) {
-    console.log(error)
   }
 };
 

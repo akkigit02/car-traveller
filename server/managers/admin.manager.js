@@ -5,140 +5,183 @@ const PackageModel = require('../models/packages.model');
 const EnquirePackage = require('../models/enquire.package.model');
 const CouponModel = require('../models/coupon.model');
 const UserModel = require('../models/user.model');
+const { getTotalPrice } = require('../services/calculation.service')
 
 
-const saveVehiclePrice = async(req, res) => {
+const saveVehiclePrice = async (req, res) => {
     try {
         const price = await PricingModel.create(req.body)
-        res.status(201).send({message: 'Vehicle price add successfully!', price})
-    } catch (error) {  
-      logger.log('server/managers/admin.manager.js-> saveVehiclePrice', {error: error})
-      res.status(500).send({ message: 'Server Error' })
+        res.status(201).send({ message: 'Vehicle price add successfully!', price })
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> saveVehiclePrice', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getVehiclePrice = async(req, res) => {
+const getVehiclePrice = async (req, res) => {
     try {
         const price = await PricingModel.find().lean();
-        res.status(200).send({price})
+        res.status(200).send({ price })
     } catch (error) {
-      logger.log('server/managers/admin.manager.js-> getVehiclePrice', {error: error})
-      res.status(500).send({ message: 'Server Error' })
+        logger.log('server/managers/admin.manager.js-> getVehiclePrice', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const updateVehiclePrice = async(req, res) => {
+const updateVehiclePrice = async (req, res) => {
     try {
-        await PricingModel.updateOne({_id: req.body._id}, req.body)
-        res.status(200).send({message: 'Vehicle price update successfully!'})
+        await PricingModel.updateOne({ _id: req.body._id }, req.body)
+        res.status(200).send({ message: 'Vehicle price update successfully!' })
     } catch (error) {
-      logger.log('server/managers/admin.manager.js-> updateVehiclePrice', {error: error})
-      res.status(500).send({ message: 'Server Error' })
+        logger.log('server/managers/admin.manager.js-> updateVehiclePrice', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const deleteVehiclePrice = async(req, res) => {
+const deleteVehiclePrice = async (req, res) => {
     try {
-        await PricingModel.deleteOne({_id: req.params.id})
-        res.status(200).send({message: 'Vehicle price delete successfully!'})
+        await PricingModel.deleteOne({ _id: req.params.id })
+        res.status(200).send({ message: 'Vehicle price delete successfully!' })
     } catch (error) {
-      logger.log('server/managers/admin.manager.js-> deleteVehiclePrice', {error: error})
-      res.status(500).send({ message: 'Server Error' })
+        logger.log('server/managers/admin.manager.js-> deleteVehiclePrice', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getVehiclePriceById = async(req, res) => {
+const getVehiclePriceById = async (req, res) => {
     try {
-       const price = await PricingModel.findOne({_id: req.params.id})
-        res.status(200).send({price})
+        const price = await PricingModel.findOne({ _id: req.params.id })
+        res.status(200).send({ price })
     } catch (error) {
-      logger.log('server/managers/admin.manager.js-> getVehiclePriceById', {error: error})
-      res.status(500).send({ message: 'Server Error' })
+        logger.log('server/managers/admin.manager.js-> getVehiclePriceById', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 /*********************************Vehicle Detail***********************************************************/
-const saveVehicle = async(req, res) => {
+const saveVehicle = async (req, res) => {
     try {
         const price = await VehicleModel.create(req.body)
-        res.status(201).send({message: 'Vehicle add successfully!', price})
+        res.status(201).send({ message: 'Vehicle add successfully!', price })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> saveVehicle', {error: error})
-        res.status(500).send({ message: 'Server Error' })  
+        logger.log('server/managers/admin.manager.js-> saveVehicle', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getVehicle = async(req, res) => {
+const getVehicle = async (req, res) => {
     try {
         const price = await VehicleModel.find().lean();
-        res.status(200).send({price})
+        res.status(200).send({ price })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getVehicle', {error: error})
+        logger.log('server/managers/admin.manager.js-> getVehicle', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const updateVehicle = async(req, res) => {
+const updateVehicle = async (req, res) => {
     try {
-        await VehicleModel.updateOne({_id: req.body._id}, req.body)
-        res.status(200).send({message: 'Vehicle update successfully!'})
+        await VehicleModel.updateOne({ _id: req.body._id }, req.body)
+        res.status(200).send({ message: 'Vehicle update successfully!' })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> updateVehicle', {error: error})
+        logger.log('server/managers/admin.manager.js-> updateVehicle', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const deleteVehicle = async(req, res) => {
+const deleteVehicle = async (req, res) => {
     try {
-        await VehicleModel.deleteOne({_id: req.params.id})
-        res.status(200).send({message: 'Vehicle delete successfully!'})
+        await VehicleModel.deleteOne({ _id: req.params.id })
+        res.status(200).send({ message: 'Vehicle delete successfully!' })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> deleteVehicle', {error: error})
+        logger.log('server/managers/admin.manager.js-> deleteVehicle', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getVehicleById = async(req, res) => {
+const getVehicleById = async (req, res) => {
     try {
-       const price = await VehicleModel.findOne({_id: req.params.id})
-        res.status(200).send({price})
+        const price = await VehicleModel.findOne({ _id: req.params.id })
+        res.status(200).send({ price })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getVehicleById', {error: error})
+        logger.log('server/managers/admin.manager.js-> getVehicleById', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getBookingInfo = async (req,res) => {
+const getBookingInfo = async (req, res) => {
     try {
-        const bookings = await RideModel.find({}).populate('userId','primaryPhone')
-        res.status(200).send({bookings})
+        const bookings = await RideModel.find({}).populate('userId', 'primaryPhone')
+        res.status(200).send({ bookings })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getBookingInfo', {error: error})
+        logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
 const saveBooking = async (req, res) => {
     try {
-        console.log(req.body)
-        const { name,primaryPhone,} = req.body;
-        const rideInfo = req.body;
-        let user = await UserModel.findOne({ primaryPhone});
+        const body = req?.body
+        const { name, primaryPhone, } = req.body;
+        let user = await UserModel.findOne({ primaryPhone });
         if (!user) {
-            user = await UserModel.create({name,primaryPhone,modules: {userType: "CLIENT"} })  
+            user = await UserModel.create({ name, primaryPhone, modules: { userType: "CLIENT" } })
         }
-        rideInfo.userId = user._id
-        rideInfo.trip ={
-            tripType: req.body.bookingType,
-          },
-        rideInfo.bookingStatus = "completed",
-        rideInfo.rideStatus = "scheduled"
-        rideInfo.pickupDate=  {
-            date: new Date(req.body?.bookingDate).getDate(),
-            month: new Date(req.body?.bookingDate).getMonth()+1,
-            year: new Date(req.body?.bookingDate).getFullYear(),
-          }
-        const booking = await RideModel.create(rideInfo);
-        res.status(201).send({ message: 'Booking created successfully', booking });
+
+        let toCityId = body?.dropCityId
+        let dropDate = {
+            date: null,
+            month: null,
+            year: null,
+        }
+        if (body?.bookingType === 'roundTrip') {
+            body?.dropCities.push(body?.pickupCityId)
+            toCityId = body?.dropCities
+            dropDate = {
+                date: String(new Date(body?.returnDate).getDate()).padStart(2, '0'),
+                month: String(new Date(body?.returnDate).getMonth() + 1).padStart(2, '0'),
+                year: new Date(body?.returnDate).getFullYear(),
+            }
+        }
+        let bookingDetails = {
+            tripType: body?.bookingType,
+            from: body?.pickupCityId,
+            to: toCityId,
+            vehicleId: body?.vehicleId,
+            pickUpDate: body?.bookingDate,
+            returnDate: body?.returnDate,
+            hourlyType: body?.hourlyType,
+            pickupCityCab: body?.pickupLocationId,
+            dropCityCab: body?.dropLocationId
+        }
+
+        const booking = await getTotalPrice(bookingDetails)
+        let rideInfo = {
+            name: body?.name,
+            userId: user._id,
+            trip: {
+                tripType: body?.bookingType,
+                hourlyType: body?.hourlyType
+            },
+            rideStatus: "scheduled",
+            source: 'ADMIN',
+            pickupLocation: body?.pickupLocation,
+            dropoffLocation: body?.dropLocation,
+            pickupDate: {
+                date: String(new Date(body?.bookingDate).getDate()).padStart(2, '0'),
+                month: String(new Date(body?.bookingDate).getMonth() + 1).padStart(2, '0'),
+                year: new Date(body?.bookingDate).getFullYear(),
+            },
+            pickupTime: body?.pickupTime,
+            pickUpCity: body?.pickupCityId,
+            dropCity: body?.bookingType === 'roundTrip' ? toCityId : [toCityId],
+            dropDate: dropDate,
+            totalPrice: booking?.totalPrice?.toFixed(2),
+            payablePrice: booking?.totalPrice?.toFixed(2),
+            totalDistance: booking?.distance
+        }
+
+        const info = await RideModel.create(rideInfo);
+        res.status(201).send({ message: 'Booking created successfully', booking: info });
     } catch (error) {
         logger.log('server/managers/admin.manager.js-> saveBooking', { error: error });
         res.status(500).send({ message: 'Server Error' });
@@ -147,62 +190,62 @@ const saveBooking = async (req, res) => {
 
 
 /*********************************Package Detail***********************************************************/
-const savePackage = async(req, res) => {
+const savePackage = async (req, res) => {
     try {
         const package = await PackageModel.create(req.body)
-        res.status(201).send({message: 'Package add successfully!', package})
+        res.status(201).send({ message: 'Package add successfully!', package })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> savePackage', {error: error})
-        res.status(500).send({ message: 'Server Error' })  
+        logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getPackage = async(req, res) => {
+const getPackage = async (req, res) => {
     try {
         const package = await PackageModel.find().lean();
-        res.status(200).send({package})
+        res.status(200).send({ package })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getPackage', {error: error})
+        logger.log('server/managers/admin.manager.js-> getPackage', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const updatePackage = async(req, res) => {
+const updatePackage = async (req, res) => {
     try {
-        await PackageModel.updateOne({_id: req.body._id}, req.body)
-        res.status(200).send({message: 'Package update successfully!'})
+        await PackageModel.updateOne({ _id: req.body._id }, req.body)
+        res.status(200).send({ message: 'Package update successfully!' })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> updatePackage', {error: error})
+        logger.log('server/managers/admin.manager.js-> updatePackage', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const deletePackage = async(req, res) => {
+const deletePackage = async (req, res) => {
     try {
-        await PackageModel.deleteOne({_id: req.params.id})
-        res.status(200).send({message: 'Package delete successfully!'})
+        await PackageModel.deleteOne({ _id: req.params.id })
+        res.status(200).send({ message: 'Package delete successfully!' })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> deletePackage', {error: error})
+        logger.log('server/managers/admin.manager.js-> deletePackage', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getPackageById = async(req, res) => {
+const getPackageById = async (req, res) => {
     try {
-       const package = await PackageModel.findOne({_id: req.params.id})
-        res.status(200).send({package})
+        const package = await PackageModel.findOne({ _id: req.params.id })
+        res.status(200).send({ package })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getPackageById', {error: error})
+        logger.log('server/managers/admin.manager.js-> getPackageById', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
 const getPackageInfo = async () => {
     try {
-        const ride = await RideModel.find({}).populate('passengerId','firstName lastName')
-        res.status(200).send({ride})
+        const ride = await RideModel.find({}).populate('passengerId', 'firstName lastName')
+        res.status(200).send({ ride })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getPackageInfo', {error: error})
+        logger.log('server/managers/admin.manager.js-> getPackageInfo', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
@@ -210,89 +253,88 @@ const getPackageInfo = async () => {
 const getEnquirePackage = async (req, res) => {
     try {
         const packages = await EnquirePackage.find({})
-        res.status(200).send({packages})
+        res.status(200).send({ packages })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getEnquirePackage', {error: error})
+        logger.log('server/managers/admin.manager.js-> getEnquirePackage', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
 /*****************************Referral Code***************************************/
 
-const saveReferral = async(req, res) => {
+const saveReferral = async (req, res) => {
     try {
         const coupon = await CouponModel.create(req.body)
-        res.status(201).send({message: 'Vehicle add successfully!', coupon})
+        res.status(201).send({ message: 'Vehicle add successfully!', coupon })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> saveReferral', {error: error})
-        res.status(500).send({ message: 'Server Error' })  
+        logger.log('server/managers/admin.manager.js-> saveReferral', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getReferral = async(req, res) => {
+const getReferral = async (req, res) => {
     try {
         const coupons = await CouponModel.find().lean();
-        res.status(200).send({coupons})
+        res.status(200).send({ coupons })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getReferral', {error: error})
+        logger.log('server/managers/admin.manager.js-> getReferral', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const updateReferral = async(req, res) => {
+const updateReferral = async (req, res) => {
     try {
-        await CouponModel.updateOne({_id: req.params.id}, req.body)
-        res.status(200).send({message: 'Vehicle update successfully!'})
+        await CouponModel.updateOne({ _id: req.params.id }, req.body)
+        res.status(200).send({ message: 'Vehicle update successfully!' })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> updateReferral', {error: error})
+        logger.log('server/managers/admin.manager.js-> updateReferral', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const deleteReferral = async(req, res) => {
+const deleteReferral = async (req, res) => {
     try {
-        await CouponModel.deleteOne({_id: req.params.id})
-        res.status(200).send({message: 'Vehicle delete successfully!'})
+        await CouponModel.deleteOne({ _id: req.params.id })
+        res.status(200).send({ message: 'Vehicle delete successfully!' })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> deleteReferral', {error: error})
+        logger.log('server/managers/admin.manager.js-> deleteReferral', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getReferralById = async(req, res) => {
+const getReferralById = async (req, res) => {
     try {
-       const coupon = await CouponModel.findOne({_id: req.params.id})
-        res.status(200).send({coupon})
+        const coupon = await CouponModel.findOne({ _id: req.params.id })
+        res.status(200).send({ coupon })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getReferralById', {error: error})
+        logger.log('server/managers/admin.manager.js-> getReferralById', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
 
-const getLeads = async(req,res) =>{
+const getLeads = async (req, res) => {
     try {
         const leads = await RideModel.find({ paymentStatus: "pending" },
-            { _id:1,name: 1,pickupDate: 1,createdOn: 1,isConnected:1}
-          ).populate('userId', 'primaryPhone email').populate('pickUpCity','name').populate('dropCity','name').sort({ createdOn: -1 });
-        res.status(200).send({leads})   
+            { _id: 1, name: 1, pickupDate: 1, createdOn: 1, isConnected: 1 }
+        ).populate('userId', 'primaryPhone email').populate('pickUpCity', 'name').populate('dropCity', 'name').sort({ createdOn: -1 });
+        res.status(200).send({ leads })
     } catch (error) {
-       logger.log('server/managers/admin.manager.js-> getLeads', {error: error})
-       res.status(500).send({ message: 'Server Error' })  
+        logger.log('server/managers/admin.manager.js-> getLeads', { error: error })
+        res.status(500).send({ message: 'Server Error' })
     }
 }
 
 const confirmCall = async (req, res) => {
     try {
-      const id = req.params.id;
-      console.log('ID:',id)
-      if (!id) {
-        return res.status(400).send({ message: 'Invalid ID' });
-      }
-      await RideModel.updateOne({ _id: id }, { isConnected: true });
-      res.status(200).send({ message: 'Lead marked as called' });
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).send({ message: 'Invalid ID' });
+        }
+        await RideModel.updateOne({ _id: id }, { isConnected: true });
+        res.status(200).send({ message: 'Lead marked as called' });
     } catch (error) {
-      logger.log('server/managers/admin.manager.js -> confirmCall', { error: error });
-      res.status(500).send({ message: 'Server Error' });
+        logger.log('server/managers/admin.manager.js -> confirmCall', { error: error });
+        res.status(500).send({ message: 'Server Error' });
     }
   };
   
@@ -316,6 +358,42 @@ const confirmCall = async (req, res) => {
     }
   }
   
+  const getVehicleByBookingType = async (req, res) => {
+    try {
+        const type = req?.params?.type;
+        const vehicleList = await PricingModel.find({}, { vehicleType: 1, _id: 1 })
+        let vehicle = []
+        if (type === 'cityCab') {
+            vehicle = vehicleList.filter(li => ['Hatchback', 'Sedan', 'SUV'].includes(li.vehicleType))
+        } else {
+            vehicle = vehicleList.filter(li => !['Hatchback'].includes(li.vehicleType))
+        }
+
+        res.status(200).send({ vehicleList: vehicle });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> getVehicleByBookingType', { error: error });
+        res.status(500).send({ message: 'Server Error' });
+    }
+}
+
+const confirmBooking = async (req, res) => {
+    try {
+        const id = req?.params?.id
+        const body = req?.body
+
+        const booking = await RideModel.findOne({ _id: id}, { totalPrice: 1, payablePrice: 1})
+
+        const advancePercent = (body?.advanceAmount/booking?.payablePrice) * 100;
+        await RideModel.updateOne({ _id: id}, {
+            advancePercent: advancePercent?.toFixed(2),
+            paymentStatus: advanced
+        })
+        res.status(200).send({ message: 'Booking Confirm!' });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> confirmBooking', { error: error });
+        res.status(500).send({ message: 'Server Error' });
+    }
+}
 
 module.exports = {
     saveVehiclePrice,
@@ -323,7 +401,7 @@ module.exports = {
     updateVehiclePrice,
     deleteVehiclePrice,
     getVehiclePriceById,
-    
+
     saveVehicle,
     getVehicle,
     updateVehicle,
@@ -347,11 +425,13 @@ module.exports = {
     updateReferral,
     getReferral,
     saveReferral,
-    
+
     getLeads,
     confirmCall,
 
     getUsers,
-    getUserById
+    getUserById,
+    getVehicleByBookingType,
+    confirmBooking
 
 }
