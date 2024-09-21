@@ -657,12 +657,14 @@ background: #68a5ff8c;
 .hour-nav > div:last-child{
     border-right: none;
     }
-
+.modal-dropdown .suggestion-list {
+    height: 200px !important;
+}
 .suggestion-list {
     position: absolute;
     width: 100%;
     border: 1px solid #2d344a;
-    height: 300px;
+    height: 280px;
     overflow: auto;
     background: #dae6f9;
     border-radius: 8px;

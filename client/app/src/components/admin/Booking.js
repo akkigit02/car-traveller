@@ -369,7 +369,7 @@ export default function BookingManagement() {
           )}
         </table></div>
       <Modal isOpen={isOpen} onClose={closeModal} title="Add Booking">
-        <form onSubmit={handleSubmit(saveBooking)}>
+        <form onSubmit={handleSubmit(saveBooking)} className="modal-dropdown">
           <div className="scroll-body">
             <div className="form-row row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
@@ -439,7 +439,7 @@ export default function BookingManagement() {
                 )}
               </div>
               {watch('bookingType') !== 'cityCab' && <>
-                <div className="form-group col-lg-6 col-md-6 col-12">
+                <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
                   <label htmlFor="pickupCity">Pickup City</label>
                   <input
                     type="text"
@@ -453,12 +453,13 @@ export default function BookingManagement() {
                   {errors?.pickupCity && (
                     <span className="text-danger">{errors.pickupCity.message}</span>
                   )}
-                </div>
-                {citiesData.type === 'pickupCity' &&
+                  {citiesData.type === 'pickupCity' &&
                   <ul className='suggestion-list'>
                     {citiesData.cities.map((ele, idx) => (<li onClick={() => { setValue('pickupCity', ele.city_name); setCitiesData(old => ({ ...old, pickupCityId: ele._id })) }} key={"pickUp" + idx} ><p className='mb-0'>{ele?.city_name}</p></li>))}
                   </ul>}
-                {watch('bookingType') === 'oneWay' && <div className="form-group col-lg-6 col-md-6 col-12">
+                </div>
+                
+                {watch('bookingType') === 'oneWay' && <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
                   <label htmlFor="dropCity">Drop City</label>
                   <input
                     type="text"
@@ -472,13 +473,15 @@ export default function BookingManagement() {
                   {errors?.dropCity && (
                     <span className="text-danger">{errors.dropCity.message}</span>
                   )}
-                </div>}
-                {citiesData.type === 'dropCity' &&
+                  {citiesData.type === 'dropCity' &&
                   <ul className='suggestion-list'>
                     {citiesData.cities.map((ele, idx) => (<li onClick={() => { setValue('dropCity', ele.city_name); setCitiesData(old => ({ ...old, dropCityId: ele._id })) }} key={"dropCi" + idx} ><p className='mb-0'>{ele?.city_name}</p></li>))}
                   </ul>}
+                </div>
+                }
+                
                 {watch('bookingType') === 'roundTrip' && fields.map((field, index) => (
-                  <div className="form-group col-lg-6 col-md-6 col-12" key={field.id}>
+                  <div className="form-group col-lg-6 col-md-6 col-12 position-relative" key={field.id}>
                     <label htmlFor={`dropCities.${index}.dropCity`}>Drop City {index + 1}</label>
                     <input
                       type="text"
@@ -513,7 +516,7 @@ export default function BookingManagement() {
                 ))}
 
               </>}
-              {(watch('pickupCity') || watch('bookingType') === 'cityCab') && <div className="form-group col-lg-6 col-md-6 col-12">
+              {(watch('pickupCity') || watch('bookingType') === 'cityCab') && <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
                 <label htmlFor="pickupLocation">Pickup Location</label>
                 <input
                   type="text"
@@ -527,14 +530,15 @@ export default function BookingManagement() {
                 {errors?.pickupLocation && (
                   <span className="text-danger">{errors.pickupLocation.message}</span>
                 )}
-              </div>}
-
-              {suggestions.type === 'pickupLocation' &&
+                {suggestions.type === 'pickupLocation' &&
                 <ul className='suggestion-list'>
                   {suggestions.addresses.map((ele, idx) => (<li onClick={() => { setValue('pickupLocation', ele.address); setSuggestions(old => ({ ...old, pickupLocationId: ele.placeId })) }} key={"pickUpLo" + idx} ><p className='mb-0'>{ele?.address}</p></li>))}
                 </ul>}
+              </div>}
 
-              {(['cityCab', 'oneWay'].includes(watch('bookingType')) || watch('dropCity')) && <div className="form-group col-lg-6 col-md-6 col-12">
+              
+
+              {(['cityCab', 'oneWay'].includes(watch('bookingType')) || watch('dropCity')) && <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
                 <label htmlFor="dropLocation">Drop Location</label>
                 <input
                   type="text"
@@ -548,11 +552,12 @@ export default function BookingManagement() {
                 {errors?.dropLocation && (
                   <span className="text-danger">{errors.dropLocation.message}</span>
                 )}
-              </div>}
-              {suggestions.type === 'dropLocation' &&
+                {suggestions.type === 'dropLocation' &&
                 <ul className='suggestion-list'>
                   {suggestions.addresses.map((ele, idx) => (<li onClick={() => { setValue('dropLocation', ele.address); setSuggestions(old => ({ ...old, dropLocationId: ele.placeId })) }} key={"dropLocation" + idx} ><p className='mb-0'>{ele?.address}</p></li>))}
                 </ul>}
+              </div>}
+              
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label for="session-date" htmlFor="bookingDate">Booking Date</label>
                 <input
