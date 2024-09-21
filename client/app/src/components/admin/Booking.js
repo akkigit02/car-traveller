@@ -597,7 +597,7 @@ export default function BookingManagement() {
           </div>
           <div className="d-flex justify-content-end pt-2">
             <button type="submit" className="cstm-btn">
-              Save
+              Proceed
             </button>
           </div>
         </form>
