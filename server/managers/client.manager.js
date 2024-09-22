@@ -20,12 +20,16 @@ const { getTotalPrice } = require('../services/calculation.service');
 const getCities = async (req, res) => {
   try {
     const search = req?.query?.search;
+    let match = { isMetroCity: true }
+    if (search?.trim()) {
+      match = { city_name: { $regex: search, $options: "i" } }
+    }
     const cities = await CitiesModel.aggregate([
       {
         $addFields: { city_name: { $concat: ["$name", ", ", "$state_name"] } },
       },
       {
-        $match: { city_name: { $regex: search, $options: "i" } },
+        $match: match,
       },
       { $limit: 15 },
     ]);
@@ -71,7 +75,7 @@ const getCars = async (req, res) => {
     let carList = [];
     let hourlyCarDetails = []
     if (['cityCab'].includes(search?.tripType)) {
-      cars = cars.filter(vehicle => !['Traveller','Innova','Innova_Crysta'].includes(vehicle.vehicleType))
+      cars = cars.filter(vehicle => !['Traveller', 'Innova', 'Innova_Crysta'].includes(vehicle.vehicleType))
     } else {
       cars = cars.filter(vehicle => !['Hatchback'].includes(vehicle.vehicleType))
     }
@@ -92,7 +96,7 @@ const getCars = async (req, res) => {
 
       for (let car of cars) {
         let extra = 1
-        if(car.vehicleType === 'Traveller') {
+        if (car.vehicleType === 'Traveller') {
           extra = 2
         }
         car["totalPrice"] =
@@ -100,7 +104,7 @@ const getCars = async (req, res) => {
 
         car['showDistance'] = distance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
-        car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
         car['costPerKm'] = car.costPerKmOneWay
         carList.push(car);
       }
@@ -159,7 +163,7 @@ const getCars = async (req, res) => {
           car['showDistance'] = distance.toFixed(2)
         }
         car['showPrice'] = car?.totalPrice
-        car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
         car['costPerKm'] = car.costPerKmRoundTrip
         carList.push(car);
       }
@@ -173,7 +177,7 @@ const getCars = async (req, res) => {
           distance = hourlyData?.distance
           car['showDistance'] = distance?.toFixed(2);
           car['showPrice'] = car?.totalPrice
-          car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
+          car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
           carList.push(car);
         }
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
@@ -195,7 +199,7 @@ const getCars = async (req, res) => {
         }
         car['showDistance'] = distance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
-        car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
         carList.push(car);
       }
     }
@@ -296,69 +300,69 @@ const saveBooking = async (req, res) => {
 
 const getBookingList = async (req, res) => {
   try {
-      const { user, query } = req;
-      const { filter = 'all', skip = 0, limit = 15 } = query;
+    const { user, query } = req;
+    const { filter = 'all', skip = 0, limit = 15 } = query;
 
-      const today = new Date();
-      const currentYear = today.getFullYear();
-      const currentMonth = today.getMonth() + 1; // Months are 0-based in JS, so add 1
-      const currentDay = today.getDate();
+    const today = new Date();
+    const currentYear = today.getFullYear();
+    const currentMonth = today.getMonth() + 1; // Months are 0-based in JS, so add 1
+    const currentDay = today.getDate();
 
-      // Build the match query based on the filter
-      let matchQuery = {};
+    // Build the match query based on the filter
+    let matchQuery = {};
 
-      switch (filter) {
-          case 'past':
-              matchQuery = {
-                  $or: [
-                      { "pickupDate.year": { $lt: currentYear } },
-                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": { $lt: currentMonth } }] },
-                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $lt: currentDay } }] }
-                  ]
-              };
-              break;
-          case 'today':
-              matchQuery = {
-                  "pickupDate.year": currentYear,
-                  "pickupDate.month": currentMonth,
-                  "pickupDate.date": currentDay
-              };
-              break;
-          case 'upcoming':
-              matchQuery = {
-                  $or: [
-                      { "pickupDate.year": { $gt: currentYear } },
-                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": { $gt: currentMonth } }] },
-                      { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $gt: currentDay } }] }
-                  ]
-              };
-              break;
-          default:
-              // No additional filtering for 'all'
-              matchQuery = {};
-              break;
-      }
+    switch (filter) {
+      case 'past':
+        matchQuery = {
+          $or: [
+            { "pickupDate.year": { $lt: currentYear } },
+            { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": { $lt: currentMonth } }] },
+            { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $lt: currentDay } }] }
+          ]
+        };
+        break;
+      case 'today':
+        matchQuery = {
+          "pickupDate.year": currentYear,
+          "pickupDate.month": currentMonth,
+          "pickupDate.date": currentDay
+        };
+        break;
+      case 'upcoming':
+        matchQuery = {
+          $or: [
+            { "pickupDate.year": { $gt: currentYear } },
+            { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": { $gt: currentMonth } }] },
+            { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $gt: currentDay } }] }
+          ]
+        };
+        break;
+      default:
+        // No additional filtering for 'all'
+        matchQuery = {};
+        break;
+    }
 
-      // Fetch the bookings with filtering, pagination, and sorting
-      const bookingList = await RideModel.find({ userId: user._id, ...matchQuery }, {
-          name: 1,
-          totalPrice: 1,
-          advancePayment: 1,
-          pickupDate: 1,
-          pickupTime: 1,
-          bookingStatus: 1,
-          trip: 1,
-          dropDate: 1
-      })
+    // Fetch the bookings with filtering, pagination, and sorting
+    const bookingList = await RideModel.find({ userId: user._id, ...matchQuery }, {
+      name: 1,
+      totalPrice: 1,
+      advancePayment: 1,
+      pickupDate: 1,
+      pickupTime: 1,
+      bookingStatus: 1,
+      trip: 1,
+      dropDate: 1
+    })
       .sort({ createdOn: 1 })
       .skip(parseInt(skip, 10))
       .limit(parseInt(limit, 10))
       .lean();
 
-      res.status(200).send({ list: bookingList });
+    res.status(200).send({ list: bookingList });
   } catch (error) {
-      logger.log('server/managers/client.manager.js-> getBookingList', { error: error });
-      res.status(500).send({ message: 'Server Error' });
+    logger.log('server/managers/client.manager.js-> getBookingList', { error: error });
+    res.status(500).send({ message: 'Server Error' });
   }
 };
 
