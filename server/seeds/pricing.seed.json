@@ -8,14 +8,15 @@
     "upToCostPerKm": 12,
     "upToCostPerHour": 120,
     "capacity": {
-      "totalNumberOfSeats": 4,
+      "totalNumberOfSeats": 5,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
     "acAvailable": true,
     "baseFare": 0,
     "discount": 2,
-    "costPerKm": 13,
+    "costPerKmOneWay": 15,
+    "costPerKmRoundTrip": 13,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
     "minimumFare": 600,
@@ -48,14 +49,15 @@
     "upToCostPerKm": 12,
     "upToCostPerHour": 120,
     "capacity": {
-      "totalNumberOfSeats": 4,
+      "totalNumberOfSeats": 5,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
     "acAvailable": true,
     "baseFare": 0,
     "discount": 2,
-    "costPerKm": 13,
+    "costPerKmOneWay": 15,
+    "costPerKmRoundTrip": 13,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
     "minimumFare": 600,
@@ -66,7 +68,6 @@
       "hour": 8,
       "distance": 80,
       "basePrice": 2399,
-      "costPerKm": 12,
       "costPerHour": 120
     },{
       "type": "10hr100km",
@@ -88,14 +89,15 @@
     "upToCostPerKm": 15,
     "upToCostPerHour": 150,
     "capacity": {
-      "totalNumberOfSeats": 6,
+      "totalNumberOfSeats": 7,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
     "acAvailable": true,
     "baseFare": 0,
     "discount": 2,
-    "costPerKm": 16,
+    "costPerKmOneWay": 18,
+    "costPerKmRoundTrip": 16,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
     "minimumFare": 600,
@@ -125,14 +127,15 @@
     "upToCostPerKm": 18,
     "upToCostPerHour": 180,
     "capacity": {
-      "totalNumberOfSeats": 6,
+      "totalNumberOfSeats": 7,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
     "acAvailable": true,
     "baseFare": 0,
     "discount": 2,
-    "costPerKm": 19,
+    "costPerKmOneWay": 21,
+    "costPerKmRoundTrip": 19,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
     "minimumFare": 600,
@@ -162,14 +165,15 @@
     "upToCostPerKm": 20,
     "upToCostPerHour": 200,
     "capacity": {
-      "totalNumberOfSeats": 7,
+      "totalNumberOfSeats": 8,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
     "acAvailable": true,
     "baseFare": 0,
     "discount": 2,
-    "costPerKm": 21,
+    "costPerKmOneWay": 23,
+    "costPerKmRoundTrip": 21,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
     "minimumFare": 600,
@@ -199,14 +203,15 @@
     "upToCostPerKm": 24,
     "upToCostPerHour": 480,
     "capacity": {
-      "totalNumberOfSeats": 13,
+      "totalNumberOfSeats": 14,
       "reservedNumberOfSeats": 1,
       "description": ""
     },
     "acAvailable": true,
     "baseFare": 0,
     "discount": 2,
-    "costPerKm": 24,
+    "costPerKmOneWay": 26,
+    "costPerKmRoundTrip": 24,
     "costPerHour": 180,
     "laguageCarrierCost": 0,
     "minimumFare": 600,
@@ -217,6 +222,16 @@
       "hour": 8,
       "distance": 80,
       "basePrice": 7099
+    },{
+      "type": "10hr100km",
+      "hour": 10,
+      "distance": 100,
+      "basePrice": 8599
+    },{
+      "type": "12hr120km",
+      "hour": 12,
+      "distance": 120,
+      "basePrice": 9999
     }
   ]
 }

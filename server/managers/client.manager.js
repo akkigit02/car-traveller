@@ -71,7 +71,7 @@ const getCars = async (req, res) => {
     let carList = [];
     let hourlyCarDetails = []
     if (['cityCab'].includes(search?.tripType)) {
-      cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
+      cars = cars.filter(vehicle => !['Traveller','Innova','Innova_Crysta'].includes(vehicle.vehicleType))
     } else {
       cars = cars.filter(vehicle => !['Hatchback'].includes(vehicle.vehicleType))
     }
@@ -91,10 +91,17 @@ const getCars = async (req, res) => {
       if (!toCity?.isMetroCity) metroCityPrice = 1.75
 
       for (let car of cars) {
+        let extra = 1
+        if(car.vehicleType === 'Traveller') {
+          extra = 2
+        }
         car["totalPrice"] =
-          distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
+          distance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
 
         car['showDistance'] = distance?.toFixed(2);
+        car['showPrice'] = car?.totalPrice
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
+        car['costPerKm'] = car.costPerKmOneWay
         carList.push(car);
       }
     } else if (search?.tripType === "roundTrip") {
@@ -142,15 +149,18 @@ const getCars = async (req, res) => {
       for (let car of cars) {
         if (distance <= numberOfDay * 250) {
           car["totalPrice"] =
-            numberOfDay * 300 * car.costPerKm +
+            numberOfDay * 300 * car.costPerKmRoundTrip +
             numberOfDay * car.driverAllowance;
           car['showDistance'] = numberOfDay * 250
         } else {
           car["totalPrice"] =
-            distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
+            distance * car.costPerKmRoundTrip + numberOfDay * car.driverAllowance || 0;
 
           car['showDistance'] = distance.toFixed(2)
         }
+        car['showPrice'] = car?.totalPrice
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
+        car['costPerKm'] = car.costPerKmRoundTrip
         carList.push(car);
       }
     } else if (search?.tripType === "hourly") {
@@ -162,6 +172,8 @@ const getCars = async (req, res) => {
           car["hour"] = hourlyData.hour
           distance = hourlyData?.distance
           car['showDistance'] = distance?.toFixed(2);
+          car['showPrice'] = car?.totalPrice
+          car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
           carList.push(car);
         }
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
@@ -182,6 +194,8 @@ const getCars = async (req, res) => {
           car["totalPrice"] = priceInfo.suv.base + priceInfo.suv.perKm * distance
         }
         car['showDistance'] = distance?.toFixed(2);
+        car['showPrice'] = car?.totalPrice
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice*car?.discount)/100
         carList.push(car);
       }
     }

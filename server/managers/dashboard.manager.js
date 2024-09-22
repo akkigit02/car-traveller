@@ -57,7 +57,7 @@ const getBookingCount = async (req, res) => {
         pastRides: result[0].pastRides[0] ? result[0].pastRides[0].count : 0,
         todayRides: result[0].todayRides[0] ? result[0].todayRides[0].count : 0,
       };
-  
+      console.log(rideCounts,"======--------")
       res.status(200).send({rideCounts})
     } catch (error) {
       logger.log('server\managers\dashboard.manager.js -> getBookingCount', { error: error })

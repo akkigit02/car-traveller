@@ -11,6 +11,7 @@ export default function VehiclePricing() {
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [vehicleTypes, setVehicleTypes] = useState(VEHICLE_TYPE)
+  const [isModalLoding, setIsModalLoading] = useState(false)
   const { register, handleSubmit, reset, setValue, control, watch,formState: { errors } } = useForm({
     mode: "onChange",
   });
@@ -26,8 +27,8 @@ export default function VehiclePricing() {
   });
 
   useEffect(() => {
-    getVehiclePrice();
-  }, [isOpen]);
+      getVehiclePrice(false);
+  }, []);
 
   const saveVehiclePrice = async (data) => {
     try {
@@ -60,23 +61,26 @@ export default function VehiclePricing() {
 
   const getVehiclePrice = async () => {
     try {
+      setIsModalLoading(true)
       const res = await axios.get("/api/admin/vehicle-price");
       setList(res.data.price);
       const filteredList = VEHICLE_TYPE.filter(
         (vehicle) => !res.data.price.some(dbVehicle => dbVehicle.vehicleType === vehicle.value)
       );
-      const list = isEdit ? VEHICLE_TYPE : filteredList
-      setVehicleTypes(list)
+      setVehicleTypes(filteredList)
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsModalLoading(false)
     }
   };
   const getVehiclePriceById = async (id) => {
     try {
-      setIsEdit(true);
+      setIsModalLoading(true)
       setIsOpen(true);
       const res = await axios.get(`/api/admin/vehicle-price/${id}`);
       const { price } = res.data;
+      setIsEdit(true);
       reset(price);
       setValue('similar', price.similar.map(value => ({ value })));
       setValue('hourly', price.hourly.map(item => ({
@@ -87,6 +91,8 @@ export default function VehiclePricing() {
       })));
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsModalLoading(false)
     }
   };
 
@@ -193,7 +199,7 @@ export default function VehiclePricing() {
               </tr>
             )):
             <tr className='no-data'>
-            <td colspan="100%">
+            <td colSpan="100%">
               <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
             </td>
           </tr>
@@ -201,15 +207,14 @@ export default function VehiclePricing() {
           </tbody>
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ?  'Edit Price': 'Add Price'}>
-        <form onSubmit={handleSubmit(saveVehiclePrice)}>
+        {isModalLoding ? <div className="loader"></div> : <form onSubmit={handleSubmit(saveVehiclePrice)}>
           <div className="scroll-body">
             <div className="form-row row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputState">Vehicle Type</label>
-                {watch('vehicleType')}
+                <label htmlFor="inputState">Vehicle Type *</label>
                 <select {...register("vehicleType", { required: 'Vehicle Type is Required' })} disabled={isEdit} className="cstm-select-input">
                   <option value="">Choose Type</option>
-                  {vehicleTypes.map((vehicle, index) => (
+                  {(isEdit ? VEHICLE_TYPE : vehicleTypes).map((vehicle, index) => (
                     <option key={"vehicle"+index} value={vehicle.value}>
                       {vehicle.name}
                     </option>
@@ -220,7 +225,7 @@ export default function VehiclePricing() {
                 )}
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputPassword4">Vehicle Name</label>
+                <label htmlFor="inputPassword4">Vehicle Name *</label>
                 <input
                   type="text"
                   {...register("vehicleName", { required: 'Vehicle Name is Required' })}
@@ -236,7 +241,7 @@ export default function VehiclePricing() {
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label>Similar</label>
                 {fields.map((item, index) => (
-                  <div key={"simi"+item.id} className="d-flex align-items-center mb-2">
+                  <div key={"simi"+index} className="d-flex align-items-center mb-2">
                     <input
                       type="text"
                       {...register(`similar.${index}.value`, { required: 'This field is required' })}
@@ -262,7 +267,7 @@ export default function VehiclePricing() {
               </div>
 
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputPassword4">Image Url</label>
+                <label htmlFor="inputPassword4">Image Url *</label>
                 <input
                   type="text"
                   {...register("vehicleImageUrl")}
@@ -271,7 +276,7 @@ export default function VehiclePricing() {
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputPassword4">Minimum Fare</label>
+                <label htmlFor="inputPassword4">Minimum Fare *</label>
                 <input
                   type="number"
                   {...register("minimumFare", { required: 'Minimum Fare is Required' })}
@@ -282,7 +287,7 @@ export default function VehiclePricing() {
                   <span className="text-danger">{errors.minimumFare.message}</span>
                 )}
               </div>
-            <div className="form-group col-lg-6 col-md-6 col-12">
+            {/* <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputAddress">Cost per km</label>
               <input
                 type="number"
@@ -293,9 +298,33 @@ export default function VehiclePricing() {
               {errors?.costPerKm && (
                 <span className="text-danger">{errors.costPerKm.message}</span>
               )}
+            </div> */}
+            <div className="form-group col-lg-6 col-md-6 col-12">
+              <label htmlFor="inputAddress">Cost per km(One Way) *</label>
+              <input
+                type="number"
+                {...register("costPerKmOneWay", { required: 'Cost Per Km is Required' })}
+                className="cstm-select-input"
+                placeholder="Enter cost per km"
+              />
+              {errors?.costPerKmOneWay && (
+                <span className="text-danger">{errors.costPerKmOneWay.message}</span>
+              )}
             </div>
             <div className="form-group col-lg-6 col-md-6 col-12">
-              <label htmlFor="inputAddress2">Cost per hour</label>
+              <label htmlFor="inputAddress">Cost per km(Round Trip)*</label>
+              <input
+                type="number"
+                {...register("costPerKmRoundTrip", { required: 'Cost Per Km is Required' })}
+                className="cstm-select-input"
+                placeholder="Enter cost per km"
+              />
+              {errors?.costPerKmRoundTrip && (
+                <span className="text-danger">{errors.costPerKmRoundTrip.message}</span>
+              )}
+            </div>
+            <div className="form-group col-lg-6 col-md-6 col-12">
+              <label htmlFor="inputAddress2">Cost per hour *</label>
               <input
                 type="number"
                 {...register("costPerHour", { required: 'Cost Per Hour is Required' })}
@@ -306,7 +335,7 @@ export default function VehiclePricing() {
                 <span className="text-danger">{errors.costPerHour.message}</span>
               )}
             </div>
-              <div className="form-group col-lg-6 col-md-6 col-12">
+              {/* <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Carrier Luggage Charges</label>
                 <input
                   type="number"
@@ -317,8 +346,8 @@ export default function VehiclePricing() {
                 {errors?.laguageCarrierCost && (
                   <span className="text-danger">{errors.laguageCarrierCost.message}</span>
                 )}
-              </div>
-              <div className="form-group col-lg-6 col-md-6 col-12">
+              </div> */}
+              {/* <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Additional Charges</label>
                 <input
                   type="number"
@@ -329,9 +358,9 @@ export default function VehiclePricing() {
                 {errors?.additionalCharges && (
                   <span className="text-danger">{errors.additionalCharges.message}</span>
                 )}
-              </div>
+              </div> */}
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Discount</label>
+                <label htmlFor="inputCity">Discount *</label>
                 <input
                   type="number"
                   {...register("discount")}
@@ -340,7 +369,7 @@ export default function VehiclePricing() {
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Up to Cost per Km</label>
+                <label htmlFor="inputCity">Up to Cost per Km *</label>
                 <input
                   type="number"
                   {...register("upToCostPerKm")}
@@ -349,7 +378,7 @@ export default function VehiclePricing() {
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Up to Cost per Hour</label>
+                <label htmlFor="inputCity">Up to Cost per Hour *</label>
                 <input
                   type="number"
                   {...register("upToCostPerHour")}
@@ -358,7 +387,7 @@ export default function VehiclePricing() {
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Total Number of Seats</label>
+                <label htmlFor="inputCity">Total Number of Seats *</label>
                 <input
                   type="number"
                   {...register("capacity.totalNumberOfSeats", { required: 'Total Number of Seats is Required' })}
@@ -370,12 +399,21 @@ export default function VehiclePricing() {
                 )}
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Reserved Number of Seats</label>
+                <label htmlFor="inputCity">Reserved Number of Seats *</label>
                 <input
                   type="number"
                   {...register("capacity.reservedNumberOfSeats")}
                   className="cstm-select-input"
                   placeholder="Enter reserved number of seats"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputCity">Driver Allowance *</label>
+                <input
+                  type="number"
+                  {...register("driverAllowance")}
+                  className="cstm-select-input"
+                  placeholder="Enter driver allowance"
                 />
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
@@ -387,9 +425,9 @@ export default function VehiclePricing() {
                 </select>
               </div>
               <div className="form-group col-lg-12 col-md-12 col-12">
-                <label>Hourly Rates</label>
+                <label>Hourly Rates *</label>
                 {HOURLY_DEFAULT.map((item, index) => (
-                  <div key={"hour"+item.id} className="d-flex align-items-center mb-2 row  ">
+                  <div key={"hour"+index} className="d-flex align-items-center mb-2 row  ">
                     <input
                       type="text"
                       {...register(`hourly.${index}.type`)}
@@ -400,7 +438,7 @@ export default function VehiclePricing() {
                       hidden
                     />
                     <div className="form-group col-lg-4 col-md-4 col-12">
-                    <label htmlFor="">Time (Hour)</label>
+                    <label htmlFor="">Time (Hour) *</label>
                     <input
                       type="number"
                       {...register(`hourly.${index}.hour`)}
@@ -411,7 +449,7 @@ export default function VehiclePricing() {
                     />
                     </div>
                     <div className="form-group col-lg-4 col-md-4 col-12">
-                    <label htmlFor="">Distance (Km)</label>
+                    <label htmlFor="">Distance (Km) *</label>
                     <input
                       type="number"
                       {...register(`hourly.${index}.distance`)}
@@ -422,7 +460,7 @@ export default function VehiclePricing() {
                     />
                     </div>
                     <div className="form-group col-lg-4 col-md-4 col-12">
-                    <label htmlFor="">Price</label>
+                    <label htmlFor="">Price *</label>
                     <input
                       type="number"
                       {...register(`hourly.${index}.basePrice`, {
@@ -440,15 +478,6 @@ export default function VehiclePricing() {
                   </div>
                 ))}
               </div>
-              <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Driver Allowance</label>
-                <input
-                  type="number"
-                  {...register("driverAllowance")}
-                  className="cstm-select-input"
-                  placeholder="Enter driver allowance"
-                />
-              </div>
             </div>
             
             </div>
@@ -456,7 +485,7 @@ export default function VehiclePricing() {
             {isEdit ? "Update" : "Save"}
           </button>
           </div>
-        </form>
+        </form> }
       </Modal>
       <Modal isOpen={isViewOpen} onClose={closeViewModal} width={'w-auto'} title="View More Data">
       <div className="scroll-body">
@@ -476,7 +505,7 @@ export default function VehiclePricing() {
         </thead>
           <tbody>
             {list.length > 0 ? list.map((li, index) => (
-              <tr key={index}>
+              <tr key={'listing'+index}>
                 
                 <td>{li?.similar?.join()}</td>
                 <td>{li.laguageCarrierCost}</td>
@@ -491,7 +520,7 @@ export default function VehiclePricing() {
               </tr>
             )):
             <tr className='no-data'>
-            <td colspan="100%">
+            <td colSpan="100%">
               <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
             </td>
           </tr>
