@@ -308,13 +308,13 @@ const getBookingList = async (req, res) => {
     const { filter = 'all', skip = 0, limit = 15 } = query;
 
     const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1; // Months are 0-based in JS, so add 1
-    const currentDay = today.getDate();
+    const currentYear = String(today.getFullYear());
+    const currentMonth = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JS, so add 1
+    const currentDay = String(today.getDate()).padStart(2, '0');
 
     // Build the match query based on the filter
     let matchQuery = {};
-
+    console.log(filter)
     switch (filter) {
       case 'past':
         matchQuery = {
