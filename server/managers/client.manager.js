@@ -105,6 +105,7 @@ const getCars = async (req, res) => {
         car['showDistance'] = distance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
         car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
         car['costPerKm'] = car.costPerKmOneWay
         carList.push(car);
       }
@@ -164,6 +165,7 @@ const getCars = async (req, res) => {
         }
         car['showPrice'] = car?.totalPrice
         car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
         car['costPerKm'] = car.costPerKmRoundTrip
         carList.push(car);
       }
@@ -178,6 +180,7 @@ const getCars = async (req, res) => {
           car['showDistance'] = distance?.toFixed(2);
           car['showPrice'] = car?.totalPrice
           car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+          car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
           carList.push(car);
         }
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
@@ -200,6 +203,7 @@ const getCars = async (req, res) => {
         car['showDistance'] = distance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
         car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
         carList.push(car);
       }
     }
