@@ -314,7 +314,6 @@ const getBookingList = async (req, res) => {
 
     // Build the match query based on the filter
     let matchQuery = {};
-    console.log(filter)
     switch (filter) {
       case 'past':
         matchQuery = {
