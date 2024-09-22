@@ -5,7 +5,8 @@ const PackageModel = require('../models/packages.model');
 const EnquirePackage = require('../models/enquire.package.model');
 const CouponModel = require('../models/coupon.model');
 const UserModel = require('../models/user.model');
-const { getTotalPrice } = require('../services/calculation.service')
+const { getTotalPrice } = require('../services/calculation.service');
+const CitiesModel = require('../models/cities.model');
 
 
 const saveVehiclePrice = async (req, res) => {
@@ -122,6 +123,13 @@ const saveBooking = async (req, res) => {
     try {
         const body = req?.body
         const { name, primaryPhone, } = req.body;
+
+        const pickUpCity = await CitiesModel.findOne({_id: body?.pickupCityId}, {isMetroCity: 1});
+
+        if(pickUpCity && !pickUpCity?.isMetroCity) {
+            return res.status(400).send({ message: 'Please select metro city!'});
+        }
+
         let user = await UserModel.findOne({ primaryPhone });
         if (!user) {
             user = await UserModel.create({ name, primaryPhone, modules: { userType: "CLIENT" } })
