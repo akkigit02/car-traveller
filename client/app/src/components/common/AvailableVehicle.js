@@ -210,9 +210,9 @@ export default function AvailableVehicle() {
                             <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">
                               &#8377; {Math.ceil(item.showPrice)}
                             </p>
-                            <p className="mb-0 pb-0 pe-3 font-20 font-bold">
-                              &#8377; {item?.discount} %
-                            </p>
+                            {item?.discount > 0 && <p className="mb-0 pb-0 pe-3 font-20 font-bold">
+                              &#8517; {item?.discount} % OFF
+                            </p>}
                           </div>
                           {decodedQuery?.tripType !== 'cityCab' && !bookingDetails?.from?.isMetroCity ? <button
                             className="cstm-btn-trans"

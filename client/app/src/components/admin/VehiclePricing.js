@@ -151,7 +151,8 @@ export default function VehiclePricing() {
             <th className="">Type</th>
             <th className="">Name</th>
             <th className="">Minimum Fare</th>
-            <th className="">Cost per km</th>
+            <th className="">Cost per km (One Way)</th>
+            <th className="">Cost per km (Round Trip)</th>
             <th className="">Cost per hour</th>
             <th className="">Action</th>
           </tr>
@@ -165,7 +166,8 @@ export default function VehiclePricing() {
                 <td>{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</td>
                 <td>{li.vehicleName}</td>
                 <td>{li.minimumFare}</td>
-                <td>{li.costPerKm}</td>
+                <td>{li.costPerKmOneWay}</td>
+                <td>{li.costPerKmRoundTrip}</td>
                 <td>{li.costPerHour}</td>
                 <td className="d-flex align-items-center">
                  <Tooltip message={'Edit'} direction="bottom">
