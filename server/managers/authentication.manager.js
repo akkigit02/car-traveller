@@ -10,6 +10,7 @@ const EmailOtpTemplate = require('../templates/email/OtpTemplate')
 
 const { saveBooking } = require("./client.manager");
 const SMTPService = require("../services/smtp.service");
+const { sendOtpSms } = require("../services/sms.service");
 
 const getUserSession = async (userId) => {
   const loginSessionId = generateSecureRandomString(10);
@@ -42,7 +43,7 @@ const login = async (req, res) => {
         { primaryPhone: String(body.userName) },
       ],
     }
-    const user = await UserModel.findOne(query, { password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1, modules: 1, });
+    const user = await UserModel.findOne(query, { name: 1, password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1, modules: 1, });
     if (!user) {
       return res.status(401).send({ message: userType === 'CLIENT' ? "Incorrect phone Number" : "Incorrect username or password. Please try again." });
     }
@@ -69,9 +70,11 @@ const login = async (req, res) => {
           },
         }
       );
-
-      // send otp
-      console.log(otp);
+      await sendOtpSms(`91${user.primaryPhone}`, otp)
+      const emailtempalte = EmailOtpTemplate({ fullName: user.name, otp })
+      const emailData = { to: user.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+      if (user.email)
+        new SMTPService().sendMail(emailData)
       return res.status(200).send({ session: { sessionId, email: user.email, phone: user.primaryPhone }, status: "TWO_STEP_AUTHENTICATION", message: 'Otp Send Succcessfully' });
     }
     const userSession = await getUserSession(user._id);
@@ -180,203 +183,15 @@ const signup = async (req, res) => {
       }
     );
     const ride = await saveBooking({ body, user })
-
-    // const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
-    // const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
-    // console.log(emailData)
-    // new SMTPService().sendMail(emailData)
-
-
-
+    await sendOtpSms(`91${body.userDetails.phoneNumber}`, otp)
+    const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
+    const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+    if (emailData)
+      new SMTPService().sendMail(emailData)
     res.status(200).send({ sessionId: sessionId, booking_id: ride?.rideId, status: "TWO_STEP_AUTHENTICATION", });
-
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong. Please try again later." });
-  }
-};
-
-const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-    if (!email) {
-      return res.status(400).send({ message: "Email is required." });
-    }
-
-    const user = await UserModel.findOne(
-      { email: String(email) },
-      { "authentication.forgetOtp": 1 }
-    );
-    if (!user) {
-      return res.status(404).send({ message: "User not found." });
-    }
-
-    const otp = generateOTP();
-    const resetSessionId = generateSecureRandomString();
-    await UserModel.updateOne(
-      { _id: user._id },
-      {
-        $set: {
-          "authentication.forgetOtp.otp": otp,
-          "authentication.forgetOtp.type": "email",
-          "authentication.forgetOtp.expiresOn": new Date(
-            new Date().getTime() + 300000
-          ), // 5 minutes
-          "authentication.forgetOtp.resetSessionId": resetSessionId,
-        },
-      }
-    );
-    console.log("OTP:", otp);
-    // Send OTP to the user's email
-    // sendEmail(user.email, `Your OTP is ${otp}`);
-
-    res
-      .status(200)
-      .send({
-        message: "OTP sent to email.",
-        sessionId: resetSessionId,
-        status: "OTP_SENT",
-      });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
-  }
-};
-
-const verifyPasswordResetOtp = async (req, res) => {
-  try {
-    const { otp, sessionId } = req.body;
-    if (!otp || !sessionId) {
-      return res.status(400).send({ message: "OTP and session ID are required." });
-    }
-
-    const user = await UserModel.findOne({ "authentication.forgetOtp.resetSessionId": String(sessionId) },
-      { "authentication.forgetOtp": 1 }
-    );
-    if (!user) {
-      return res
-        .status(401)
-        .send({
-          message:
-            "Session expired or invalid. Please resend OTP and try again.",
-        });
-    }
-
-    if (new Date() > user.authentication.forgetOtp.expiresOn) {
-      return res
-        .status(401)
-        .send({ message: "OTP expired. Please resend OTP and try again." });
-    }
-
-    if (user.authentication.forgetOtp.otp !== String(otp)) {
-      return res
-        .status(401)
-        .send({ message: "Invalid OTP. Please try again." });
-    }
-
-    // OTP is verified; proceed to allow password reset
-    res.status(200).send({ message: "OTP verified.", status: "OTP_VERIFIED" });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
-  }
-};
-
-const resetPassword = async (req, res) => {
-  try {
-    const { sessionId, newPassword } = req.body;
-    if (!sessionId || !newPassword) {
-      return res
-        .status(400)
-        .send({ message: "Session ID and new password are required." });
-    }
-
-    const user = await UserModel.findOne(
-      { "authentication.forgetOtp.resetSessionId": String(sessionId) },
-      { authentication: 1 }
-    );
-    if (!user) {
-      return res
-        .status(401)
-        .send({
-          message:
-            "Session expired or invalid. Please resend OTP and try again.",
-        });
-    }
-
-    const hashedPassword = await newPassword; // Assuming you have a function to hash passwords
-    await UserModel.updateOne(
-      { _id: user._id },
-      {
-        $set: { password: hashedPassword },
-        $unset: {
-          "authentication.forgetOtp": 1, // Remove the password reset data
-        },
-      }
-    );
-
-    res
-      .status(200)
-      .send({
-        message: "Password reset successful.",
-        status: "PASSWORD_RESET_SUCCESS",
-      });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
-  }
-};
-
-const changePassword = async (req, res) => {
-  try {
-    const { userId, currentPassword, newPassword } = req.body;
-
-    if (!userId || !currentPassword || !newPassword) {
-      return res
-        .status(400)
-        .send({
-          message: "User ID, current password, and new password are required.",
-        });
-    }
-
-    const user = await UserModel.findOne({ _id: userId }, { password: 1 });
-    if (!user) {
-      return res.status(404).send({ message: "User not found." });
-    }
-
-    const isCurrentPasswordMatch = await comparePassword(
-      currentPassword,
-      user.password
-    );
-    if (!isCurrentPasswordMatch) {
-      return res
-        .status(401)
-        .send({ message: "Current password is incorrect." });
-    }
-
-    const hashedNewPassword = await hashPassword(newPassword);
-    await UserModel.updateOne(
-      { _id: userId },
-      { $set: { password: hashedNewPassword } }
-    );
-
-    res
-      .status(200)
-      .send({
-        message: "Password changed successfully.",
-        status: "PASSWORD_CHANGE_SUCCESS",
-      });
-  } catch (error) {
-    console.log(error);
-    res
-      .status(500)
-      .send({ message: "Something went wrong. Please try again later." });
   }
 };
 
@@ -385,8 +200,4 @@ module.exports = {
   verifyOtp,
   verifySession,
   signup,
-  forgotPassword,
-  verifyPasswordResetOtp,
-  resetPassword,
-  changePassword,
 };
