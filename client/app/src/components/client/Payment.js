@@ -214,7 +214,6 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12">
-          {console.log(bookingDetails?.paymetStatus === 'pending')}
           {bookingDetails?.paymentStatus === 'pending' &&
             <>
               <div className="mb-5">

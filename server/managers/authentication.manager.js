@@ -6,8 +6,11 @@ const {
 } = require("../utils/common.utils");
 const { JWT_SECRET_KEY } = process.env;
 const JWT = require("jsonwebtoken");
+const SmsOtpTemplate = require('../templates/sms/OtpTemplate')
+const EmailOtpTemplate = require('../templates/email/OtpTemplate')
 
 const { saveBooking } = require("./client.manager");
+const SMTPService = require("../services/smtp.service");
 
 const getUserSession = async (userId) => {
   const loginSessionId = generateSecureRandomString(10);
@@ -164,7 +167,6 @@ const signup = async (req, res) => {
       });
     }
     const otp = generateOTP();
-    console.log(otp)
     const sessionId = generateSecureRandomString();
     await UserModel.updateOne(
       { _id: user._id },
@@ -179,6 +181,17 @@ const signup = async (req, res) => {
       }
     );
     const ride = await saveBooking({ body, user })
+
+
+    const smstempalte = SmsOtpTemplate({ fullName: body.userDetails.name, otp })
+    console.log(smstempalte)
+    const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
+    const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+    console.log(emailData)
+    new SMTPService().sendMail(emailData)
+
+
+
     res.status(200).send({ sessionId: sessionId, booking_id: ride?.rideId, status: "TWO_STEP_AUTHENTICATION", });
 
   } catch (error) {

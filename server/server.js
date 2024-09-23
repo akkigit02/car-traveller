@@ -1,10 +1,5 @@
 require('dotenv').config();
 require('./configs/database.config');
-const { initialize, sendMessage,sendWhatsappMessage } = require('./configs/whatsapp.config.js')
-if (process.env.NODE_ENV === 'production') {
-    initialize()
-}
-// sendWhatsappMessage()
 const port = process.env.SERVER_PORT || 5000
 const express = require('express');
 const cors = require('cors');
@@ -13,9 +8,7 @@ const requestIp = require('request-ip');
 const userAgent = require('express-useragent');
 global.logger = require('./utils/logger.util.js');
 const app = express();
-// if (process.env.NODE_ENV !== 'production') {
 app.use(morgan('dev'));
-// }
 const { bodyParser } = require('./utils/bodyParser.util.js');
 app.use(bodyParser());
 app.use(express.urlencoded({ extended: true }));
