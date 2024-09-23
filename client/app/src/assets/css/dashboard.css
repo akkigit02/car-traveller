@@ -6,23 +6,29 @@
   
   .dashboard-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
+    grid-auto-rows: minmax(300px, 300px);
   }
   
   .chart-container {
     background-color: #fff;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
   
   .table-container {
-    grid-column: span 2;
+    /* grid-column: span 1.5; */
     background-color: #fff;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .table-grid{
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .dashboard-table {

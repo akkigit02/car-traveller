@@ -5,8 +5,8 @@ import { MONTH_NAME } from "../../constants/common.constants";
 
 const Dashboard = () => {
   // Data for the pie charts
-  const [rideCount, setRideCount] = useState([0,0,0])
-  const [revenues, setRevenues]  = useState({
+  const [rideCount, setRideCount] = useState([0, 0, 0])
+  const [revenues, setRevenues] = useState({
     series: [{ name: "Revenue", data: [] }],
     options: { chart: { type: "bar" }, xaxis: { categories: [] } }
   })
@@ -21,11 +21,11 @@ const Dashboard = () => {
 
   const getBookingList = async () => {
     try {
-      const {data} = await axios({
+      const { data } = await axios({
         method: 'GET',
         url: '/api/admin/booking-count',
       })
-      setRideCount([data.rideCounts.upcomingRides,data.rideCounts.todayRides,data.rideCounts.pastRides])
+      setRideCount([data.rideCounts.upcomingRides, data.rideCounts.todayRides, data.rideCounts.pastRides])
     } catch (error) {
       console.log(error)
     }
@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   const getBookingRevenue = async () => {
     try {
-      const {data} = await axios({
+      const { data } = await axios({
         method: 'GET',
         url: '/api/admin/booking-revenue',
         params: {
@@ -41,7 +41,7 @@ const Dashboard = () => {
         }
       })
       setRevenues({
-        series: [{name: "Revenue", data: data.revenue}],
+        series: [{ name: "Revenue", data: data.revenue }],
         options: { chart: { type: "bar" }, xaxis: { categories: data.monthly } }
       })
     } catch (error) {
@@ -51,7 +51,7 @@ const Dashboard = () => {
 
   const getBookingRevenueByCar = async () => {
     try {
-      const {data} = await axios({
+      const { data } = await axios({
         method: 'GET',
         url: '/api/admin/car-revenue',
         params: {
@@ -59,7 +59,7 @@ const Dashboard = () => {
         }
       })
       setCarTypeRevenue({
-        series: [{name: "Revenue", data: data.revenue}],
+        series: [{ name: "Revenue", data: data.revenue }],
         options: { chart: { type: "bar" }, xaxis: { categories: data.carTypes } }
       })
     } catch (error) {
@@ -93,16 +93,16 @@ const Dashboard = () => {
 
   useEffect(() => {
     getBookingRevenueByCar()
-  },[yearCarFilter])
+  }, [yearCarFilter])
 
   useEffect(() => {
     getRecentBooking()
     getBookingList()
     getRecentLead()
-  },[])
+  }, [])
   useEffect(() => {
     getBookingRevenue()
-  },[yearFilter])
+  }, [yearFilter])
 
   return (
     <div className="dashboard-container">
@@ -113,26 +113,56 @@ const Dashboard = () => {
         </div>
 
         <div className="chart-container">
-        <div>
-          <select className="select-input" name="year" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
-            {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={"year"+i}>{((new Date().getFullYear() + 1) - i)}</option>))}
-          </select>
+          <div>
+            <select className="select-input" name="year" value={yearFilter} onChange={(e) => setYearFilter(e.target.value)}>
+              {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={"year" + i}>{((new Date().getFullYear() + 1) - i)}</option>))}
+            </select>
           </div>
-          <Chart options={revenues.options} series={revenues.series} type="bar" height={350} />
+          <Chart options={revenues.options} series={revenues.series} type="bar" height={250} />
         </div>
 
         <div className="chart-container">
-        <div>
-          <select className="select-input" name="year" value={yearCarFilter} onChange={(e) => setYearCarFilter(e.target.value)}>
-            {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={i}>{((new Date().getFullYear() + 1) - i)}</option>))}
-          </select>
+          <div>
+            <select className="select-input" name="year" value={yearCarFilter} onChange={(e) => setYearCarFilter(e.target.value)}>
+              {Array.from({ length: 15 }, (_, i) => (<option value={((new Date().getFullYear() + 1) - i)} key={i}>{((new Date().getFullYear() + 1) - i)}</option>))}
+            </select>
           </div>
-          <Chart options={carTypeRevenue.options} series={carTypeRevenue.series} type="bar" height={350} />
+          <Chart options={carTypeRevenue.options} series={carTypeRevenue.series} type="bar" height={250} />
         </div>
 
         {/* Table */}
+      </div>
+      <div className="table-grid">
+      <div className="table-container">
+        Client
+        <table className="cstm-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Pickup Date</th>
+              <th>Vehicle Type</th>
+              <th>Total Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {bookingList.length > 0 ? bookingList.map((row, i) => (
+              <tr key={"new" + i}>
+                <td>{row?.userId?.name}</td>
+                <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
+                <td>{row?.vehicleId?.vehicleType}</td>
+                <td>{row.totalPrice}</td>
+              </tr>
+            )) :
+              <tr className='no-data'>
+                <td colspan="100%">
+                  <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
+                </td>
+              </tr>}
+          </tbody>
+        </table>
+      </div>
         <div className="table-container">
-          Client
+          Lead
           <table className="cstm-table">
             <thead>
               <tr>
@@ -143,36 +173,8 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {bookingList.length > 0 ? bookingList.map((row, i) => (
-                <tr key={"new"+i}>
-                  <td>{row?.userId?.name}</td>
-                  <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
-                  <td>{row?.vehicleId?.vehicleType}</td>
-                  <td>{row.totalPrice}</td>
-                </tr>
-              )):
-              <tr className='no-data'>
-              <td colspan="100%">
-                <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
-              </td>
-            </tr>}
-            </tbody>
-          </table>
-        </div>
-        <div className="table-container">
-          Lead
-          <table className="dashboard-table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Pickup Date</th>
-                <th>Vehicle Type</th>
-                <th>Total Price</th>
-              </tr>
-            </thead>
-            <tbody>
               {lead.map((row, i) => (
-                <tr key={"new"+i}>
+                <tr key={"new" + i}>
                   <td>{row?.userId?.name}</td>
                   <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
                   <td>{row?.vehicleId?.vehicleType}</td>
