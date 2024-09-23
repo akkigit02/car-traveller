@@ -223,7 +223,7 @@ function BookingHistory() {
               </tr>
             </thead>
             <tbody>
-              {bookingList.map(item => (
+              {bookingList.length > 0 ? bookingList.map(item => (
                 <tr key={item._id}>
                   <td>{item.name}</td>
                   <td>{getDateAndTimeString(item.pickupDate, item.pickupTime)}</td>
@@ -256,7 +256,13 @@ function BookingHistory() {
                     </Tooltip>
                   </td>
                 </tr>
-              ))}
+              )):
+              <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          }
             </tbody>
           </table>
         </InfiniteScroll>

@@ -45,8 +45,6 @@ export default function AvailableVehicle() {
       if (decodedData?.tripType === "hourly") {
         decodedData["hourlyType"] = "8hr80km";
       }
-
-      console.log(decodedData,"======-------")
       setDecodedQuery(decodedData);
     } else window.location.href = CLIENT_URL;
   }, []);
@@ -195,7 +193,7 @@ export default function AvailableVehicle() {
                           <div className="content">
                             <h6>Passengers:</h6>
                             <p className="mb-0 pb-0">
-                              {item?.capacity?.totalNumberOfSeats} +{" "}
+                              {item?.capacity?.totalNumberOfSeats - item?.capacity?.reservedNumberOfSeats} +{" "}
                               {item?.capacity?.reservedNumberOfSeats} Seats
                             </p>
                           </div>
@@ -210,8 +208,11 @@ export default function AvailableVehicle() {
                           </div>
                           <div>
                             <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">
-                              &#8377; {Math.ceil(item.totalPrice)}
+                              &#8377; {Math.ceil(item.showPrice)}
                             </p>
+                            {item?.discount > 0 && <p className="mb-0 pb-0 pe-3 font-20 font-bold">
+                              &#8517; {item?.discount} % OFF
+                            </p>}
                           </div>
                           {decodedQuery?.tripType !== 'cityCab' && !bookingDetails?.from?.isMetroCity ? <button
                             className="cstm-btn-trans"

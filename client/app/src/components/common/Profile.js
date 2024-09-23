@@ -98,7 +98,7 @@ const Profile = () => {
               placeholder='Enter name'
               disabled={otpSession}
             />
-            {errors.name && <p>{errors.name.message}</p>}
+            {errors.name && <span className="text-danger">{errors.name.message}</span>}
           </div>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Email <span>*</span></label>
@@ -111,7 +111,7 @@ const Profile = () => {
               placeholder='Enter email'
               disabled={otpSession}
             />
-            {errors.email && <p>{errors.email.message}</p>}
+            {errors.email && <span className="text-danger">{errors.email.message}</span>}
           </div>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Primary Phone <span>*</span> </label>
@@ -121,7 +121,7 @@ const Profile = () => {
               placeholder='Enter primary phone'
               disabled={otpSession}
             />
-            {errors.primaryPhone && <p>{errors.primaryPhone.message}</p>}
+            {errors.primaryPhone && <span className="text-danger">{errors.primaryPhone.message}</span>}
           </div>
           <div className="form-group col-lg-4 col-md-4 col-sm-12">
             <label>Secondary Phone</label>
@@ -203,7 +203,7 @@ const Profile = () => {
       </form>
       {dirtyFields?.primaryPhone && otpSession && <div>
         <Popup isOpen={otpSession} handleClose={() => setOtpSession()}>
-          <h5>Otp <span>*</span> </h5>
+          <h5>OTP <span>*</span> </h5>
             <div>
               <input className="cstm-input me-3"
                 value={otp}

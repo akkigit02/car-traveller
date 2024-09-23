@@ -15,16 +15,21 @@ const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/G
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../configs/phonepe.config');
 const { isSchedulabel } = require('../utils/format.util');
+const { getTotalPrice } = require('../services/calculation.service');
 
 const getCities = async (req, res) => {
   try {
     const search = req?.query?.search;
+    let match = { isMetroCity: true }
+    if (search?.trim()) {
+      match = { city_name: { $regex: search, $options: "i" } }
+    }
     const cities = await CitiesModel.aggregate([
       {
         $addFields: { city_name: { $concat: ["$name", ", ", "$state_name"] } },
       },
       {
-        $match: { city_name: { $regex: search, $options: "i" } },
+        $match: match,
       },
       { $limit: 15 },
     ]);
@@ -70,7 +75,7 @@ const getCars = async (req, res) => {
     let carList = [];
     let hourlyCarDetails = []
     if (['cityCab'].includes(search?.tripType)) {
-      cars = cars.filter(vehicle => !['Traveller'].includes(vehicle.vehicleType))
+      cars = cars.filter(vehicle => !['Traveller', 'Innova', 'Innova_Crysta'].includes(vehicle.vehicleType))
     } else {
       cars = cars.filter(vehicle => !['Hatchback'].includes(vehicle.vehicleType))
     }
@@ -90,10 +95,18 @@ const getCars = async (req, res) => {
       if (!toCity?.isMetroCity) metroCityPrice = 1.75
 
       for (let car of cars) {
+        let extra = 1
+        if (car.vehicleType === 'Traveller') {
+          extra = 2
+        }
         car["totalPrice"] =
-          distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
+          distance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
 
         car['showDistance'] = distance?.toFixed(2);
+        car['showPrice'] = car?.totalPrice
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
+        car['costPerKm'] = car.costPerKmOneWay
         carList.push(car);
       }
     } else if (search?.tripType === "roundTrip") {
@@ -141,15 +154,19 @@ const getCars = async (req, res) => {
       for (let car of cars) {
         if (distance <= numberOfDay * 250) {
           car["totalPrice"] =
-            numberOfDay * 300 * car.costPerKm +
+            numberOfDay * 300 * car.costPerKmRoundTrip +
             numberOfDay * car.driverAllowance;
           car['showDistance'] = numberOfDay * 250
         } else {
           car["totalPrice"] =
-            distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
+            distance * car.costPerKmRoundTrip + numberOfDay * car.driverAllowance || 0;
 
           car['showDistance'] = distance.toFixed(2)
         }
+        car['showPrice'] = car?.totalPrice
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
+        car['costPerKm'] = car.costPerKmRoundTrip
         carList.push(car);
       }
     } else if (search?.tripType === "hourly") {
@@ -161,6 +178,9 @@ const getCars = async (req, res) => {
           car["hour"] = hourlyData.hour
           distance = hourlyData?.distance
           car['showDistance'] = distance?.toFixed(2);
+          car['showPrice'] = car?.totalPrice
+          car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+          car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
           carList.push(car);
         }
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
@@ -181,6 +201,9 @@ const getCars = async (req, res) => {
           car["totalPrice"] = priceInfo.suv.base + priceInfo.suv.perKm * distance
         }
         car['showDistance'] = distance?.toFixed(2);
+        car['showPrice'] = car?.totalPrice
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
         carList.push(car);
       }
     }
@@ -209,95 +232,6 @@ const getCars = async (req, res) => {
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getCars', { error: error })
     res.status(500).send({ message: 'Server Error' })
-  }
-};
-
-const getTotalPrice = async (bookingDetails) => {
-  try {
-    let totalPrice = 0;
-    let distance = 0;
-    let toDetail = [];
-    let fromDetail = "";
-    const car = await PricingModel.findOne({
-      _id: bookingDetails?.vehicleId,
-    }).lean();
-    if (bookingDetails?.tripType === "oneWay") {
-      let toCity = await CitiesModel.findOne({ _id: bookingDetails.to }).lean();
-      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-      distance = estimateRouteDistance(
-        fromDetail.latitude,
-        fromDetail.longitude,
-        toCity.latitude,
-        toCity.longitude,
-        1.25
-      );
-      toDetail.push(toCity);
-      let metroCityPrice = 1
-      if (!toCity?.isMetroCity) metroCityPrice = 1.75
-
-      totalPrice = distance * car.costPerKm * metroCityPrice + (car?.driverAllowance ? car.driverAllowance : 0);
-    } else if (bookingDetails?.tripType === "roundTrip") {
-      let cityIds = bookingDetails?.to?.map((vehicle) => vehicle._id);
-      cityIds.unshift(bookingDetails?.from?._id);
-      let totalDistance = 0;
-      for (let i = 0; i < cityIds.length - 1; i++) {
-        const fromCity = await CitiesModel.findOne({ _id: cityIds[i] }).lean();
-        if (i == 0) {
-          fromDetail = fromCity;
-        }
-        const toCity = await CitiesModel.findOne({
-          _id: cityIds[i + 1],
-        }).lean();
-        // if(i+1 < cityIds.length - 1)
-        toDetail.push(toCity);
-        const dist = estimateRouteDistance(
-          fromCity.latitude,
-          fromCity.longitude,
-          toCity.latitude,
-          toCity.longitude,
-          1.25
-        );
-
-        totalDistance += dist;
-      }
-      distance = totalDistance;
-      let numberOfDay = dateDifference(
-        bookingDetails?.pickUpDate,
-        bookingDetails?.returnDate
-      );
-
-      if (distance <= numberOfDay * 250) {
-        totalPrice =
-          numberOfDay * 300 * car.costPerKm + numberOfDay * car.driverAllowance;
-      } else {
-        totalPrice =
-          distance * car.costPerKm + numberOfDay * car.driverAllowance || 0;
-      }
-    } else if (bookingDetails?.tripType === "hourly") {
-      fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
-      let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
-      if (hourlyData) {
-        totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
-        distance = hourlyData?.distance
-      }
-    } else if (bookingDetails?.tripType === 'cityCab') {
-      const data = await getDistanceBetweenPlaces(bookingDetails?.pickupCityCab, bookingDetails?.dropCityCab)
-      distance = parseFloat(data?.distance.replace(/[^0-9.]/g, ''))
-      const priceInfo = CITY_CAB_PRICE.find(info => info.max > distance && info.min < distance)
-      fromDetail = { name: data.from }
-      toDetail = [{ name: data.to }]
-      if (['Sedan'].includes(car.vehicleType)) {
-        totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * distance
-      } else if (['Hatchback'].includes(car.vehicleType)) {
-        totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * distance
-      } else {
-        totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
-      }
-    }
-
-    return { totalPrice, toDetail, distance: distance?.toFixed(2) };
-  } catch (error) {
-    console.log(error)
   }
 };
 
@@ -374,13 +308,12 @@ const getBookingList = async (req, res) => {
     const { filter = 'all', skip = 0, limit = 15 } = query;
 
     const today = new Date();
-    const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1; // Months are 0-based in JS, so add 1
-    const currentDay = today.getDate();
+    const currentYear = String(today.getFullYear());
+    const currentMonth = String(today.getMonth() + 1).padStart(2, '0'); // Months are 0-based in JS, so add 1
+    const currentDay = String(today.getDate()).padStart(2, '0');
 
     // Build the match query based on the filter
     let matchQuery = {};
-
     switch (filter) {
       case 'past':
         matchQuery = {

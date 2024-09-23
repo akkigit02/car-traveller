@@ -1,5 +1,32 @@
 [
   {
+    "name": "Mumbai",
+    "state_name": "Maharashtra",
+    "country_name": "India",
+    "latitude": "19.07283000",
+    "longitude": "72.88261000",
+    "isActive": true,
+    "isMetroCity": true
+  },
+  {
+    "name": "Pune",
+    "state_name": "Maharashtra",
+    "country_name": "India",
+    "latitude": "18.51957000",
+    "longitude": "73.85535000",
+    "isActive": true,
+    "isMetroCity": true
+  },
+  {
+    "name": "Nashik",
+    "state_name": "Maharashtra",
+    "country_name": "India",
+    "latitude": "19.99727000",
+    "longitude": "73.79096000",
+    "isActive": true,
+    "isMetroCity": true
+  },
+  {
     "name": "Bamboo Flat",
     "state_name": "Andaman and Nicobar Islands",
     "country_name": "India",
@@ -16778,15 +16805,6 @@
     "isActive": true
   },
   {
-    "name": "Mumbai",
-    "state_name": "Maharashtra",
-    "country_name": "India",
-    "latitude": "19.07283000",
-    "longitude": "72.88261000",
-    "isActive": true,
-    "isMetroCity": true
-  },
-  {
     "name": "Mumbai Suburban",
     "state_name": "Maharashtra",
     "country_name": "India",
@@ -16995,15 +17013,6 @@
     "latitude": "21.47000000",
     "longitude": "78.53000000",
     "isActive": true
-  },
-  {
-    "name": "Nashik",
-    "state_name": "Maharashtra",
-    "country_name": "India",
-    "latitude": "19.99727000",
-    "longitude": "73.79096000",
-    "isActive": true,
-    "isMetroCity": true
   },
   {
     "name": "Nashik Division",
@@ -17446,15 +17455,6 @@
     "latitude": "20.72204000",
     "longitude": "78.32056000",
     "isActive": true
-  },
-  {
-    "name": "Pune",
-    "state_name": "Maharashtra",
-    "country_name": "India",
-    "latitude": "18.51957000",
-    "longitude": "73.85535000",
-    "isActive": true,
-    "isMetroCity": true
   },
   {
     "name": "Pune Division",

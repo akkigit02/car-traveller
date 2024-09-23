@@ -11,14 +11,14 @@ import PaymentRedirect from '../../components/client/PaymentRedirect'
 
 export default function ClientRoute() {
   return (
-    <main className="position-relative h-100vh">
+    <main className="position-relative h-100vh-client">
       <ClientHeaderBar />
       <div className="row mx-0 mt-3 page-height">
         <div className="col-lg-12 col-md-12 col-12">
           <div className="border rounded shadow p-3 h-100">
             <Routes>
-              <Route path={`/`} element={<Navigate to="/dashboard" />} exact />
-              <Route path={`/dashboard`} Component={AdminDashboard} exact />
+              <Route path={`/`} element={<Navigate to="/booking-list" />} exact />
+              {/* <Route path={`/dashboard`} Component={AdminDashboard} exact /> */}
               <Route path="/car-list/:query" Component={AvailableVehicle} exact />
               <Route path="/booking/:query" Component={BookingForm} exact />
               <Route path={`/payment/:bookingId`} Component={Payment} exact />

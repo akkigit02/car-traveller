@@ -49,7 +49,8 @@ const rideSchema = new Schema({
   },
   reason: { type: String },
   isConnected: { type: Boolean, default: false },
-  activity: [{ type: Schema.Types.Mixed }]
+  activity: [{ type: Schema.Types.Mixed }],
+  source: { type: String }
 }, { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
 
 // Create a model based on the schema

@@ -19,6 +19,7 @@ router.get('/vehicle/:id',AdminManager.getVehicleById)
 
 router.get('/bookings',AdminManager.getBookingInfo)
 router.post('/bookings',AdminManager.saveBooking)
+router.patch('/confirm-booking/:id', AdminManager.confirmBooking);
 
 router.post('/package',AdminManager.savePackage)
 router.get('/package',AdminManager.getPackage)
@@ -47,5 +48,7 @@ router.get('/recent-lead', DashboardManager.getRecentLead)
 
 router.get('/users',AdminManager.getUsers)
 router.get('/users/:id',AdminManager.getUserById)
+router.get('/vehicle-type/:type', AdminManager.getVehicleByBookingType)
+
 
 module.exports = router

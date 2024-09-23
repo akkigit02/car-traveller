@@ -143,14 +143,19 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {bookingList.map((row, i) => (
+              {bookingList.length > 0 ? bookingList.map((row, i) => (
                 <tr key={"new"+i}>
                   <td>{row?.userId?.name}</td>
                   <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
                   <td>{row?.vehicleId?.vehicleType}</td>
                   <td>{row.totalPrice}</td>
                 </tr>
-              ))}
+              )):
+              <tr className='no-data'>
+              <td colspan="100%">
+                <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+              </td>
+            </tr>}
             </tbody>
           </table>
         </div>

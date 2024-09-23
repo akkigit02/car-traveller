@@ -112,9 +112,8 @@ export default function UserManagement() {
             <th className="">Action</th>
           </tr>
         </thead>
-        {list.length > 0 && (
           <tbody>
-            {list.map((user) => (
+            {list.length > 0 ?list.map((user) => (
               <tr key={user._id}>
                 <td>{user.name}</td>
                 <td>{user.email}</td>
@@ -149,9 +148,14 @@ export default function UserManagement() {
                   </Tooltip>
                 </td>
               </tr>
-            ))}
+            )):
+            <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
+          }
           </tbody>
-        )}
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={'Add/Edit User'}>
         <form onSubmit={handleSubmit(saveUser)}>

@@ -93,9 +93,9 @@ export default function Leads() {
                   </td>
                   <td
                     style={{
-                      backgroundColor: lead?.isConnected ? "green" : "red",
-                      color: "white",
+                      color: lead?.isConnected ? "green" : "red",
                       textAlign: "center",
+                      fontWeight:600,
                     }}
                   >
                     {lead?.isConnected ? "Yes" : "No" || "N/A"}
@@ -112,9 +112,11 @@ export default function Leads() {
                 </tr>
               ))
             ) : (
-              <tr>
-                <td colSpan="9">No leads found</td>
-              </tr>
+              <tr className='no-data'>
+            <td colspan="100%">
+              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+            </td>
+          </tr>
             )}
           </tbody>
         </table>
