@@ -6,7 +6,6 @@ const {
 } = require("../utils/common.utils");
 const { JWT_SECRET_KEY } = process.env;
 const JWT = require("jsonwebtoken");
-const SmsOtpTemplate = require('../templates/sms/OtpTemplate')
 const EmailOtpTemplate = require('../templates/email/OtpTemplate')
 
 const { saveBooking } = require("./client.manager");
@@ -182,13 +181,10 @@ const signup = async (req, res) => {
     );
     const ride = await saveBooking({ body, user })
 
-
-    const smstempalte = SmsOtpTemplate({ fullName: body.userDetails.name, otp })
-    console.log(smstempalte)
-    const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
-    const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
-    console.log(emailData)
-    new SMTPService().sendMail(emailData)
+    // const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
+    // const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+    // console.log(emailData)
+    // new SMTPService().sendMail(emailData)
 
 
 

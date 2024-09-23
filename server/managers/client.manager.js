@@ -13,7 +13,7 @@ const {
 } = require("../utils/calculation.util");
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
-const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../configs/phonepe.config');
+const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../services/phonepe.service');
 const { isSchedulabel } = require('../utils/format.util');
 const { getTotalPrice } = require('../services/calculation.service');
 
