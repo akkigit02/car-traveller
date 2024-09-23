@@ -57,6 +57,7 @@ const login = async (req, res) => {
     }
     if (user?.authentication?.twoFactor?.enabled) {
       const otp = generateOTP();
+      console.log(otp);
       const sessionId = generateSecureRandomString();
       await UserModel.updateOne(
         { _id: user._id },
@@ -169,6 +170,7 @@ const signup = async (req, res) => {
       });
     }
     const otp = generateOTP();
+    console.log(otp);
     const sessionId = generateSecureRandomString();
     await UserModel.updateOne(
       { _id: user._id },

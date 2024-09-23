@@ -144,7 +144,7 @@ export default function VehiclePricing() {
           </button>
         </div>
       </div>
-      <table className="cstm-table">
+      {/* <table className="cstm-table">
         <thead>
           <tr>
             <th className="">Image</th>
@@ -207,7 +207,70 @@ export default function VehiclePricing() {
           </tr>
           }
           </tbody>
-      </table>
+      </table> */}
+
+
+      <div class="cstm-table-container">
+        <div class="cstm-table-row cstm-header">
+          <div class="cstm-table-cell">Image</div>
+          <div class="cstm-table-cell">Type</div>
+          <div class="cstm-table-cell">Name</div>
+          <div class="cstm-table-cell">Minimum Fare</div>
+          <div class="cstm-table-cell">Cost per km (One Way)</div>
+          <div class="cstm-table-cell">Cost per km (Round Trip)</div>
+          <div class="cstm-table-cell">Cost per hour</div>
+          <div class="cstm-table-cell">Action</div>
+        </div>
+        {list.length > 0 ? list.map((li, index) => (
+        <div key={"list"+index} class="cstm-table-row">
+          <div class="cstm-table-cell" data-label="Image"><img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle"/></div>
+          <div class="cstm-table-cell" data-label="Type">{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</div>
+          <div class="cstm-table-cell" data-label="Name">{li.vehicleName}</div>
+          <div class="cstm-table-cell" data-label="Minimum Fare">{li.minimumFare}</div>
+          <div class="cstm-table-cell" data-label="Cost per km (One Way)">{li.costPerKmOneWay}</div>
+          <div class="cstm-table-cell" data-label="Cost per km (Round Trip)">{li.costPerKmRoundTrip}</div>
+          <div class="cstm-table-cell" data-label="Cost per hour">{li.costPerHour}</div>
+          <div class="cstm-table-cell" data-label="Action">
+          <div className="d-flex align-items-center">
+                 <Tooltip message={'Edit'} direction="bottom">
+                  <button
+                    onClick={() => getVehiclePriceById(li._id)}
+                    className="icon-btn me-2"
+                    type="button"
+                  >
+                    <i className="fa fa-edit"></i>
+                  </button></Tooltip>
+                  <Tooltip message={'View More'} direction="bottom">
+                  <button
+                    // onClick={() => deleteVehiclePrice(li._id)}
+                    onClick={openViewModal}
+                    className="icon-btn me-2"
+                    type="button"
+                  >
+                    <i className="fa fa-eye"></i>
+                  </button>
+                  </Tooltip>
+                  <Tooltip message={'Cancel'} direction="bottom">
+                  <button
+                    onClick={() => deleteVehiclePrice(li._id)}
+                    className="icon-btn"
+                    type="button"
+                  >
+                    <i className="fa fa-trash"></i>
+                  </button>
+                  </Tooltip>
+                </div>
+          </div>
+        </div>
+    )):
+            <div className='no-data'>
+                        <div colSpan="100%">
+                          <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
+                        </div>
+                      </div>
+                      }
+            </div>
+
       <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ?  'Edit Price': 'Add Price'}>
         {isModalLoding ? <div className="loader"></div> : <form onSubmit={handleSubmit(saveVehiclePrice)}>
           <div className="scroll-body">
