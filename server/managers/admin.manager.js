@@ -7,7 +7,7 @@ const CouponModel = require('../models/coupon.model');
 const UserModel = require('../models/user.model');
 const { getTotalPrice } = require('../services/calculation.service');
 const CitiesModel = require('../models/cities.model');
-
+const { createCSVFile } = require('../utils/csv.util');
 
 const saveVehiclePrice = async (req, res) => {
     try {
@@ -423,6 +423,28 @@ const confirmBooking = async (req, res) => {
     }
 }
 
+const downloadUsersCSV = async (req, res) => {
+    try {
+        const users = await UserModel.find({ 'modules.userType': { $ne: 'ADMIN' } });
+        const headers = [
+            JSON.stringify({ id: 'name', title: 'Name' }),
+            JSON.stringify({ id: 'primaryPhone', title: 'Primary Phone' }),
+            JSON.stringify({ id: 'email', title: 'Email' }),
+        ];
+
+        const filePath = await createCSVFile(headers, users);
+        res.download(filePath, 'users.csv', (err) => {
+            if (err) {
+                console.error("Error sending file:", err);
+                res.status(500).send('Error downloading file');
+            }
+        });
+    } catch (error) {
+        console.error("Error downloading CSV:", error);
+        res.status(500).send('Error generating CSV');
+    }
+};
+
 module.exports = {
     saveVehiclePrice,
     getVehiclePrice,
@@ -461,6 +483,9 @@ module.exports = {
     getUserById,
     saveUser,
     updateUser,
+    downloadUsersCSV,
+
+
     getVehicleByBookingType,
     confirmBooking
 

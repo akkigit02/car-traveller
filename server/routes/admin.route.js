@@ -50,6 +50,7 @@ router.get('/users',AdminManager.getUsers)
 router.get('/users/:id',AdminManager.getUserById)
 router.post('/users',AdminManager.saveUser)
 router.put('/users/:id',AdminManager.updateUser)
+router.get('/user/csv-dowload',AdminManager.downloadUsersCSV)
 router.get('/vehicle-type/:type', AdminManager.getVehicleByBookingType)
 
 

@@ -85,6 +85,24 @@ export default function UserManagement() {
     setSelectedUser(null);
   };
 
+  const downloadCSV = async () => {
+    try {
+        const response = await axios.get('/api/admin/user/csv-dowload', {
+            responseType: 'blob',
+        });
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'users.csv');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    } catch (error) {
+        console.error("Error downloading CSV:", error);
+    }
+};
+
   return (
     <div>
       <div className="d-flex justify-content-between pb-2">
@@ -92,16 +110,20 @@ export default function UserManagement() {
           <p className="cstm-title">User Management</p>
         </div>
         <div>
-          <button
-            className="cstm-btn"
-            onClick={() => {
-              reset({});
-              setIsOpen(true);
-            }}
-          >
-            <i className="fa fa-plus"></i>
-          </button>
-        </div>
+    <button
+        className="cstm-btn"
+        onClick={() => {
+            reset({});
+            setIsOpen(true);
+        }}
+    >
+        <i className="fa fa-plus"></i>
+    </button>
+    <button onClick={downloadCSV} className="cstm-btn">
+        <i className="fa fa-file-download"></i> {/* Download icon */}
+        Download Users CSV
+    </button>
+   </div>
       </div>
       <table className="cstm-table">
         <thead>
