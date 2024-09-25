@@ -6,6 +6,7 @@ const CouponModel = require("../models/coupon.model");
 const UserModel = require("../models/user.model");
 const BillingModel = require('../models/billing.model')
 const EnquirePackageModel = require("../models/enquire.package.model")
+const PaymentModel = require('../models/payment.model');
 
 const {
   estimateRouteDistance,
@@ -14,7 +15,7 @@ const {
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../services/phonepe.service');
-const { isSchedulabel } = require('../utils/format.util');
+const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
 const { getTotalPrice } = require('../services/calculation.service');
 
 const getCities = async (req, res) => {
@@ -378,11 +379,6 @@ const getBookingById = async (req, res) => {
         { path: 'dropCity', select: 'name' },
         { path: 'vehicleId', select: 'vehicleType vehicleName' },]).lean();
     const billing = await BillingModel.find({ bookingId: new ObjectId(bookingId) })
-    billing.forEach(ele => {
-      if (ele.paymentState === 'PAYMENT_SUCCESS') {
-        // console.log(ele)
-      }
-    })
     return res.status(200).send({ bookingDetails });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
@@ -444,7 +440,7 @@ const initiatePayment = async (req, res) => {
   try {
     const { body } = req
     let couponDetails = { discountAmount: 0 }
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }, { totalPrice: 1 }).lean()
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }, { totalPrice: 1, totalDistance: 1 }).lean()
     if (body?.coupon?.isApply) {
       const coupon = await CouponModel.findOne({ code: body.coupon.code })
       const couponValidate = await validateCalculateCouponCode(bookingDetails, coupon)
@@ -453,34 +449,63 @@ const initiatePayment = async (req, res) => {
       else
         couponDetails = { ...couponValidate.discountDetails, couponCode: coupon.code }
     }
-    const advancePercentage = [10, 25, 50, 100].includes(body?.advancePercentage) ? body?.advancePercentage : 100;
+    const advancePercentage = [10, 25, 50, 100].includes(body?.advancePercentage) ? body?.advancePercentage : null;
     const afterDiscountPayble = bookingDetails.totalPrice - couponDetails.discountAmount
-    const payableAmount = (afterDiscountPayble * advancePercentage) / 100
-    const phonePayPayload = {
-      amount: payableAmount,
-      merchantTransactionId: String(new ObjectId()),
-    }
-    await RideModel.updateOne({ _id: new ObjectId(body.bookingId) }, {
-      $set: {
-        couponCode: couponDetails.couponCode,
-        advancePercent: advancePercentage,
-        paymentStatus: 'pending',
-        payablePrice: afterDiscountPayble
-      }
-    })
-    const result = await initiatePhonepePayment(phonePayPayload)
-    const billingData = {
-      merchantTransactionId: result?.data.merchantTransactionId,
-      userId: req.user._id,
+    const paymentData = {
       bookingId: bookingDetails._id,
-      amount: phonePayPayload.amount,
-      currency: 'INR',
-      paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url,
-      paymentState: result.code,
-      paymentType: advancePercentage < 100 ? 'advanced' : 'full'
+      userId: req.user._id,
+      createdBy: req.user._id,
+      updateBy: req.user._id,
+      totalPrice: bookingDetails.totalPrice,
+      couponCode: couponDetails?.couponCode || null,
+      totalDistance: bookingDetails.totalDistance,
+      payableAmount: afterDiscountPayble,
+      dueAmount: afterDiscountPayble
     }
-    await BillingModel.create(billingData)
-    return res.status(200).send({ paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url })
+    if (advancePercentage) {
+      const payablecouponCodeAmount = roundToDecimalPlaces((afterDiscountPayble * advancePercentage) / 100)
+      paymentData['advancePercent'] = advancePercentage
+      if (payablecouponCodeAmount === 'NAN') {
+        res.status(400).send({ message: 'Something Went wrong' })
+      }
+      const phonePayPayload = {
+        amount: payablecouponCodeAmount,
+        merchantTransactionId: String(new ObjectId()),
+      }
+      const result = await initiatePhonepePayment(phonePayPayload)
+      const billingData = {
+        merchantTransactionId: result?.data.merchantTransactionId,
+        userId: req.user._id,
+        bookingId: bookingDetails._id,
+        amount: phonePayPayload.amount,
+        currency: 'INR',
+        paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url,
+        paymentState: result.code,
+        paymentType: advancePercentage < 100 ? 'advanced' : 'full'
+      }
+      let paymentId = bookingDetails?.paymentId;
+      if (bookingDetails?.paymentId) {
+        await PaymentModel.updateOne({ _id: bookingDetails?.paymentId }, { $set: paymentData })
+      } else {
+        const payment = await PaymentModel.create(paymentData)
+        paymentId = payment._id
+      }
+      billingData['paymentId'] = paymentId
+      await RideModel.updateOne({ _id: bookingDetails._id }, { $set: { paymentId: paymentId } })
+      await BillingModel.create(billingData)
+      return res.status(200).send({ paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url })
+    } else {
+      paymentData['isPayLater'] = true
+      let paymentId = bookingDetails?.paymentId;
+      if (bookingDetails?.paymentId) {
+        await PaymentModel.updateOne({ _id: bookingDetails?.paymentId }, { $set: paymentData })
+      } else {
+        const payment = await PaymentModel.create(paymentData)
+        paymentId = payment._id
+      }
+      await RideModel.updateOne({ _id: bookingDetails._id }, { $set: { paymentId: paymentId, rideStatus: 'booked' } })
+      return res.status(200).send({ message: 'Ride Bokked successfully' })
+    }
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })
     res.status(500).send({ message: 'Server Error' })
@@ -497,7 +522,7 @@ const changePaymentStatus = async (req, res) => {
       return res.status(400).send({ message: "Invalid Request" })
     const result = await chackStatusPhonepePayment({ merchantTransactionId: params.transactionId })
     const billingData = {
-      paymentId: result?.data.transactionId,
+      transactionId: result?.data.transactionId,
       paymentInstrument: result?.data?.paymentInstrument,
       paymentState: result?.code,
     }
@@ -505,6 +530,12 @@ const changePaymentStatus = async (req, res) => {
       $set: billingData,
       $push: { gatewayResponse: result }
     })
+    if (result?.code === 'PAYMENT_SUCCESS') {
+      console.log(billing.bookingId)
+      await RideModel.updateOne({ _id: billing.bookingId }, { $set: { rideStatus: 'booked' } })
+      const payment = await PaymentModel.findOne({ _id: billing.paymentId }).lean()
+      await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: { rideStatus: 'booked', dueAmount: payment.dueAmount - (result.data.amount / 100) } })
+    }
     return res.status(200).send({ message: result.message, bookingId: billing.bookingId })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })

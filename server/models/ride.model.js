@@ -32,21 +32,14 @@ const rideSchema = new Schema({
     year: { type: String },
   },
   totalPrice: { type: Number },
-  payablePrice: { type: Number },
-  advancePercent: { type: String },
-  couponCode: { type: String },
   totalDistance: { type: Number },
+  paymentId: { type: Schema.Types.ObjectId },
   trip: {
     tripType: { type: String },
     hourlyType: { type: String }
   },
   isLaguageCarrier: { type: Boolean },
-  paymentStatus: { type: String, enum: ["pending", "advance", "completed"], default: 'pending' },
-  rideStatus: {
-    type: String,
-    enum: ["none", "scheduled", "inProgress", "completed", "cancelled", 'resheduled'],
-    default: 'none',
-  },
+  rideStatus: { type: String, enum: ["none", "scheduled", "completed", "cancelled", 'resheduled', 'booked'] },
   reason: { type: String },
   isConnected: { type: Boolean, default: false },
   activity: [{ type: Schema.Types.Mixed }],

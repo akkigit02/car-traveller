@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const BillingSchema = new mongoose.Schema({
-    paymentId: { type: String },
+    paymentId: { type: mongoose.Schema.Types.ObjectId },
+    transactionId: { type: String },
     paymentType: { type: String, enum: ['advanced', 'full'] },
     isPayOffine: { type: Boolean, default: false },
     merchantTransactionId: { type: String },
