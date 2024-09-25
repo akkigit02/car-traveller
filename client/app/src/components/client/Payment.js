@@ -215,7 +215,7 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12">
-          {bookingDetails?.paymentStatus === 'pending' &&
+          {bookingDetails?.rideStatus === 'none' &&
             <>
               <div className="mb-3">
                 {/* <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p> */}
@@ -229,14 +229,6 @@ function Payment() {
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p>
                     <div className="row m-0">
                       {[10, 25, 50, 100].map(ele => (
-                        // <div className="col-lg-6 col-md-6 col-12 pe-0">
-                        //   <div className="payment-percentage">
-                        //     <input type="radio" name="advancePayment" value={advancePercentage} checked={advancePercentage === ele} onChange={() => setAdvancePercentage(ele)} >
-                        //     </input>
-                        //     <label className="ps-2">{ele === 100 ? 'Full Payment' : ele + '%'}
-                        //     </label>
-                        //   </div>
-                        // </div>
                         <div className="col-lg-6 col-md-6 col-12 pe-0">
                           <div className={`payment-percentage ${advancePercentage === ele ? 'active' : ''}`}>
                             <label className="d-flex align-items-center p-4">
@@ -274,33 +266,6 @@ function Payment() {
                     </div>}
                   </div>
                 </div>
-                {/* <div className="d-flex mb-3">
-                  {[10, 25, 50, 100].map(ele => (
-                    <div className="payment-percentage">
-                      <input type="radio" name="advancePayment" value={advancePercentage} checked={advancePercentage === ele} onChange={() => setAdvancePercentage(ele)} >
-                      </input>
-                      <label>{ele === 100 ? 'Full Payment' : ele + '%'}
-                      </label>
-                    </div>
-                  ))}
-                </div> */}
-
-                {/* <div className="d-flex align-content-end flex-wrap-reverse form-group">
-                  <div className=" col-md-4">
-                    <label htmlFor="">Coupon</label>
-                    <input className="form-control" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
-                      setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
-                    }} />
-                    {coupon.error && <p> {coupon.error}</p>}
-                  </div>
-                  {!coupon.isApply ? <button className="cstm-btn ms-2" onClick={() => applyCopoun(true)}>Apply</button> :
-                    <>
-                      <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
-                      <div>
-                        coupon discount price: {coupon.discountAmount}
-                      </div>
-                    </>}
-                </div> */}
               </div>
               <div className="d-flex flex-column align-items-end border-top pt-2">
                 <div className="mb-2 font-bold">
@@ -314,23 +279,6 @@ function Payment() {
               </div>
             </>
           }
-          {bookingDetails?.paymentStatus === 'advanced' && bookingDetails?.bookingStatus !== 'cancelled' &&
-            <div className="mb-5">
-              <div className="d-flex mb-3">
-
-              </div>
-              <div className="d-flex flex-column align-items-end pt-5">
-                <div className="mb-2 font-bold">
-                  Pending Payment amount: {bookingDetails?.payablePrice - ((bookingDetails?.payablePrice * bookingDetails.advancePercent) / 100)}
-                </div>
-              </div>
-              <div className="d-flex flex-column align-items-end pt-5">
-                <button className="cstm-btn" onClick={submitForPayment}>
-                  Proceed to pay
-                </button>
-              </div>
-            </div>}
-
         </div>
       </div >
     </>
