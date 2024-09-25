@@ -377,8 +377,9 @@ const getBookingById = async (req, res) => {
       .populate([
         { path: 'pickUpCity', select: 'name' },
         { path: 'dropCity', select: 'name' },
-        { path: 'vehicleId', select: 'vehicleType vehicleName' },]).lean();
-    const billing = await BillingModel.find({ bookingId: new ObjectId(bookingId) })
+        { path: 'vehicleId', select: 'vehicleType vehicleName' },
+        { path: 'paymentId', select: 'dueAmount' }
+      ]).lean();
     return res.status(200).send({ bookingDetails });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingById', { error: error })
@@ -511,6 +512,38 @@ const initiatePayment = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 }
+const initiateDuePayment = async (req, res) => {
+  try {
+    const { body } = req
+
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }, { paymentId: 1, totalPrice: 1, totalDistance: 1 }).lean()
+    const paymentDetails = await PaymentModel.findOne({ _id: bookingDetails.paymentId }).lean()
+    if (paymentDetails.dueAmount) {
+      const phonePayPayload = {
+        amount: roundToDecimalPlaces(paymentDetails.dueAmount),
+        merchantTransactionId: String(new ObjectId()),
+      }
+      const result = await initiatePhonepePayment(phonePayPayload)
+      const billingData = {
+        merchantTransactionId: result?.data.merchantTransactionId,
+        userId: req.user._id,
+        bookingId: bookingDetails._id,
+        amount: phonePayPayload.amount,
+        currency: 'INR',
+        paymentId: bookingDetails.paymentId,
+        paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url,
+        paymentState: result.code,
+        paymentType: 'due'
+      }
+      await BillingModel.create(billingData)
+      return res.status(200).send({ paymentUrl: result?.data?.instrumentResponse?.redirectInfo?.url })
+    }
+    return res.status(200).send({ message: 'You dont have any due payment' })
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> bookingPayment', { error: error })
+    res.status(500).send({ message: 'Server Error' })
+  }
+}
 
 const changePaymentStatus = async (req, res) => {
   try {
@@ -531,10 +564,18 @@ const changePaymentStatus = async (req, res) => {
       $push: { gatewayResponse: result }
     })
     if (result?.code === 'PAYMENT_SUCCESS') {
-      console.log(billing.bookingId)
-      await RideModel.updateOne({ _id: billing.bookingId }, { $set: { rideStatus: 'booked' } })
       const payment = await PaymentModel.findOne({ _id: billing.paymentId }).lean()
-      await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: { rideStatus: 'booked', dueAmount: payment.dueAmount - (result.data.amount / 100) } })
+      const dueAmount = roundToDecimalPlaces(payment.dueAmount - (result.data.amount / 100))
+      const paymentUpdateData = {
+        dueAmount
+      }
+      if (billing.paymentType === 'advanced') {
+        paymentUpdateData['isAdvancePaymentCompleted'] = true
+        await RideModel.updateOne({ _id: billing.bookingId }, { $set: { rideStatus: 'booked' } })
+      }
+      else if (['due', 'full'].includes(billing.paymentType))
+        paymentUpdateData['isPaymentCompleted'] = true
+      await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
     }
     return res.status(200).send({ message: result.message, bookingId: billing.bookingId })
   } catch (error) {
@@ -694,5 +735,6 @@ module.exports = {
   bookingCancel,
   bookingReshuduled,
   getCoupons,
-  changePaymentStatus
+  changePaymentStatus,
+  initiateDuePayment
 };

@@ -33,13 +33,13 @@ const rideSchema = new Schema({
   },
   totalPrice: { type: Number },
   totalDistance: { type: Number },
-  paymentId: { type: Schema.Types.ObjectId },
+  paymentId: { type: Schema.Types.ObjectId, ref: 'payment' },
   trip: {
     tripType: { type: String },
     hourlyType: { type: String }
   },
   isLaguageCarrier: { type: Boolean },
-  rideStatus: { type: String, enum: ["none", "scheduled", "completed", "cancelled", 'resheduled', 'booked'] },
+  rideStatus: { type: String, enum: ["none", "scheduled", "completed", "cancelled", 'resheduled', 'booked'], default: 'none' },
   reason: { type: String },
   isConnected: { type: Boolean, default: false },
   activity: [{ type: Schema.Types.Mixed }],

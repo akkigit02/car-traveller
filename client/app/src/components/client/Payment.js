@@ -29,7 +29,7 @@ function Payment() {
   }
 
   useEffect(() => {
-    if (bookingDetails)
+    if (bookingDetails.rideStatus === 'none')
       calculatePayablePrice(bookingDetails)
   }, [advancePercentage, coupon])
 
@@ -68,15 +68,16 @@ function Payment() {
     }
   }
 
-  const submitForPayment = async () => {
+  const submitForPayment = async (isPayLater) => {
     try {
       const { data } = await axios({
         url: '/api/client/initiate-payment',
         method: 'POST',
         data: {
+          isPayLater,
           bookingId,
           coupon,
-          advancePercentage
+          advancePercentage: isPayLater ? null : advancePercentage
         }
       })
       if (data.paymentUrl)
@@ -85,7 +86,23 @@ function Payment() {
       console.log(error)
     }
   }
-
+  const submitForDuePayment = async () => {
+    try {
+      const { data } = await axios({
+        url: '/api/client/initiate-due-payment',
+        method: 'POST',
+        data: {
+          bookingId,
+        }
+      })
+      if (data.message)
+        toast.success(data?.message);
+      if (data.paymentUrl)
+        window.location.href = data.paymentUrl
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const resetCoupon = () => {
     setCopouns({
@@ -243,8 +260,6 @@ function Payment() {
                             </label>
                           </div>
                         </div>
-
-
                       ))}
                     </div>
                     <div className="d-flex align-items-end justify-content-end pt-2">
@@ -272,10 +287,32 @@ function Payment() {
                   Total Payment amount:<span className="font-22"> &#x20b9;  {payblePrice}</span>
                 </div>
               </div>
-              <div className="d-flex flex-column align-items-end mb-sm">
+              <div className="d-flex flex-column align-items-end mb-sm pt-2">
+                <button className="cstm-btn" onClick={submitForPayment(true)}>
+                  Pay Later
+                </button>
+              </div>
+              <div className="d-flex flex-column align-items-end mb-sm pt-2">
                 <button className="cstm-btn" onClick={submitForPayment}>
                   Proceed to pay
                 </button>
+              </div>
+            </>
+          }
+          {
+            bookingDetails?.rideStatus === 'booked' && <>
+              <div>
+                <div className="d-flex flex-column align-items-end border-top pt-2">
+                  <div className="mb-2 font-bold">
+                    Due amount:<span className="font-22"> &#x20b9;  {bookingDetails.paymentId.dueAmount}</span>
+                  </div>
+                </div>
+                <div className="d-flex flex-column align-items-end mb-sm">
+                  <button className="cstm-btn" onClick={submitForDuePayment}>
+                    Proceed to pay
+                  </button>
+                </div>
+
               </div>
             </>
           }

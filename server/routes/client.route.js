@@ -13,6 +13,7 @@ router.get('/booking/:bookingId', jwtUserAuthentication, ClientManager.getBookin
 router.get('/apply-coupon/:bookingId/:couponCode', jwtUserAuthentication, ClientManager.applyCopounCode)
 router.put('/cancel-booking/:bookingId', jwtUserAuthentication, ClientManager.bookingCancel)
 router.post('/initiate-payment', jwtUserAuthentication, ClientManager.initiatePayment)
+router.post('/initiate-due-payment', jwtUserAuthentication, ClientManager.initiateDuePayment)
 router.put('/payment-status/:transactionId', jwtUserAuthentication, ClientManager.changePaymentStatus)
 router.post('/reshedule/:bookingId', jwtUserAuthentication, ClientManager.bookingReshuduled)
 router.get('/coupons', jwtUserAuthentication, ClientManager.getCoupons)
