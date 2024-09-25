@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import Modal from "../Modal"; // Assume you have a Modal component
+import Modal from "../Modal";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
-import Tooltip from "../Tooltip"; // Assume you have a Tooltip component
+import Tooltip from "../Tooltip";
+import { emailPattern, namePattern, phoneNumberValidation } from '../../constants/Validation.constant';
+
 
 export default function UserManagement() {
   const [isOpen, setIsOpen] = useState(false);
@@ -165,7 +167,10 @@ export default function UserManagement() {
                 <label htmlFor="name">Name</label>
                 <input
                   type="text"
-                  {...register("name", { required: 'Name is Required' })}
+                  {...register("name", {
+                    required: "Name is required",
+                    pattern: namePattern,
+                })}
                   className="cstm-select-input"
                   placeholder="Enter name"
                 />
@@ -177,7 +182,10 @@ export default function UserManagement() {
                 <label htmlFor="email">Email</label>
                 <input
                   type="email"
-                  {...register("email", { required: 'Email is Required' })}
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: emailPattern,
+                })}
                   className="cstm-select-input"
                   placeholder="Enter email"
                 />
@@ -189,22 +197,25 @@ export default function UserManagement() {
                 <label htmlFor="primaryPhone">Primary Phone</label>
                 <input
                   type="text"
-                  {...register("primaryPhone", { required: 'Primary Phone is Required' })}
+                  {...register("primaryPhone", phoneNumberValidation)}
                   className="cstm-select-input"
                   placeholder="Enter primary phone"
                 />
-                {errors?.primaryPhone && (
-                  <span className="text-danger">{errors.primaryPhone.message}</span>
+                {errors?.primaryPhone?.message && (
+                  <span className='error'>{errors?.primaryPhone?.message}</span>
                 )}
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="secondaryPhone">Secondary Phone</label>
                 <input
                   type="text"
-                  {...register("secondaryPhone")}
+                  {...register("secondaryPhone",phoneNumberValidation)}
                   className="cstm-select-input"
                   placeholder="Enter secondary phone"
                 />
+                {errors?.secondaryPhone?.message && (
+                  <span className='error'>{errors?.secondaryPhone?.message}</span>
+                )}
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="userType">User Type</label>

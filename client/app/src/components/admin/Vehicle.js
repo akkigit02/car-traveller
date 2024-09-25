@@ -223,7 +223,7 @@ export default function VehiclePricing() {
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputPassword4">Model Name</label>
                 <input
-                  type="number"
+                  type="text"
                   {...register("modelName")}
                   className="cstm-select-input"
                   placeholder="Enter Model Name"

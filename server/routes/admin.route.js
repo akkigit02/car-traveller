@@ -48,6 +48,8 @@ router.get('/recent-lead', DashboardManager.getRecentLead)
 
 router.get('/users',AdminManager.getUsers)
 router.get('/users/:id',AdminManager.getUserById)
+router.post('/users',AdminManager.saveUser)
+router.put('/users/:id',AdminManager.updateUser)
 router.get('/vehicle-type/:type', AdminManager.getVehicleByBookingType)
 
 

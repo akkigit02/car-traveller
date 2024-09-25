@@ -365,6 +365,26 @@ const confirmCall = async (req, res) => {
       res.status(500).send({ message: 'Server Error' });
     }
   }
+
+  const saveUser = async(req,res) =>{
+    try {
+        const user = await UserModel.create(req.body)
+        res.status(201).send({ message: 'User add successfully!', user })    
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> saveUser', { error: error });
+        res.status(500).send({ message: 'Server Error' }); 
+    }
+  }
+
+  const updateUser = async(req,res) =>{
+    try {
+        await UserModel.updateOne({ _id: req.params.id }, req.body)
+        res.status(200).send({ message: 'User update successfully!' })
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> updateUser', { error: error });
+        res.status(500).send({ message: 'Server Error' }); 
+    }
+  }
   
   const getVehicleByBookingType = async (req, res) => {
     try {
@@ -439,6 +459,8 @@ module.exports = {
 
     getUsers,
     getUserById,
+    saveUser,
+    updateUser,
     getVehicleByBookingType,
     confirmBooking
 
