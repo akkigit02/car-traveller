@@ -959,3 +959,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .border-top_LR{
     border-radius: 8px 8px 0 0 !important;
 }
+
+.text-capitalize {
+    text-transform: capitalize;
+}

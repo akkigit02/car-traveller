@@ -288,12 +288,12 @@ function Payment() {
                 </div>
               </div>
               <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                <button className="cstm-btn" onClick={submitForPayment(true)}>
+                <button className="cstm-btn" onClick={()=>{submitForPayment(true)}}>
                   Pay Later
                 </button>
               </div>
               <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                <button className="cstm-btn" onClick={submitForPayment}>
+                <button className="cstm-btn" onClick={()=>{submitForPayment()}}>
                   Proceed to pay
                 </button>
               </div>

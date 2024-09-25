@@ -56,7 +56,7 @@ function BookingHistory() {
     try {
       if (!isScroll) setSkip(0); // Reset skip if not scrolling
       setIsLoading(true);
-      
+
       // Fetch booking data from the server
       const { data } = await axios({
         url: '/api/client/booking',
@@ -66,20 +66,20 @@ function BookingHistory() {
           filter
         }
       });
-  
+
       // Process the list of bookings
       const list = data.list.map(ele => {
-        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime);
+        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime)||['none','cancelled'].includes(ele.rideStatus);
         return ele;
       });
-  
+
       // Update booking list state
       if (isScroll) {
         setBookingList(old => old.concat(list));
       } else {
         setBookingList(list);
       }
-  
+
       // Update state for whether there are more items to load
       setHasMore(list.length === limit);
       setSkip(old => old + limit);
@@ -89,26 +89,26 @@ function BookingHistory() {
       setIsLoading(false);
     }
   };
-  
+
 
   const cancelBooking = async (bookingId) => {
     try {
-      if(!reason?.length) {
+      if (!reason?.length) {
         setReasonError('Reason is required')
         return;
       }
 
-      if(reason?.length < 50) {
+      if (reason?.length < 50) {
         setReasonError('Minimum 50 character.')
         return;
       }
-      const { data } = await axios.put(`/api/client/cancel-booking/${bookingId}`,{reason});
+      const { data } = await axios.put(`/api/client/cancel-booking/${bookingId}`, { reason });
 
       setConfirmationOpen(false);
       setSelectedBookingId(null);
       setReasonError('')
       setReason('')
-      
+
       if (data?.message)
         toast.success(data?.message);
     } catch (error) {
@@ -128,12 +128,12 @@ function BookingHistory() {
     }
   };
 
-  
+
   const closeConfirmationModal = () => {
     setConfirmationOpen(false);
     setSelectedBookingId(null);
   };
-  
+
   const closeModal = () => {
     setIsOpen(false);
   };
@@ -187,21 +187,21 @@ function BookingHistory() {
     setTimeOtion(date);
     setValue('reshedulePickupTime', '00:15 AM');
   };
-  
+
 
   return (
     <>
       <div>
         <div className='d-flex align-items-center justify-content-between'>
           <h4>Booking List</h4>
-        <div className="mb-3 col-3">
-          <select className="cstm-select-input" value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="all">All</option>
-            <option value="past">Past</option>
-            <option value="today">Today</option>
-            <option value="upcoming">Upcoming</option>
-          </select>
-        </div>
+          <div className="mb-3 col-3">
+            <select className="cstm-select-input" value={filter} onChange={(e) => setFilter(e.target.value)}>
+              <option value="all">All</option>
+              <option value="past">Past</option>
+              <option value="today">Today</option>
+              <option value="upcoming">Upcoming</option>
+            </select>
+          </div>
         </div>
 
         <InfiniteScroll
@@ -216,8 +216,8 @@ function BookingHistory() {
               <tr>
                 <th>Name</th>
                 <th>Pick Up Date</th>
-                <th>Booking Price</th>
-                <th>Advance Payment</th>
+                <th>Booking Amount</th>
+                <th>Due Amount</th>
                 <th>Status</th>
                 <th>Action</th>
               </tr>
@@ -225,44 +225,44 @@ function BookingHistory() {
             <tbody>
               {bookingList.length > 0 ? bookingList.map(item => (
                 <tr key={item._id}>
-                  <td>{item.name}</td>
+                  <td className='text-capitalize'>{item.name}</td>
                   <td>{getDateAndTimeString(item.pickupDate, item.pickupTime)}</td>
-                  <td>{item.totalPrice}</td>
-                  <td>{item.advancePayment}</td>
-                  <td>{item.bookingStatus}</td>
+                  <td> &#8377; {item?.payableAmount || item?.totalPrice || '0'}</td>
+                  <td >&#8377; {item?.dueAmount || item?.totalPrice || '0'}</td>
+                  <td className='text-capitalize'>{item.rideStatus}</td>
                   <td className='d-flex'>
                     <Tooltip message={'View Details'} direction='bottom'>
-                    <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)}>
-                      <i className="fa fa-eye" aria-hidden="true"></i>
-                    </button>
+                      <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)}>
+                        <i className="fa fa-eye" aria-hidden="true"></i>
+                      </button>
                     </Tooltip>
                     <Tooltip message={'Reschedule'} direction='bottom'>
-                    <button
-                      className={`icon-btn me-2 ${item.isCancelable ? 'disabled' : ''}`}
-                      onClick={() => resheduleData(item)}
-                      disabled={item.isCancelable}
-                    >
-                      <i className="fa fa-retweet" aria-hidden="true"></i>
-                    </button>
+                      <button
+                        className={`icon-btn me-2 ${item.isCancelable ? 'disabled' : ''}`}
+                        onClick={() => resheduleData(item)}
+                        disabled={item.isCancelable}
+                      >
+                        <i className="fa fa-retweet" aria-hidden="true"></i>
+                      </button>
                     </Tooltip>
                     <Tooltip message={'Cancel'} direction='bottom'>
-                    <button
-                      className={`icon-btn ${item.isCancelable ? 'disabled' : ''}`}
-                      disabled={item.isCancelable}
-                      onClick={() => handleCancelClick(item._id)}
-                    >
-                      <i className="fa fa-times" aria-hidden="true"></i>
-                    </button>
+                      <button
+                        className={`icon-btn ${(item.isCancelable) ? 'disabled' : ''}`}
+                        disabled={item.isCancelable}
+                        onClick={() => handleCancelClick(item._id)}
+                      >
+                        <i className="fa fa-times" aria-hidden="true"></i>
+                      </button>
                     </Tooltip>
                   </td>
                 </tr>
-              )):
-              <tr className='no-data'>
-            <td colspan="100%">
-              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
-            </td>
-          </tr>
-          }
+              )) :
+                <tr className='no-data'>
+                  <td colspan="100%">
+                    <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
+                  </td>
+                </tr>
+              }
             </tbody>
           </table>
         </InfiniteScroll>
@@ -332,10 +332,10 @@ function BookingHistory() {
           </div>
           <div className="d-flex justify-content-end border-top mt-3 pt-2">
             <button type="button" className="btn btn-primary" onClick={closeConfirmationModal}>
-                Cancel
+              Cancel
             </button>
             <button type="button" className="btn btn-primary" onClick={() => confirmCancel()}>
-                Confirm
+              Confirm
             </button>
           </div>
         </Modal>

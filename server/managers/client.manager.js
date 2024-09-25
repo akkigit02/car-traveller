@@ -348,21 +348,41 @@ const getBookingList = async (req, res) => {
     }
 
     // Fetch the bookings with filtering, pagination, and sorting
-    const bookingList = await RideModel.find({ userId: user._id, ...matchQuery }, {
-      name: 1,
-      totalPrice: 1,
-      advancePayment: 1,
-      pickupDate: 1,
-      pickupTime: 1,
-      bookingStatus: 1,
-      trip: 1,
-      dropDate: 1
-    })
-      .sort({ createdOn: 1 })
-      .skip(parseInt(skip, 10))
-      .limit(parseInt(limit, 10))
-      .lean();
-
+    const bookingList = await RideModel.aggregate([
+      {
+        $match: { userId: user._id, ...matchQuery }
+      },
+      { $sort: { createdOn: -1 } },
+      { $skip: Number(skip) },
+      { $limit: Number(limit) },
+      {
+        $lookup:{
+          from:'payments',
+          localField:'paymentId',
+          foreignField:'_id',
+          as:'bookingPayment'          
+        }
+      },
+      {
+        $unwind: {
+          path: '$bookingPayment',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          name: 1,
+          pickupDate: 1,
+          pickupTime: 1,
+          trip: 1,
+          dropDate: 1,
+          payableAmount:'$bookingPayment.payableAmount',
+          dueAmount:'$bookingPayment.dueAmount',
+          totalPrice:1,
+          rideStatus: 1
+        }
+      }])
+      console.log(bookingList,"====-------")
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error });

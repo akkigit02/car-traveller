@@ -1,5 +1,5 @@
 import moment from 'moment'
-const RESCHEDULE_TIME = 90 // in minutes
+const { RESCHEDULE_TIME } = process.env
 const formatDateAndTime = (date, format = 'MM/DD/yyyy hh:mm A') => {
     if (!date) return "";
     let _date = new Date(date)
