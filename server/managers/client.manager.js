@@ -17,6 +17,7 @@ const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../services/phonepe.service');
 const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
 const { getTotalPrice } = require('../services/calculation.service');
+const { sendBookingConfirmedSms } = require('../services/sms.service');
 
 const getCities = async (req, res) => {
   try {
@@ -356,11 +357,11 @@ const getBookingList = async (req, res) => {
       { $skip: Number(skip) },
       { $limit: Number(limit) },
       {
-        $lookup:{
-          from:'payments',
-          localField:'paymentId',
-          foreignField:'_id',
-          as:'bookingPayment'          
+        $lookup: {
+          from: 'payments',
+          localField: 'paymentId',
+          foreignField: '_id',
+          as: 'bookingPayment'
         }
       },
       {
@@ -376,13 +377,13 @@ const getBookingList = async (req, res) => {
           pickupTime: 1,
           trip: 1,
           dropDate: 1,
-          payableAmount:'$bookingPayment.payableAmount',
-          dueAmount:'$bookingPayment.dueAmount',
-          totalPrice:1,
+          payableAmount: '$bookingPayment.payableAmount',
+          dueAmount: '$bookingPayment.dueAmount',
+          totalPrice: 1,
           rideStatus: 1
         }
       }])
-      console.log(bookingList,"====-------")
+    console.log(bookingList, "====-------")
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error });
@@ -525,6 +526,7 @@ const initiatePayment = async (req, res) => {
         paymentId = payment._id
       }
       await RideModel.updateOne({ _id: bookingDetails._id }, { $set: { paymentId: paymentId, rideStatus: 'booked' } })
+      // sendBookingConfirmedSms(req.user.primaryPhone, { bookingId: "DDD1001", name: req.user.name })
       return res.status(200).send({ message: 'Ride Bokked successfully' })
     }
   } catch (error) {

@@ -13,7 +13,7 @@ const getHeader = () => {
 const sendOtpSms = async (mobile, otp) => {
     try {
         const smsBody = {
-            template_id: "66efd695d6fc050cab3d6f12",
+            template_id: "66f4e7ddd6fc056d985b6a63",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
@@ -32,6 +32,30 @@ const sendOtpSms = async (mobile, otp) => {
         console.log(error)
     }
 }
+const sendBookingConfirmedSms = async (mobile, payload) => {
+    try {
+        const { name, bookingId } = payload;
+        const smsBody = {
+            template_id: "66f10da7d6fc053cb465c262",
+            short_url: 0,
+            recipients: [{
+                "mobiles": mobile,
+                "var1": `${name}`,
+                "var2": `${bookingId}`
+            }]
+        }
+        const { data } = await axios({
+            url: BASE_URL,
+            method: 'POST',
+            data: JSON.stringify(smsBody),
+            headers: getHeader()
+        })
+        console.log(data)
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-module.exports = { sendOtpSms };
+
+module.exports = { sendOtpSms, sendBookingConfirmedSms };
 
