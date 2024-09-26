@@ -13,7 +13,7 @@ const getHeader = () => {
 const sendOtpSms = async (mobile, otp) => {
     try {
         const smsBody = {
-            template_id: "66f4e7ddd6fc056d985b6a63",
+            template_id: "66efd695d6fc050cab3d6f12",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
