@@ -12,7 +12,7 @@ import { HOURLY_TYPE } from '../../constants/common.constants';
 import Popup from '../Popup';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function BookingForm() {
-    const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+    const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm({
         mode: "onChange", // Validate on every change
     });
     const userInfo = useSelector(({ userInfo }) => userInfo)
@@ -21,6 +21,7 @@ function BookingForm() {
     const [bookingDetails, setBookingDetails] = useState({})
     const [isOtpSent, setIsOtpSent] = useState(false)
     const [sessionId, setSessionId] = useState()
+    const [isButtonLoad, setIsButtonLoad] = useState(false)
 
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [otp, setOtp] = useState()
@@ -33,41 +34,42 @@ function BookingForm() {
 
 
 
-  const togglePopup = () => {
-    setIsPopupOpen(false);
-    setIsOtpSent(false)
-  };
+    const togglePopup = () => {
+        setIsPopupOpen(false);
+        setIsOtpSent(false)
+    };
 
-//   const handleChange = (e, index) => {
-//     const value = e.target.value;
-//     const newOtp = [...otp];
-//     if (/^\d*$/.test(value)) {
-//       newOtp[index] = value;
-//       setOtp(newOtp);
-//       if (value.length === 1 && index < 5) {
-//         document.getElementById(`otp-input-${index + 1}`).focus();
-//       }
-//     }
-//   };
-//   const handleKeyDown = (e, index) => {
-//     if (e.key === "Backspace" && otp[index] === "") {
-//       if (index > 0) {
-//         document.getElementById(`otp-input-${index - 1}`).focus();
-//         const newOtp = [...otp];
-//         newOtp[index - 1] = "";
-//         setOtp(newOtp);
-//       }
-//     } else if (e.key === "Backspace") {
-//       const newOtp = [...otp];
-//       newOtp[index] = "";
-//       setOtp(newOtp);
-//     }
-//   };
+    //   const handleChange = (e, index) => {
+    //     const value = e.target.value;
+    //     const newOtp = [...otp];
+    //     if (/^\d*$/.test(value)) {
+    //       newOtp[index] = value;
+    //       setOtp(newOtp);
+    //       if (value.length === 1 && index < 5) {
+    //         document.getElementById(`otp-input-${index + 1}`).focus();
+    //       }
+    //     }
+    //   };
+    //   const handleKeyDown = (e, index) => {
+    //     if (e.key === "Backspace" && otp[index] === "") {
+    //       if (index > 0) {
+    //         document.getElementById(`otp-input-${index - 1}`).focus();
+    //         const newOtp = [...otp];
+    //         newOtp[index - 1] = "";
+    //         setOtp(newOtp);
+    //       }
+    //     } else if (e.key === "Backspace") {
+    //       const newOtp = [...otp];
+    //       newOtp[index] = "";
+    //       setOtp(newOtp);
+    //     }
+    //   };
 
 
 
     const verifyOtp = async () => {
         try {
+            setIsButtonLoad(true)
             const { data } = await axios({
                 url: '/api/auth/verify-otp',
                 method: 'POST',
@@ -89,6 +91,8 @@ function BookingForm() {
         } catch (error) {
             console.log(error.response.data)
             toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
+        } finally {
+            setIsButtonLoad(false)
         }
     }
 
@@ -112,7 +116,7 @@ function BookingForm() {
             toast.error(error?.response?.data?.message || 'Something went wrong please try again!')
         }
     }
-    
+
     const saveBooking = async (formData) => {
         try {
             const { data } = await axios({
@@ -182,10 +186,10 @@ function BookingForm() {
                                 <div className='mb-0 destination-details'>{bookingDetails?.from?.name}</div>
                                 {bookingDetails?.to?.map((item, index) => (
                                     <div className=' w-100' key={index} >
-                                    <div className='d-flex justify-content-center py-2'><i className="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
-                                    <div className='mb-0 destination-details'>{item.name}</div>
+                                        <div className='d-flex justify-content-center py-2'><i className="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
+                                        <div className='mb-0 destination-details'>{item.name}</div>
                                     </div>
-                                    ))}
+                                ))}
                             </div>
                             <div className='row m-0 pb-5'>
                                 <div className='col-lg-6 col-md-6 col-12 ps-0'>
@@ -204,13 +208,13 @@ function BookingForm() {
                             <div>
                                 <p>
                                     <strong>Trip type:</strong>{" "}
-                                        {bookingDetails?.type}
+                                    {bookingDetails?.type}
                                 </p>
-                            {bookingDetails?.tripType === "hourly" && 
-                                <p>
-                                    <strong>Hourly type:</strong>{" "}
+                                {bookingDetails?.tripType === "hourly" &&
+                                    <p>
+                                        <strong>Hourly type:</strong>{" "}
                                         {HOURLY_TYPE.find(li => li.value === bookingDetails?.hourlyType)?.name}
-                                </p>
+                                    </p>
                                 }
 
                                 <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
@@ -328,7 +332,7 @@ function BookingForm() {
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'pickupAddress' &&
                                                                 <ul className='suggestion-list'>
-                                                                    {addressSuggestion.address.map((ele, idx) => (<li onClick={() => setValue('pickupAddress', ele)} key={"add"+idx}><p className='mb-0'>{ele}</p></li>))}
+                                                                    {addressSuggestion.address.map((ele, idx) => (<li onClick={() => setValue('pickupAddress', ele)} key={"add" + idx}><p className='mb-0'>{ele}</p></li>))}
                                                                 </ul>}
                                                             {errors?.pickupAddress?.message && (
                                                                 <span className='error'>{errors?.pickupAddress?.message}</span>
@@ -355,7 +359,7 @@ function BookingForm() {
                                                             />
                                                             {addressSuggestion.isOpen && addressSuggestion.type === 'dropAddress' &&
                                                                 <ul className='suggestion-list'>
-                                                                    {addressSuggestion.address.map((ele, idx) => (<li onClick={() => setValue('dropAddress', ele)} key={"address"+idx} ><p className='mb-0'>{ele}</p></li>))}
+                                                                    {addressSuggestion.address.map((ele, idx) => (<li onClick={() => setValue('dropAddress', ele)} key={"address" + idx} ><p className='mb-0'>{ele}</p></li>))}
                                                                 </ul>}
                                                             {errors?.dropAddress?.message && (
                                                                 <span className='error'>{errors?.dropAddress?.message}</span>
@@ -364,7 +368,10 @@ function BookingForm() {
                                                     </div>}
                                                     <div className="col-lg-12 d-flex justify-content-end">
                                                         <button className="theme-btn-2" type="submit">
-                                                            { userInfo ? 'Book Now' : 'Send Otp'}
+                                                            {isSubmitting && <div class="spinner-border text-primary" role="status">
+                                                                <span class="sr-only">Loading...</span>
+                                                            </div>}
+                                                            {userInfo ? 'Book Now' : 'Send Otp'}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -387,7 +394,13 @@ function BookingForm() {
                             placeholder="Enter your OTP"
                         />
                     </div>
-                      <div className='d-flex justify-content-end'> <button className="cstm-btn-red" onClick={verifyOtp}>verify</button></div> 
+                    <div className='d-flex justify-content-end'> <button className="cstm-btn-red" disabled={isButtonLoad} onClick={verifyOtp}>
+                        {isButtonLoad && <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>}
+                        Verify
+                    </button>
+                    </div>
                 </Popup>
             </div>}
         </>

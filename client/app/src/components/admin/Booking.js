@@ -5,6 +5,7 @@ import axios from "axios";
 import { formatDateAndTime, getDateAndTimeString, isSchedulabel } from "../../utils/format.util";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
 import Tooltip from "../Tooltip";
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { toast } from 'react-toastify';
 import { phoneNumberValidation } from "../../constants/Validation.constant";
 
@@ -23,6 +24,7 @@ export default function BookingManagement() {
   const [paymentInfo, setPaymentInfo] = useState({})
   const [advanceAmount, setAdvanceAmount] = useState(null)
   const [advanceAmountError, setAdvanceAmountError] = useState('')
+  const [isConfirmBooking, setIsConfirmBooking] = useState(false)
   const [suggestions, setSuggestions] = useState({
     pickupLocationId: '',
     dropLocationId: '',
@@ -37,7 +39,14 @@ export default function BookingManagement() {
     dropCities: []
   })
 
-  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors } } = useForm({
+  const [scrollBar, setScrollBar] = useState({
+    limit: 15,
+    skip: 0,
+    hasMore: false,
+    isScrollLoading: false
+  })
+
+  const { register, handleSubmit, reset, setValue, control, watch, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
     defaultValues: {
       bookingType: 'oneWay'
@@ -93,6 +102,7 @@ export default function BookingManagement() {
 
   const confirmBooking = async () => {
     try {
+    setIsConfirmBooking(true)
       if(advanceAmount <= 0) {
         setAdvanceAmountError('Please enter advance amount')
       }
@@ -103,17 +113,30 @@ export default function BookingManagement() {
       setAdvanceAmountError('')
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsConfirmBooking(false)
     }
   }
 
-  const getBookings = async () => {
+  const getBookings = async (isScroll) => {
     try {
-      const res = await axios.get("/api/admin/bookings");
-      const list = res.data.bookings.map(ele => {
+      if(!isScroll) {
+        setScrollBar(old => ({...old, skip: 0}))
+      }
+      const res = await axios.get("/api/admin/bookings", {params: {limit: scrollBar.limit, skip: scrollBar.skip}});
+      const list1 = res.data.bookings.map(ele => {
         ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime);
         return ele;
       });
-      setList(list);
+
+      if(isScroll) {
+        setList(old => old.concat(list1));
+      } else {
+        setList(list1);
+      }
+   
+      setScrollBar(old => ({...old, skip: (old.skip + scrollBar.limit), hasMore: (list1.length === scrollBar.limit)}))
+  
     } catch (error) {
       console.error(error);
     }
@@ -174,6 +197,7 @@ export default function BookingManagement() {
 
   const cancelBooking = async (bookingId) => {
     try {
+      setIsConfirmBooking(true)
       if (!reason?.length) {
         setReasonError('Reason is required')
         return;
@@ -195,6 +219,8 @@ export default function BookingManagement() {
     } catch (error) {
       console.error(error);
       toast.error(error?.response?.data?.message || "Something went wrong please try again!");
+    } finally {
+      setIsConfirmBooking(false)
     }
   };
 
@@ -320,6 +346,13 @@ export default function BookingManagement() {
         </div>
       </div>
       <div className="table-responsive">
+      <InfiniteScroll
+          dataLength={list.length}
+          next={() => getBookings(true)}
+          hasMore={scrollBar.hasMore}
+          loader={<h6>Loading...</h6>}
+          endMessage={<p className='py-2'>No more data to show.</p>}
+        >
         <table className="cstm-table table">
           <thead>
             <tr>
@@ -368,7 +401,9 @@ export default function BookingManagement() {
               ))}
             </tbody>
           )}
-        </table></div>
+        </table>
+        </InfiniteScroll>
+        </div>
       <Modal isOpen={isOpen} onClose={closeModal} title="Add Booking">
         <form onSubmit={handleSubmit(saveBooking)} className="modal-dropdown">
           <div className="scroll-body">
@@ -602,7 +637,10 @@ export default function BookingManagement() {
             </div>
           </div>
           <div className="d-flex justify-content-end pt-2">
-            <button type="submit" className="cstm-btn">
+            <button type="submit" disabled={isSubmitting} className="cstm-btn">
+              {isSubmitting && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>}
               Proceed
             </button>
           </div>
@@ -638,7 +676,10 @@ export default function BookingManagement() {
           <button type="button" className="btn btn-primary" onClick={() => setIsPaymentModal(false)}>
             Cancel
           </button>
-          <button type="button" className="btn btn-primary" onClick={() => confirmBooking()}>
+          <button type="button" disabled={isConfirmBooking} className="btn btn-primary" onClick={() => confirmBooking()}>
+          {isConfirmBooking && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
+            </div>}
             Confirm
           </button>
         </div>
@@ -708,9 +749,12 @@ export default function BookingManagement() {
             <button type="button" className="cstm-btn-trans me-2" onClick={closeConfirmationModal}>
                 Cancel
             </button>
-            <button type="button" className="cstm-btn" onClick={() => confirmCancel()}>
-                Confirm
-            </button>
+          <button type="button" className="cstm-btn" disabled={isConfirmBooking} onClick={() => confirmCancel()}>
+            {isConfirmBooking && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only">Loading...</span>
+            </div>}
+            Confirm
+          </button>
           </div>
         </Modal>}
     </div>

@@ -9,6 +9,8 @@ function Payment() {
   const [bookingDetails, setBookingDetails] = useState({});
   const [advancePercentage, setAdvancePercentage] = useState(25)
   const [payblePrice, setPayblePrice] = useState(0)
+  const [isButtonLoad, setIsButtonLoad] = useState('')
+  const [isApplyCoupon, setIsApplyCoupon] = useState(false)
   const [coupon, setCopouns] = useState({
     code: '',
     error: '',
@@ -40,7 +42,6 @@ function Payment() {
       const { data } = await axios({
         url: `/api/client/booking/${bookingId}`,
       });
-      console.log(data, "====------")
       setBookingDetails(data?.bookingDetails);
       calculatePayablePrice(data?.bookingDetails)
     } catch (error) {
@@ -51,6 +52,7 @@ function Payment() {
 
   const applyCopoun = async () => {
     try {
+      setIsApplyCoupon(true)
       if (!coupon.code) {
         setCopouns(old => ({ ...old, error: 'Coupon is required' }))
         return
@@ -65,11 +67,14 @@ function Payment() {
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message || "Something went wrong please try again!");
+    } finally {
+      setIsApplyCoupon(false)
     }
   }
 
   const submitForPayment = async (isPayLater) => {
     try {
+      setIsButtonLoad(isPayLater?'paylater':'payment')
       const { data } = await axios({
         url: '/api/client/initiate-payment',
         method: 'POST',
@@ -82,12 +87,18 @@ function Payment() {
       })
       if (data.paymentUrl)
         window.location.href = data.paymentUrl
+      if(isPayLater) {
+        getBookingDetails()
+      }
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsButtonLoad(null)
     }
   }
   const submitForDuePayment = async () => {
     try {
+      setIsButtonLoad('duePayment')
       const { data } = await axios({
         url: '/api/client/initiate-due-payment',
         method: 'POST',
@@ -101,6 +112,8 @@ function Payment() {
         window.location.href = data.paymentUrl
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsButtonLoad(null)
     }
   }
 
@@ -271,7 +284,7 @@ function Payment() {
                         {coupon.error && <p> {coupon.error}</p>}
                       </div>
                       {!coupon.isApply ?
-                        <button className="cstm-btn-trans ms-2" onClick={() => applyCopoun(true)}>Apply</button> :
+                        <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
                         <>
                           <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
                         </>}
@@ -288,12 +301,18 @@ function Payment() {
                 </div>
               </div>
               <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                <button className="cstm-btn" onClick={()=>{submitForPayment(true)}}>
+                <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
+                  {isButtonLoad==='isPaylater' && <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>}
                   Pay Later
                 </button>
               </div>
               <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                <button className="cstm-btn" onClick={()=>{submitForPayment()}}>
+                <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
+                {isButtonLoad==='payment' && <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>}
                   Proceed to pay
                 </button>
               </div>
@@ -308,7 +327,10 @@ function Payment() {
                   </div>
                 </div>
                 <div className="d-flex flex-column align-items-end mb-sm">
-                  <button className="cstm-btn" onClick={submitForDuePayment}>
+                  <button className="cstm-btn" disabled={isButtonLoad} onClick={submitForDuePayment}>
+                  {isButtonLoad==='duePayment' && <div class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                  </div>}
                     Proceed to pay
                   </button>
                 </div>

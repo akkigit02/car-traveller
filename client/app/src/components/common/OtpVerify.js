@@ -3,9 +3,11 @@ import React, { useState } from 'react'
 import { toast } from "react-toastify";
 function OtpVerify({ otpDetails, handleOtpVerify }) {
     const [otp, setOtp] = useState("");
+    const [isButtonLoad, setIsButtonLoad] = useState(false)
 
     const verifyOtp = async () => {
         try {
+            setIsButtonLoad(true)
             const { data } = await axios({
                 url: "/api/auth/verify-otp",
                 method: "POST",
@@ -24,6 +26,8 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
         } catch (error) {
             console.log(error.response.data);
             toast.error(error?.response?.data?.message || "Something went wrong please try again!");
+        } finally {
+            setIsButtonLoad(false)
         }
     };
     return (
@@ -42,7 +46,10 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
                 />
             </div>
             <div className="form-group-login form-button">
-                <button onClick={verifyOtp} className="form-submit">
+                <button onClick={verifyOtp} disabled={isButtonLoad} className="form-submit">
+                    {isButtonLoad && <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only"></span>
+                    </div>}
                     Verify
                 </button>
             </div>

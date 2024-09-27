@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
         buttonWrapper.classList.add('pickup-items');
         buttonWrapper.innerHTML = `
         <label class="field-label style-2">button</label>
-        <button class="pickup-btn" type="button" id="submitButtom">Find a Car</button>`;
+        <button class="pickup-btn" type="button" id="submitButtom">Search Cars</button>`;
         parentContainer.appendChild(buttonWrapper);
         formContainer.appendChild(parentContainer);
         getTimeForDropdown(); // Call the function to populate time dropdown

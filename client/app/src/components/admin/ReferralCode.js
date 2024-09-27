@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 export default function CouponForm() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
-  const { register, handleSubmit, reset, setValue, control, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, control, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
   });
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null)
   const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
@@ -59,7 +62,7 @@ export default function CouponForm() {
         method: "get",
         url: `/api/admin/coupons/${id}`,
       });
-  
+
       const couponData = res.data.coupon;
       // Format the startDate and expiryDate to YYYY-MM-DD
       couponData.startDate = couponData.startDate
@@ -68,30 +71,31 @@ export default function CouponForm() {
       couponData.expiryDate = couponData.expiryDate
         ? new Date(couponData.expiryDate).toISOString().split("T")[0]
         : "";
-  
+
       reset(couponData); // Reset the form with formatted dates
       setIsOpen(true);
       setIsEdit(true);
     } catch (error) {
       console.error(error);
     }
-  };  
-
+  };
+  const closeConfirmationModal = () => {
+    setConfirmationOpen(false);
+  };
   const closeModal = () => {
     reset({});
     setIsEdit(false);
     setIsOpen(false);
   };
 
-  const deleteCoupon = async (id) => {
+  const deleteCoupon = async () => {
     try {
-      const confirmation = window.confirm("Do you really want to delete?");
-      if (!confirmation) return;
       const res = await axios({
         method: "delete",
-        url: `/api/admin/coupons/${id}`,
+        url: `/api/admin/coupons/${selectedId}`,
       });
-      setList(list.filter((li) => li._id !== id));
+      setList(list.filter((li) => li._id !== selectedId));
+      setSelectedId(null);
     } catch (error) {
       console.error(error);
     }
@@ -148,7 +152,7 @@ export default function CouponForm() {
                   </li>
                   <li className="list-inline-item">
                     <button
-                      onClick={() => deleteCoupon(li._id)}
+                      onClick={() => { setConfirmationOpen(true); setSelectedId(li._id) }}
                       className="btn btn-danger btn-sm rounded-0"
                       type="button"
                       data-toggle="tooltip"
@@ -161,124 +165,129 @@ export default function CouponForm() {
                 </ul>
               </td>
             </tr>
-          )):
-          <tr className='no-data'>
-            <td colspan="100%">
-              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
-            </td>
-          </tr>}
+          )) :
+            <tr className='no-data'>
+              <td colspan="100%">
+                <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
+              </td>
+            </tr>}
         </tbody>
       </table>
-  <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Coupon' : 'Add Coupon'}>
-  <form onSubmit={handleSubmit(saveCoupon)}>
-    <div className="scroll-body">
-      <div className="row m-0">
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Coupon Code</label>
-          <input
-            type="text"
-            {...register("code", { required: "Coupon Code is required" })}
-            className="cstm-select-input"
-            placeholder="Enter coupon code"
-          />
-          {errors?.code && <span className="text-danger">{errors.code.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Discount Type</label>
-          <select
-            {...register("discountType", { required: "Discount Type is required" })}
-            className="cstm-select-input"
-          >
-            <option value="percentage">Percentage</option>
-          </select>
-          {errors?.discountType && <span className="text-danger">{errors.discountType.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Discount Value</label>
-          <input
-            type="number"
-            {...register("discountValue", { required: "Discount Value is required" })}
-            className="cstm-select-input"
-            placeholder="Enter discount value"
-          />
-          {errors?.discountValue && <span className="text-danger">{errors.discountValue.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Max Discount Amount</label>
-          <input
-            type="number"
-            {...register("maxDiscountAmount", { required: "Max Discount Amount is required" })}
-            className="cstm-select-input"
-            placeholder="Enter max discount amount"
-          />
-          {errors?.maxDiscountAmount && <span className="text-danger">{errors.maxDiscountAmount.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Min Booking Amount</label>
-          <input
-            type="number"
-            {...register("minPurchaseAmount", { required: "Min Purchase Amount is required" })}
-            className="cstm-select-input"
-            placeholder="Enter min purchase amount"
-          />
-          {errors?.minPurchaseAmount && <span className="text-danger">{errors.minPurchaseAmount.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label for="session-date">Start Date</label>
-          <input
-            type="date"
-            id="session-date" name="session-date"
-            {...register("startDate", { required: "Start Date is required" })}
-            className="cstm-select-input"
-          />
-          {errors?.startDate && <span className="text-danger">{errors.startDate.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label for="session-date">Expiry Date</label>
-          <input
-            type="date"
-            id="session-date" name="session-date"
-            {...register("expiryDate", { required: "Expiry Date is required" })}
-            className="cstm-select-input"
-          />
-          {errors?.expiryDate && <span className="text-danger">{errors.expiryDate.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-          <label>Active</label>
-          <select
-            {...register("isActive", { required: "Active status is required" })}
-            className="cstm-select-input"
-          >
-            <option value={true}>Active</option>
-            <option value={false}>Inactive</option>
-          </select>
-          {errors?.isActive && <span className="text-danger">{errors.isActive.message}</span>}
-        </div>
-        <div className="form-group col-lg-6 col-md-6 col-12">
-        <label>User Type</label>
-        <select
-          {...register("userType", { required: "User Type is required" })}
-          className="cstm-select-input"
-          placeholder="Select user type"
-        >
-          <option value="">Select user type</option>
-          <option value="0">For All Users</option>
-          <option value="1">For New Users</option>
-          <option value="3">For 3+ Bookings</option>
-          <option value="5">For 5+ Bookings</option>
-        </select>
-        {errors?.userType && <span className="text-danger">{errors.userType.message}</span>}
-      </div>
-      </div>
-    </div>
-    <div className="d-flex justify-content-end border-top mt-3 pt-2">
-      <button type="submit" className="btn btn-primary">
-        {isEdit ? "Update" : "Add"}
-      </button>
-    </div>
-  </form>
-</Modal>
-
+      <Modal isOpen={isOpen} onClose={closeModal} title={isEdit ? 'Edit Coupon' : 'Add Coupon'}>
+        <form onSubmit={handleSubmit(saveCoupon)}>
+          <div className="scroll-body">
+            <div className="row m-0">
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>Coupon Code</label>
+                <input
+                  type="text"
+                  {...register("code", { required: "Coupon Code is required" })}
+                  className="cstm-select-input"
+                  placeholder="Enter coupon code"
+                />
+                {errors?.code && <span className="text-danger">{errors.code.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>Discount Type</label>
+                <select
+                  {...register("discountType", { required: "Discount Type is required" })}
+                  className="cstm-select-input"
+                >
+                  <option value="percentage">Percentage</option>
+                </select>
+                {errors?.discountType && <span className="text-danger">{errors.discountType.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>Discount Value</label>
+                <input
+                  type="number"
+                  {...register("discountValue", { required: "Discount Value is required" })}
+                  className="cstm-select-input"
+                  placeholder="Enter discount value"
+                />
+                {errors?.discountValue && <span className="text-danger">{errors.discountValue.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>Max Discount Amount</label>
+                <input
+                  type="number"
+                  {...register("maxDiscountAmount", { required: "Max Discount Amount is required" })}
+                  className="cstm-select-input"
+                  placeholder="Enter max discount amount"
+                />
+                {errors?.maxDiscountAmount && <span className="text-danger">{errors.maxDiscountAmount.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>Min Booking Amount</label>
+                <input
+                  type="number"
+                  {...register("minPurchaseAmount", { required: "Min Purchase Amount is required" })}
+                  className="cstm-select-input"
+                  placeholder="Enter min purchase amount"
+                />
+                {errors?.minPurchaseAmount && <span className="text-danger">{errors.minPurchaseAmount.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label for="session-date">Start Date</label>
+                <input
+                  type="date"
+                  id="session-date" name="session-date"
+                  {...register("startDate", { required: "Start Date is required" })}
+                  className="cstm-select-input"
+                />
+                {errors?.startDate && <span className="text-danger">{errors.startDate.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label for="session-date">Expiry Date</label>
+                <input
+                  type="date"
+                  id="session-date" name="session-date"
+                  {...register("expiryDate", { required: "Expiry Date is required" })}
+                  className="cstm-select-input"
+                />
+                {errors?.expiryDate && <span className="text-danger">{errors.expiryDate.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>Active</label>
+                <select
+                  {...register("isActive", { required: "Active status is required" })}
+                  className="cstm-select-input"
+                >
+                  <option value={true}>Active</option>
+                  <option value={false}>Inactive</option>
+                </select>
+                {errors?.isActive && <span className="text-danger">{errors.isActive.message}</span>}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label>User Type</label>
+                <select
+                  {...register("userType", { required: "User Type is required" })}
+                  className="cstm-select-input"
+                  placeholder="Select user type"
+                >
+                  <option value="">Select user type</option>
+                  <option value="0">For All Users</option>
+                  <option value="1">For New Users</option>
+                  <option value="3">For 3+ Bookings</option>
+                  <option value="5">For 5+ Bookings</option>
+                </select>
+                {errors?.userType && <span className="text-danger">{errors.userType.message}</span>}
+              </div>
+            </div>
+          </div>
+          <div className="d-flex justify-content-end border-top mt-3 pt-2">
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+              {isEdit ? "Update" : "Add"}
+            </button>
+          </div>
+        </form>
+      </Modal>
+      <ConfirmationModal
+        isOpen={confirmationOpen}
+        onClose={closeConfirmationModal}
+        onConfirm={deleteCoupon}
+        message="Are you sure you want to delete this coupon?"
+      />
     </div>
   );
 }

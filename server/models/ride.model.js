@@ -34,6 +34,7 @@ const rideSchema = new Schema({
   },
   totalPrice: { type: Number },
   totalDistance: { type: Number },
+  isInvoiceGenerate: { type: Boolean, default: false },
   paymentId: { type: Schema.Types.ObjectId, ref: 'payment' },
   trip: {
     tripType: { type: String },
