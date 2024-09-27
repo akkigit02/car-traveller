@@ -7,7 +7,9 @@ const UserModel = require("../models/user.model");
 const BillingModel = require('../models/billing.model')
 const EnquirePackageModel = require("../models/enquire.package.model")
 const PaymentModel = require('../models/payment.model');
-
+const NewBokkingTemplate = require('../templates/NewBokking')
+const NewLeadTemplate = require('../templates/NewLead')
+const NotificationModel = require('../models/notification.model')
 const {
   estimateRouteDistance,
   dateDifference,
@@ -15,9 +17,10 @@ const {
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../services/phonepe.service');
-const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
+const { isSchedulabel, roundToDecimalPlaces, getNewBookingNumber } = require('../utils/format.util');
 const { getTotalPrice } = require('../services/calculation.service');
 const { sendBookingConfirmedSms } = require('../services/sms.service');
+const SMTPService = require('../services/smtp.service');
 
 const getCities = async (req, res) => {
   try {
@@ -247,7 +250,7 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
       totalDistance: parseFloat(price?.distance)
     }
   });
-  // send notification to admin
+  await sendNotificationToAdmin(rideId, 'NEW_LEAD')
 
 }
 
@@ -269,7 +272,6 @@ const saveBooking = async (req, res) => {
         tripType: body?.bookingDetails?.tripType,
         hourlyType: body?.bookingDetails?.hourlyType
       },
-      paymenrtStatus: "pending",
     };
 
     if (isCityCab) {
@@ -288,6 +290,8 @@ const saveBooking = async (req, res) => {
         year: new Date(body?.bookingDetails?.returnDate).getFullYear(),
       }
     }
+    const lastBookingDetails = await RideModel.find({}).sort({ createdOn: -1 }).limit(1)
+    bookingData['bookingNo'] = getNewBookingNumber(lastBookingDetails[0]?.bookingNo)
     const ride = await RideModel.create(bookingData);
     if (!res) {
       updatePriceAndSendNotification(body?.bookingDetails, ride._id)
@@ -462,7 +466,7 @@ const initiatePayment = async (req, res) => {
   try {
     const { body } = req
     let couponDetails = { discountAmount: 0 }
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }, { totalPrice: 1, totalDistance: 1 }).lean()
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(body.bookingId) }).lean()
     if (body?.coupon?.isApply) {
       const coupon = await CouponModel.findOne({ code: body.coupon.code })
       const couponValidate = await validateCalculateCouponCode(bookingDetails, coupon)
@@ -526,7 +530,10 @@ const initiatePayment = async (req, res) => {
         paymentId = payment._id
       }
       await RideModel.updateOne({ _id: bookingDetails._id }, { $set: { paymentId: paymentId, rideStatus: 'booked' } })
-      // sendBookingConfirmedSms(req.user.primaryPhone, { bookingId: "DDD1001", name: req.user.name })
+      if (process.env.NODE_ENV === 'development') {
+        // sendBookingConfirmedSms(req.user.primaryPhone, { bookingId: "DDD1001", name: req.user.name })
+        sendNotificationToAdmin(bookingDetails._id, 'NEW_BOOKING')
+      }
       return res.status(200).send({ message: 'Ride Bokked successfully' })
     }
   } catch (error) {
@@ -534,6 +541,57 @@ const initiatePayment = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 }
+
+const sendNotificationToAdmin = async (bookingId, type) => {
+  const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
+    .populate([
+      { path: 'pickUpCity', select: 'name' },
+      { path: 'dropCity', select: 'name' },
+      { path: 'vehicleId', select: 'vehicleType vehicleName' },
+      { path: 'paymentId' }
+    ]).lean();
+  const user = await UserModel.findOne({ _id: bookingDetails.userId })
+  const payload = {
+    bookingId: bookingDetails.bookingNo,
+    clientName: bookingDetails.name,
+    phoneNo: user.primaryPhone,
+    pickupLocation: bookingDetails.pickupLocation,
+    dropLocation: bookingDetails.dropoffLocation,
+    pickupDate: `${bookingDetails.pickupDate.date}-${bookingDetails.pickupDate.month}-${bookingDetails.pickupDate.year}`,
+    pickupTime: bookingDetails.pickupTime,
+    payableAmount: bookingDetails?.paymentId?.payableAmount || bookingDetails.totalPrice,
+    advancePercent: bookingDetails?.paymentId?.advancePercent,
+    vehicleType: bookingDetails.vehicleId.vehicleType,
+    vehicleName: bookingDetails.vehicleId.vehicleName,
+    bookingType: bookingDetails.trip.tripType,
+    paymentType: bookingDetails.paymentId?.isPayLater ? 'Pay Latter' : bookingDetails.paymentId.isAdvancePaymentCompleted ? 'Advanced' : ''
+  }
+  const notificationData = {
+    type,
+    data: payload,
+    isRead: false,
+  }
+  const adminList = await UserModel.find({ 'modules.userType': 'ADMIN' }).lean()
+  for (const admin of adminList) {
+    const emailData = { to: admin.email }
+    notificationData['userId'] = admin._id;
+    if (type === 'NEW_BOOKING') {
+      emailData['subject'] = `New Booking Received - Booking ID: #${bookingDetails.bookingNo}`
+      emailData['html'] = NewBokkingTemplate({ fullName: admin.name, payload })
+      notificationData['title'] = 'New Bokking Recived';
+    }
+    else if (type === 'NEW_LEAD') {
+      emailData['subject'] = `New Lead Received - Lead ID: #${bookingDetails.bookingNo}`
+      emailData['html'] = NewLeadTemplate({ fullName: admin.name, payload })
+
+      notificationData['title'] = 'New Lead Recived';
+    }
+    await new SMTPService().sendMail(emailData)
+    await NotificationModel.create(notificationData)
+  }
+}
+
+
 const initiateDuePayment = async (req, res) => {
   try {
     const { body } = req

@@ -20,14 +20,22 @@ const getDateAndTimeString = (dateObj, time) => {
 }
 
 function roundToDecimalPlaces(number, decimalPlaces = 2) {
-    if(!number) return 0;
+    if (!number) return 0;
     const factor = Math.pow(10, decimalPlaces);
     return Math.round(number * factor) / factor;
-  }
+}
 
+function getNewBookingNumber(lastBookingId) {
+    let bookingNumber = 1;
+    if (lastBookingId) {
+        bookingNumber = Number(lastBookingId.substr(9)) + 1; // Increment
+    }
+    return `DDD${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, 0)}${String(bookingNumber).padStart(4, '0')}`;
+}
 module.exports = {
     formatDateAndTime,
     isSchedulabel,
     getDateAndTimeString,
-    roundToDecimalPlaces
+    roundToDecimalPlaces,
+    getNewBookingNumber
 }

@@ -6,7 +6,7 @@ const {
 } = require("../utils/common.utils");
 const { JWT_SECRET_KEY } = process.env;
 const JWT = require("jsonwebtoken");
-const EmailOtpTemplate = require('../templates/email/OtpTemplate')
+const EmailOtpTemplate = require('../templates/OtpTemplate')
 
 const { saveBooking } = require("./client.manager");
 const SMTPService = require("../services/smtp.service");
@@ -71,11 +71,13 @@ const login = async (req, res) => {
           },
         }
       );
-      await sendOtpSms(`91${user.primaryPhone}`, otp)
-      const emailtempalte = EmailOtpTemplate({ fullName: user.name, otp })
-      const emailData = { to: user.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
-      if (user.email)
-        new SMTPService().sendMail(emailData)
+      if (process.env.NODE_ENV !== 'development') {
+        await sendOtpSms(`91${user.primaryPhone}`, otp)
+        const emailtempalte = EmailOtpTemplate({ fullName: user.name, otp })
+        const emailData = { to: user.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+        if (user.email)
+          new SMTPService().sendMail(emailData)
+      }
       return res.status(200).send({ session: { sessionId, email: user.email, phone: user.primaryPhone }, status: "TWO_STEP_AUTHENTICATION", message: 'Otp Send Succcessfully' });
     }
     const userSession = await getUserSession(user._id);
@@ -185,11 +187,13 @@ const signup = async (req, res) => {
       }
     );
     const ride = await saveBooking({ body, user })
-    await sendOtpSms(`91${body.userDetails.phoneNumber}`, otp)
-    const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
-    const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
-    if (emailData)
-      new SMTPService().sendMail(emailData)
+    if (process.env.NODE_ENV !== 'development') {
+      await sendOtpSms(`91${body.userDetails.phoneNumber}`, otp)
+      const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
+      const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+      if (emailData)
+        new SMTPService().sendMail(emailData)
+    }
     res.status(200).send({ sessionId: sessionId, booking_id: ride?.rideId, status: "TWO_STEP_AUTHENTICATION", });
   } catch (error) {
     console.log(error);
