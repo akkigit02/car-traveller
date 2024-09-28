@@ -18,10 +18,17 @@ const getDateAndTimeString = (dateObj, time) => {
     return `${dateObj.date}/${dateObj.month}/${dateObj.year}${time ? (' ' + time) : ''}`
 }
 
+function roundToDecimalPlaces(number, decimalPlaces = 2) {
+    if (!number) return 0;
+    const factor = Math.pow(10, decimalPlaces);
+    return Math.round(number * factor) / factor;
+}
+
 
 
 export {
     formatDateAndTime,
     isSchedulabel,
-    getDateAndTimeString
+    getDateAndTimeString,
+    roundToDecimalPlaces
 }

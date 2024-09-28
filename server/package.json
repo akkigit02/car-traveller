@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@googlemaps/google-maps-services-js": "^3.4.0",
     "axios": "^1.7.2",
     "bcrypt": "^5.1.1",

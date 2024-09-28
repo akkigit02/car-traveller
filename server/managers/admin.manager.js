@@ -9,6 +9,10 @@ const { getTotalPrice } = require('../services/calculation.service');
 const CitiesModel = require('../models/cities.model');
 const NotificationModel = require('../models/notification.model')
 const { createCSVFile } = require('../utils/csv.util');
+const PaymentModel = require('../models/payment.model');
+const { CITY_CAB_PRICE } = require('../constants/common.constants');
+const { roundToDecimalPlaces } = require('../utils/format.util');
+const { ObjectId } = require('mongoose').Types
 
 const saveVehiclePrice = async (req, res) => {
     try {
@@ -113,8 +117,88 @@ const getVehicleById = async (req, res) => {
 const getBookingInfo = async (req, res) => {
     try {
         const query = req.query
-        const bookings = await RideModel.find({ rideStatus: 'completed' }).populate('userId', 'primaryPhone').sort({ createdOn: -1 }).skip(parseInt(query.skip)).limit(parseInt(query.limit))
-        res.status(200).send({ bookings })
+        const bookingList = await RideModel.aggregate([
+            {
+              $match: { rideStatus: { $in: ['completed', 'booked'] } }
+            },
+            { $sort: { createdOn: -1 } },
+            { $skip: Number(query.skip) },
+            { $limit: Number(query.limit) },
+            {
+              $lookup: {
+                from: 'payments',
+                localField: 'paymentId',
+                foreignField: '_id',
+                as: 'bookingPayment'
+              }
+            },
+            {
+              $unwind: {
+                path: '$bookingPayment',
+                preserveNullAndEmptyArrays: true
+              }
+            },
+            {
+                $lookup: {
+                  from: 'users',
+                  localField: 'userId',
+                  foreignField: '_id',
+                  as: 'user',
+                  pipeline: [{
+                    $project: {
+                    primaryPhone: 1
+                  }}]
+                }
+              },
+              {
+                $unwind: {
+                  path: '$user',
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+              {
+                $lookup: {
+                  from: 'cities',
+                  localField: 'pickUpCity',
+                  foreignField: '_id',
+                  as: 'city',
+                  pipeline: [{
+                    $project: {
+                    name: 1
+                  }}]
+                }
+              },
+              {
+                $unwind: {
+                  path: '$city',
+                  preserveNullAndEmptyArrays: true
+                }
+              },
+            {
+              $project: {
+                name: 1,
+                pickupDate: 1,
+                pickupTime: 1,
+                trip: 1,
+                dropDate: 1,
+                payableAmount: '$bookingPayment.payableAmount',
+                dueAmount: '$bookingPayment.dueAmount',
+                totalPrice: 1,
+                rideStatus: 1,
+                phone: '$user.primaryPhone',
+                isInvoiceGenerate: 1,
+                name: 1,
+                pickUpCity: 1,
+                pickupCityName: '$city.name',
+                pickupLocation: 1,
+                pickupTime: 1,
+                rideStatus: 1,
+                totalDistance: 1,
+                dropoffLocation: 1
+
+              }
+            }])
+        res.status(200).send({ bookings: bookingList })
     } catch (error) {
         logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error, userId: req?.userId })
         res.status(500).send({ message: 'Server Error' })
@@ -461,6 +545,157 @@ const getRecentNotification = async (req, res) => {
 
 
 
+const generateFinalInvoice = async (req, res) => {
+    try {
+        const rideId = req?.body?.id
+        delete req?.body?.id
+        const body = req?.body
+
+        const ride = await RideModel.aggregate([{
+            $match: { _id: new ObjectId(rideId) }
+        },
+        {
+            $lookup: {
+                from: 'payments',
+                localField: 'paymentId',
+                foreignField: '_id',
+                as: 'payments'
+            }
+        },
+        {
+            $unwind: {
+                path: '$payments',
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $lookup: {
+                from: 'prices',
+                localField: 'vehicleId',
+                foreignField: '_id',
+                as: 'vehiclePrice'
+            }
+        },
+        {
+            $unwind: {
+                path: '$vehiclePrice',
+                preserveNullAndEmptyArrays: true
+            }
+        }, {
+            $lookup: {
+                from: 'cities',
+                localField: 'pickUpCity',
+                foreignField: '_id',
+                as: 'city'
+            }
+        },
+        {
+            $unwind: {
+                path: '$city',
+                preserveNullAndEmptyArrays: true
+            }
+        },
+        {
+            $project: {
+                name: 1,
+                pickupDate: 1,
+                pickupTime: 1,
+                dropDate: 1,
+                totalPrice: 1,
+                totalDistance: 1,
+                isInvoiceGenerate: 1,
+                payments: '$payments',
+                trip: 1,
+                rideStatus: 1,
+                reason: 1,
+                isConnected: 1,
+                vehiclePrice: '$vehiclePrice',
+                cities: '$city'
+            }
+        }
+        ])
+        const rideInfo = ride[0]
+
+        const oldData = {
+            pickupDate: rideInfo?.pickupDate,
+            pickupTime: rideInfo?.pickupTime,
+            dropDate: rideInfo?.dropDate,
+            totalPrice: rideInfo?.totalPrice,
+            totalDistance: rideInfo?.totalDistance,
+            isInvoiceGenerate: rideInfo?.isInvoiceGenerate,
+            payments: rideInfo?.payments,
+            trip: rideInfo?.trip,
+            rideStatus: rideInfo?.rideStatus,
+        }
+        let extraAmount = 0
+        let distance = parseFloat(body?.totalDistance) || 0
+        let extraDistance = (distance - rideInfo?.totalDistance) || 0;
+        if ((extraDistance > 0) || (rideInfo?.trip?.tripType === 'hourly')) {
+
+            /**********************************************************************************************************/
+            if (rideInfo?.trip?.tripType === 'oneWay') {
+                let totalPrice = null
+                let metroCityPrice = 1
+                if (!rideInfo?.cities?.isMetroCity) metroCityPrice = 1.75
+                let extra = 1
+                if (rideInfo?.vehiclePrice?.vehicleType === 'Traveller') {
+                    extra = 2
+                }
+                totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm * metroCityPrice * extra;
+                extraAmount = totalPrice
+            } else if (rideInfo?.trip?.tripType === 'roundTrip') {
+                /**********************************************************************************************************/
+                let totalPrice = null
+                totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm;
+                extraAmount = totalPrice
+
+            } else if (rideInfo?.trip?.tripType === 'cityCab') {
+                /**********************************************************************************************************/
+
+                let totalPrice = null
+                const priceInfo = CITY_CAB_PRICE.find(info => info.max > extraDistance && info.min < extraDistance)
+
+       
+                if (['Sedan'].includes(rideInfo?.vehiclePrice.vehicleType)) {
+                    totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * extraDistance
+                } else if (['Hatchback'].includes(rideInfo?.vehiclePrice.vehicleType)) {
+                    totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * extraDistance
+                } else {
+                    totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * extraDistance
+                }
+
+                extraAmount = totalPrice
+            } else if (rideInfo?.trip?.tripType === 'hourly') {
+                /*****************************************************************************************************/
+                let totalPrice = 0
+                let hourlyData = rideInfo?.vehiclePrice?.hourly.find(hr => hr.type === rideInfo?.trip?.hourlyType)
+                if (hourlyData) {
+                    let extraHour = (body?.totalHour ? parseFloat(body?.totalHour) : 0) - hourlyData?.hour
+
+                    if (extraHour && extraHour > 0) {
+                        totalPrice = extraHour * rideInfo?.vehiclePrice?.upToCostPerHour
+                    }
+                    if (extraDistance > 0)
+                        totalPrice = totalPrice + (extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm) || 0
+                }
+                extraAmount = totalPrice
+            }
+
+        } else {
+            extraAmount = 0
+        }
+        let payableAmount = extraAmount + rideInfo?.payments?.payableAmount
+        let dueAmount = extraAmount + rideInfo?.payments?.payableAmount
+        await PaymentModel.updateOne({ _id: rideInfo?.payments?._id }, { extraAmount: roundToDecimalPlaces(extraAmount, 2), payableAmount: payableAmount, dueAmount: dueAmount })
+        await RideModel.updateOne({ _id: rideInfo?._id }, { $set: {rideStatus: 'completed', isInvoiceGenerate: true }, $push: {activity: oldData}})
+
+        res.status(200).send({ message: 'Invoice publish successfully!', booking: { extraAmount: roundToDecimalPlaces(extraAmount, 2), isInvoiceGenerate: true, payableAmount, dueAmount } });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> generateFinalInvoice', { error: error, userId: req.userId });
+        res.status(500).send({ message: 'Server Error' });
+    }
+}
+
 module.exports = {
     saveVehiclePrice,
     getVehiclePrice,
@@ -504,6 +739,7 @@ module.exports = {
 
     getVehicleByBookingType,
     confirmBooking,
-    getRecentNotification
+    getRecentNotification,
+    generateFinalInvoice
 
 }

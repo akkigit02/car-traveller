@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
-import { formatDateAndTime, getDateAndTimeString, isSchedulabel } from "../../utils/format.util";
+import { formatDateAndTime, getDateAndTimeString, isSchedulabel, roundToDecimalPlaces } from "../../utils/format.util";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
 import Tooltip from "../Tooltip";
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -25,6 +25,8 @@ export default function BookingManagement() {
   const [advanceAmount, setAdvanceAmount] = useState(null)
   const [advanceAmountError, setAdvanceAmountError] = useState('')
   const [isConfirmBooking, setIsConfirmBooking] = useState(false)
+  const [isInvoiceGenerate, setIsInvoiceGenerate] = useState(false)
+
   const [suggestions, setSuggestions] = useState({
     pickupLocationId: '',
     dropLocationId: '',
@@ -51,6 +53,10 @@ export default function BookingManagement() {
     defaultValues: {
       bookingType: 'oneWay'
     }
+  });
+
+  const { register: register1, handleSubmit: handleSubmit1, reset: reset1,watch: watch1 ,setValue: setValue1, formState: { errors: errors1, isSubmitting: isSubmitting1 } } = useForm({
+    mode: "onChange",
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -322,6 +328,49 @@ export default function BookingManagement() {
     setValue('pickupTime', '00:15 AM');
   };
 
+  const getDataForInvoice = (data) => {
+    try {
+      setIsInvoiceGenerate(true)
+
+      reset1({
+        tripType: data?.trip?.tripType,
+        previousDistance: data?.totalDistance,
+        id: data?._id,
+        hourlyType: data?.trip?.hourlyType,
+      })
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const publishInvoice = async (value) => {
+    try {
+
+      const {data} = await axios({
+        method: 'POST',
+        url: '/api/admin/publish-invoice',
+        data: value
+      })
+
+      console.log(data)
+      setList(old => old.map((li) => {
+
+        if(li._id == value.id) {
+          li['payableAmount'] = data?.booking?.payableAmount
+          li['dueAmount'] = data?.booking?.dueAmount
+          li['isInvoiceGenerate'] = data?.booking?.isInvoiceGenerate
+        }
+
+        return li
+      }))
+      reset1({})
+      toast.success(data?.message);
+      setIsInvoiceGenerate(false)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const closeConfirmationModal = () => {
     setConfirmationOpen(false);
     setSelectedBookingId(null);
@@ -360,8 +409,8 @@ export default function BookingManagement() {
               <th>Booking Type</th>
               <th>Mobile Number</th>
               <th>Booking Date</th>
-              <th>Total Price</th>
-              <th>Advance Payment</th>
+              <th>Booking Amount</th>
+              <th>Due Amount</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -371,15 +420,25 @@ export default function BookingManagement() {
                 <tr key={index}>
                   <td>{li.name}</td>
                   <td>{TRIP_TYPE.find(ele => ele.value === li.trip.tripType)?.name}</td>
-                  <td>{li?.userId?.primaryPhone}</td>
+                  <td>{li?.phone}</td>
                   <td>{getDateAndTimeString(li.pickupDate)}</td>
-                  <td>{li.totalPrice}</td>
-                  <td>{li.advancePayment}</td>
+                  <td> &#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
+                  <td >&#8377; {roundToDecimalPlaces(li?.dueAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
                   <td className="d-flex align-items-center">
                     <Tooltip message={'View More'} direction="bottom">
                       <button
                         // onClick={() => deleteVehiclePrice(li._id)}
                         onClick={() => setPreviewData(li)}
+                        className="icon-btn me-2"
+                        type="button"
+                      >
+                        <i className="fa fa-eye"></i>
+                      </button>
+                    </Tooltip>
+                    <Tooltip message={'Publish Invoice'} direction="bottom">
+                      <button
+                        // onClick={() => deleteVehiclePrice(li._id)}
+                        onClick={() => getDataForInvoice(li)}
                         className="icon-btn me-2"
                         type="button"
                       >
@@ -430,7 +489,7 @@ export default function BookingManagement() {
                   {...register("hourlyType", { required: 'Hourly Type is Required' })}
                   className="cstm-select-input" >
                     <option value='' disabled>Please Select</option>
-                  {HOURLY_TYPE.map(hour => (<option value={hour.value}>{hour.name}</option>))}
+                  {HOURLY_TYPE.map(hour => (<option key={'hr'+hour.value} value={hour.value}>{hour.name}</option>))}
                 </select>
                 {errors?.hourlyType && (
                   <span className="text-danger">{errors.hourlyType.message}</span>
@@ -638,8 +697,8 @@ export default function BookingManagement() {
           </div>
           <div className="d-flex justify-content-end pt-2">
             <button type="submit" disabled={isSubmitting} className="cstm-btn">
-              {isSubmitting && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
+              {isSubmitting && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only">Loading...</span>
             </div>}
               Proceed
             </button>
@@ -677,8 +736,8 @@ export default function BookingManagement() {
             Cancel
           </button>
           <button type="button" disabled={isConfirmBooking} className="btn btn-primary" onClick={() => confirmBooking()}>
-          {isConfirmBooking && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only"></span>
+          {isConfirmBooking && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only"></span>
             </div>}
             Confirm
           </button>
@@ -703,7 +762,7 @@ export default function BookingManagement() {
           {previewData?.trip?.tripType !== 'cityCab' && <div className="col-lg-6 col-md-6 col-12">
             <label>Pickup City</label>
             <div className="mb-0 desti-details-2">
-              {previewData?.pickUpCity}
+              {previewData?.pickupCityName}
             </div>
           </div>}
           <div className="col-lg-6 col-md-6 col-12">
@@ -721,13 +780,13 @@ export default function BookingManagement() {
           <div className="col-lg-6 col-md-6 col-12">
             <label>Total Amount</label>
             <div className="mb-0 desti-details-2">
-              {previewData?.totalPrice}
+              {previewData?.payableAmount}
             </div>
           </div>
           <div className="col-lg-6 col-md-6 col-12">
-            <label>Advance Amount</label>
+            <label>Due Amount</label>
             <div className="mb-0 desti-details-2">
-             {previewData?.advancePayment ? <> {previewData?.advancePayment} </> :'-'}
+             {previewData?.dueAmount ? <> {previewData?.dueAmount} </> :'-'}
             </div>
           </div>
         </div>
@@ -750,12 +809,86 @@ export default function BookingManagement() {
                 Cancel
             </button>
           <button type="button" className="cstm-btn" disabled={isConfirmBooking} onClick={() => confirmCancel()}>
-            {isConfirmBooking && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only">Loading...</span>
+            {isConfirmBooking && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only">Loading...</span>
             </div>}
             Confirm
           </button>
           </div>
+        </Modal>}
+
+        {isInvoiceGenerate && <Modal isOpen={isInvoiceGenerate} onClose={() => setIsInvoiceGenerate(false)} title={'Publish Invoice'}>
+        <form onSubmit={handleSubmit1(publishInvoice)} className="modal-dropdown">
+          <div className="scroll-body">
+            <div className="form-row row m-0">
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="tripType">Booking Type</label>
+                <div className="cstm-select-input" >
+                  {TRIP_TYPE.find(hour => hour.value === watch1('tripType'))?.name}
+                </div>
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="previousDistance"> Previous Distance</label>
+                <div className="cstm-select-input" />
+                {watch1('previousDistance')} km
+              </div>
+              {watch1('tripType') === 'hourly' && 
+              <>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="hourlyType">Hourly Type</label>
+                <div className="cstm-select-input" >
+                  {HOURLY_TYPE.find(hour => hour.value === watch1('hourlyType'))?.name}
+                </div>
+              </div>
+
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="hourlyType">Previous Hour</label>
+                <div className="cstm-select-input">
+                {HOURLY_TYPE.find(hour => hour.value === watch1('hourlyType'))?.hour} hr
+                </div>
+                {errors1?.totalHour && (
+                  <span className="text-danger">{errors1.totalHour.message}</span>
+                )}
+              </div>
+
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="hourlyType">Total Hour</label>
+                <input
+                  {...register1("totalHour", { required: 'Total hour is Required' })}
+                  type='number'
+                  className="cstm-select-input"
+                  placeholder="Please enter total hour"
+                />
+                {errors1?.totalHour && (
+                  <span className="text-danger">{errors1.totalHour.message}</span>
+                )}
+              </div>
+              </>}
+
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="totalDistance"> Total Distance</label>
+                <input
+                  {...register1("totalDistance", { required: 'Total distance is Required' })}
+                  className="cstm-select-input"
+                   type='number'
+                  placeholder="Please enter total distance"
+                />
+
+                {errors1?.totalDistance && (
+                  <span className="text-danger">{errors1.totalDistance.message}</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="d-flex justify-content-end pt-2">
+            <button type="submit" disabled={isSubmitting1} className="cstm-btn">
+              {isSubmitting1 && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>}
+              Confirm
+            </button>
+          </div>
+        </form>
         </Modal>}
     </div>
   );
