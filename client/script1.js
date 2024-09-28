@@ -506,9 +506,3 @@ document.addEventListener('DOMContentLoaded', () => {
     selectInputType('cityCab');
 });
 
-
-
-if($('.ltn__parallax-effect-active').length){
-    var scene = $('.ltn__parallax-effect-active').get(0);
-    var parallaxInstance = new Parallax(scene);
-}
