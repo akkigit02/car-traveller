@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from "../Modal";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
-import { formatDateAndTime, getDateAndTimeString, isSchedulabel } from "../../utils/format.util";
+import { formatDateAndTime, getDateAndTimeString, isSchedulabel, roundToDecimalPlaces } from "../../utils/format.util";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
 import Tooltip from "../Tooltip";
 import InfiniteScroll from 'react-infinite-scroll-component';
