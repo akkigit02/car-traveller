@@ -32,9 +32,12 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
     };
     return (
         <>
-            <h4 className="form-title">
+            <h4 className="mb-4">
                 Verify OTP
             </h4>
+            <p className=" mb-3">
+            Verify OTP for quick, secure access. Protect your<br></br> account with a simple code, ensuring<br></br> safety and preventing unauthorized entry. </p> 
+           
             <div className="form-group-login">
                 <label>
                     <i class="fa fa-key"></i>
