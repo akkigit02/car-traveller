@@ -337,7 +337,7 @@ a {
     height: auto !important;
 }
 .container-login{
-    margin: 0 auto !important;
+    margin:  auto 10px !important;
 }
 .dashboard-grid{
     display: flex !important;
