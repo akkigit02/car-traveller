@@ -1,7 +1,8 @@
 const { faker } = require('@faker-js/faker');
 const mongoose = require('mongoose');
 const Ride = require("../models/ride.model");
-const dbName = process.env.DB_NAME;
+const dbName = process.env.DB_NAME ? process.env.DB_NAME : 'traveller';
+console.log("DATABASE:",dbName)
 
 mongoose.connect(`mongodb://localhost:27017/${dbName}`, {
   serverSelectionTimeoutMS: 30000,
