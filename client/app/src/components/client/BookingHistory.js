@@ -25,8 +25,9 @@ function BookingHistory() {
   const [filter, setFilter] = useState('all');
   const [reason, setReason] = useState('')
   const [reasonError, setReasonError] = useState('')
+  const [isConfirmSubmit, setIsConfirmSubmit] = useState(false)
 
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm({
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
   });
 
@@ -69,7 +70,7 @@ function BookingHistory() {
 
       // Process the list of bookings
       const list = data.list.map(ele => {
-        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime)||['none','cancelled'].includes(ele.rideStatus);
+        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime) || ['none', 'cancelled'].includes(ele.rideStatus);
         return ele;
       });
 
@@ -93,6 +94,7 @@ function BookingHistory() {
 
   const cancelBooking = async (bookingId) => {
     try {
+      setIsConfirmSubmit(true)
       if (!reason?.length) {
         setReasonError('Reason is required')
         return;
@@ -114,6 +116,8 @@ function BookingHistory() {
     } catch (error) {
       console.log(error);
       toast.error(error?.response?.data?.message || "Something went wrong please try again!");
+    } finally {
+      setIsConfirmSubmit(false)
     }
   };
 
@@ -312,7 +316,10 @@ function BookingHistory() {
               </div>
             </div>
             <div className="d-flex justify-content-end border-top mt-3 pt-2">
-              <button type="submit" className="btn btn-primary">
+              <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+                {isSubmitting && <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only"></span>
+                </div>}
                 Reshedule
               </button>
             </div>
@@ -334,7 +341,10 @@ function BookingHistory() {
             <button type="button" className="btn btn-primary" onClick={closeConfirmationModal}>
               Cancel
             </button>
-            <button type="button" className="btn btn-primary" onClick={() => confirmCancel()}>
+            <button type="button" className="btn btn-primary" disabled={isConfirmSubmit} onClick={() => confirmCancel()}>
+            {isConfirmSubmit && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
+            </div>}
               Confirm
             </button>
           </div>

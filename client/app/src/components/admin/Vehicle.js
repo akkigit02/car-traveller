@@ -4,11 +4,14 @@ import { useForm } from "react-hook-form";
 import { VEHICLE_TYPE, FUEL_TYPE } from "../../constants/common.constants";
 import axios from "axios";
 import Tooltip from "../Tooltip";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
   const [list, setList] = useState([]);
-  const { register, handleSubmit, reset } = useForm({ mode: "onChange" });
+  const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm({ mode: "onChange" });
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
 
   useEffect(() => {
     getVehicle();
@@ -63,7 +66,7 @@ export default function VehiclePricing() {
         method: "get",
         url: `/api/admin/vehicle/${id}`,
       });
-  
+
       // Format dates for the form
       const formattedData = {
         ...res.data.price,
@@ -71,31 +74,30 @@ export default function VehiclePricing() {
         puc: formatDateToDDMMYYYY(res.data.price.puc),
         insuranceExpiryDate: formatDateToDDMMYYYY(res.data.price.insuranceExpiryDate),
         roadTax: formatDateToDDMMYYYY(res.data.price.roadTax),
-        maintenanceDate:formatDateToDDMMYYYY(res.data.price.maintenanceDate),
+        maintenanceDate: formatDateToDDMMYYYY(res.data.price.maintenanceDate),
       };
-  
+
       reset(formattedData);
       setIsOpen(true);
     } catch (error) {
       console.error(error);
     }
   };
-  
+
 
   const closeModal = () => {
     reset({});
     setIsOpen(false);
   };
 
-  const deleteVehicle = async (id) => {
+  const deleteVehicle = async () => {
     try {
-      const confirmation = window.confirm("Do you really want to delete!");
-      if (!confirmation) return;
       const res = await axios({
         method: "delete",
-        url: "/api/admin/vehicle/" + id,
+        url: "/api/admin/vehicle/" + selectedId,
       });
-      setList(list.filter((li) => li._id !== id));
+      setList(list.filter((li) => li._id !== selectedId));
+      setSelectedId(null)
     } catch (error) {
       console.error(error);
     }
@@ -103,11 +105,11 @@ export default function VehiclePricing() {
 
   function formatDateToDDMMYYYY(dateString) {
     const date = new Date(dateString);
-  const year = date.getUTCFullYear();
-  const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-  const day = String(date.getUTCDate()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}`;
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+    const day = String(date.getUTCDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 
   return (
@@ -118,7 +120,7 @@ export default function VehiclePricing() {
         </div>
         <div>
           <button
-          className="cstm-btn"
+            className="cstm-btn"
             onClick={() => {
               reset({});
               setIsOpen(true);
@@ -160,7 +162,7 @@ export default function VehiclePricing() {
               </td>
               <td>{li.mileage}</td>
               <td>{li.capacity.totalNumberOfSeats}</td>
-              <td>{li.capacity.luggage ? "Yes": "No"}</td>
+              <td>{li.capacity.luggage ? "Yes" : "No"}</td>
               <td>{formatDateToDDMMYYYY(li.registrationDate)}</td>
               <td>{formatDateToDDMMYYYY(li.puc)}</td>
               <td>{formatDateToDDMMYYYY(li.insuranceExpiryDate)}</td>
@@ -169,7 +171,7 @@ export default function VehiclePricing() {
               <td>{li.maintenanceReason}</td>
               <td>
                 <div className="d-flex align-items-center ">
-                  <Tooltip message={'Edit'} direction="bottom">         
+                  <Tooltip message={'Edit'} direction="bottom">
                     <button
                       onClick={() => getVehicleById(li._id)}
                       className="icon-btn me-2"
@@ -180,10 +182,10 @@ export default function VehiclePricing() {
                     >
                       <i className="fa fa-edit"></i>
                     </button>
-                    </Tooltip>
-                    <Tooltip message={'Delete'} direction="bottom">
+                  </Tooltip>
+                  <Tooltip message={'Delete'} direction="bottom">
                     <button
-                      onClick={() => deleteVehicle(li._id)}
+                      onClick={() => { setConfirmationOpen(true); setSelectedId(li._id) }}
                       className="icon-btn"
                       type="button"
                       data-toggle="tooltip"
@@ -192,16 +194,16 @@ export default function VehiclePricing() {
                     >
                       <i className="fa fa-trash"></i>
                     </button>
-                    </Tooltip>
+                  </Tooltip>
                 </div>
               </td>
             </tr>
-          )):
-          <tr className='no-data'>
-            <td colspan="100%">
-              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
-            </td>
-          </tr>
+          )) :
+            <tr className='no-data'>
+              <td colspan="100%">
+                <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
+              </td>
+            </tr>
           }
         </tbody>
       </table>
@@ -229,27 +231,27 @@ export default function VehiclePricing() {
                   placeholder="Enter Model Name"
                 />
               </div>
-            <div className="form-group col-lg-6 col-md-6 col-12">
-              <label htmlFor="inputAddress">Registration Number</label>
-              <input
-                type="number"
-                {...register("registrationNumber")}
-                className="cstm-select-input"
-                id="inputAddress"
-                placeholder="Enter Registration Number"
-              />
-            </div>
-            <div className="form-group col-lg-6 col-md-6 col-12">
-              <label htmlFor="inputState">Fuel Type</label>
-              <select {...register("fuelType")} className="cstm-select-input">
-                <option value={""}>Choose Type</option>
-                {FUEL_TYPE?.map((fuel, index) => (
-                  <option key={index} value={fuel.value}>
-                    {fuel.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputAddress">Registration Number</label>
+                <input
+                  type="number"
+                  {...register("registrationNumber")}
+                  className="cstm-select-input"
+                  id="inputAddress"
+                  placeholder="Enter Registration Number"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputState">Fuel Type</label>
+                <select {...register("fuelType")} className="cstm-select-input">
+                  <option value={""}>Choose Type</option>
+                  {FUEL_TYPE?.map((fuel, index) => (
+                    <option key={index} value={fuel.value}>
+                      {fuel.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Mileage</label>
                 <input
@@ -269,34 +271,34 @@ export default function VehiclePricing() {
                 />
               </div>
             </div>
-            
-              <div className="form-group col-lg-12 col-md-12 col-12">
-                <label htmlFor="inputCity">Luggage Carrier</label>
-                <div className="form-check">
-                  <input
-                    type="radio"
-                    {...register("capacity.luggage")}
-                    className="form-check-input"
-                    id="languageYes"
-                    value="yes"
-                  />
-                  <label className="form-check-label" htmlFor="languageYes">
-                    Yes
-                  </label>
-                </div>
-                <div className="form-check">
-                  <input
-                    type="radio"
-                    {...register("capacity.language")}
-                    className="form-check-input"
-                    id="languageNo"
-                    value="no"
-                  />
-                  <label className="form-check-label" htmlFor="languageNo">
-                    No
-                  </label>
-                </div>
+
+            <div className="form-group col-lg-12 col-md-12 col-12">
+              <label htmlFor="inputCity">Luggage Carrier</label>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  {...register("capacity.luggage")}
+                  className="form-check-input"
+                  id="languageYes"
+                  value="yes"
+                />
+                <label className="form-check-label" htmlFor="languageYes">
+                  Yes
+                </label>
               </div>
+              <div className="form-check">
+                <input
+                  type="radio"
+                  {...register("capacity.language")}
+                  className="form-check-input"
+                  id="languageNo"
+                  value="no"
+                />
+                <label className="form-check-label" htmlFor="languageNo">
+                  No
+                </label>
+              </div>
+            </div>
 
             <div className="row m-0">
               <div className="form-group col-lg-6 col-md-6 col-12">
@@ -309,7 +311,7 @@ export default function VehiclePricing() {
                   placeholder="Enter Fitness Date"
                 />
               </div>
-            
+
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label for="session-date" htmlFor="inputCity">PUC</label>
                 <input
@@ -363,12 +365,21 @@ export default function VehiclePricing() {
             </div>
           </div>
           <div className="d-flex justify-content-end border-top mt-3 pt-2">
-            <button type="submit" className="btn btn-primary">
-            Add
-          </button>
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+            {isSubmitting && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
+            </div>}
+              Add
+            </button>
           </div>
         </form>
       </Modal>
+      <ConfirmationModal
+        isOpen={confirmationOpen}
+        onClose={() => { setConfirmationOpen(false); setSelectedId(null) }}
+        onConfirm={deleteVehicle}
+        message="Are you sure you want to delete this vehicle detail?"
+      />
     </div>
   );
 }

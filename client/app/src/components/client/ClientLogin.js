@@ -11,7 +11,7 @@ import logo from "../../assets/img/logomain.png";
 import OtpVerify from "../common/OtpVerify";
 
 function Login() {
-    const { register, handleSubmit, formState: { errors }, } = useForm();
+    const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
     const navigate = useNavigate();
     const [otpDetails, setOtpDetails] = useState(null);
     const login = async (formData) => {
@@ -82,7 +82,10 @@ function Login() {
                                         )}
                                     </div>
                                     <div className="form-group-login form-button">
-                                        <button className="form-submit">
+                                        <button disabled={isSubmitting} className="form-submit">
+                                            {isSubmitting && <div class="spinner-border text-primary" role="status">
+                                                <span class="sr-only"></span>
+                                            </div>}
                                             Log in
                                         </button>
                                     </div>

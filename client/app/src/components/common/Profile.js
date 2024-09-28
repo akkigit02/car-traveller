@@ -6,15 +6,16 @@ import { toast } from "react-toastify";
 import { useSelector } from 'react-redux';
 import Popup from '../Popup';
 const Profile = () => {
-  const { register, handleSubmit, reset, formState: { errors, dirtyFields } } = useForm({ mode: 'onChange' });
+  const { register, handleSubmit, reset, formState: { errors, dirtyFields, isSubmitting } } = useForm({ mode: 'onChange' });
   const [formData, setFormData] = useState()
   const [otpSession, setOtpSession] = useState()
   const userInfo = useSelector((state) => state.userInfo)
   const [otp, setOtp] = useState("")
+  const [isButtonLoad, setIsButtonLoad] = useState(false)
 
   const sendOtp = async (formData) => {
     try {
-      if(dirtyFields?.primaryPhone){
+      if (dirtyFields?.primaryPhone) {
         const { data } = await axios({
           url: '/api/common/send-otp',
         })
@@ -25,7 +26,7 @@ const Profile = () => {
       } else {
         updateProfile(formData)
       }
-      
+
     } catch (error) {
       console.log(error)
       toast.success(error?.response?.data?.message);
@@ -34,6 +35,7 @@ const Profile = () => {
 
   const updateProfile = async (formData) => {
     try {
+      setIsButtonLoad(true)
       const { data } = await axios({
         url: '/api/common/profile',
         method: 'post',
@@ -52,6 +54,8 @@ const Profile = () => {
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message);
+    } finally {
+      setIsButtonLoad(false)
     }
   }
 
@@ -117,7 +121,7 @@ const Profile = () => {
             <label>Primary Phone <span>*</span> </label>
             <input
               className="cstm-select-input"
-              {...register('primaryPhone',phoneNumberValidation)}
+              {...register('primaryPhone', phoneNumberValidation)}
               placeholder='Enter primary phone'
               disabled={otpSession}
             />
@@ -167,7 +171,7 @@ const Profile = () => {
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>State</label>
               <input className="cstm-select-input" {...register('currentAddress.state')}
-              placeholder='Enter State'
+                placeholder='Enter State'
                 disabled={otpSession}
               />
             </div>
@@ -180,7 +184,7 @@ const Profile = () => {
             <div className="form-group col-lg-4 col-md-4 col-sm-12">
               <label>Pin code</label>
               <input className="cstm-select-input" {...register('currentAddress.zip')}
-              placeholder='Enter pin code'
+                placeholder='Enter pin code'
                 disabled={otpSession}
               />
             </div>
@@ -198,19 +202,28 @@ const Profile = () => {
         </div>}
         <div className='d-flex justify-content-end'>
           <button type='button' className='cstm-btn-trans me-2' onClick={() => resetProfile()}>reset</button>
-          <button className='cstm-btn' type="submit">Submit</button>
+          <button className='cstm-btn' disabled={isSubmitting} type="submit">
+            {isSubmitting && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
+            </div>}
+            Submit
+          </button>
         </div>
       </form>
       {dirtyFields?.primaryPhone && otpSession && <div>
         <Popup isOpen={otpSession} handleClose={() => setOtpSession()}>
           <h5>OTP <span>*</span> </h5>
-            <div>
-              <input className="cstm-input me-3"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter your OTP"
-                />
-            <button className="cstm-btn-red" onClick={()=>updateProfile(formData)}>verify</button>
+          <div>
+            <input className="cstm-input me-3"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              placeholder="Enter your OTP"
+            />
+            <button className="cstm-btn-red" disabled={isButtonLoad} onClick={() => updateProfile(formData)}>
+            {isButtonLoad && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
+            </div>}
+              Verify</button>
           </div>
         </Popup>
       </div>}

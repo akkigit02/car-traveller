@@ -34,8 +34,8 @@ export default function SideNavBar() {
             <span>Pricing</span>
           </Link>
           <Link
-            to={`/booking`}
-            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/booking` ? 'active-admin' : ''}`}
+            to={`/booking-info`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/booking-info` ? 'active-admin' : ''}`}
           >
             <i className="fas fa-taxi fa-fw me-3"></i>
             <span>Booking Info</span>

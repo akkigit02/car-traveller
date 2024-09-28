@@ -12,8 +12,9 @@ export default function UserManagement() {
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+  const [isDownloading, setIsDownloading] = useState(false)
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({
+  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
   });
 
@@ -87,21 +88,24 @@ export default function UserManagement() {
 
   const downloadCSV = async () => {
     try {
-        const response = await axios.get('/api/admin/user/csv-dowload', {
-            responseType: 'blob',
-        });
+      setIsDownloading(true)
+      const response = await axios.get('/api/admin/user/csv-dowload', {
+        responseType: 'blob',
+      });
 
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', 'users.csv');
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'users.csv');
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
     } catch (error) {
-        console.error("Error downloading CSV:", error);
+      console.error("Error downloading CSV:", error);
+    } finally {
+      setIsDownloading(false)
     }
-};
+  };
 
   return (
     <div>
@@ -110,20 +114,20 @@ export default function UserManagement() {
           <p className="cstm-title">User Management</p>
         </div>
         <div>
-    <button
-        className="cstm-btn"
-        onClick={() => {
-            reset({});
-            setIsOpen(true);
-        }}
-    >
-        <i className="fa fa-plus"></i>
-    </button>
-    <button onClick={downloadCSV} className="cstm-btn">
-        <i className="fa fa-file-download"></i> {/* Download icon */}
-        Download Users CSV
-    </button>
-   </div>
+          <button
+            className="cstm-btn"
+            onClick={() => {
+              reset({});
+              setIsOpen(true);
+            }}
+          >
+            <i className="fa fa-plus"></i>
+          </button>
+          <button onClick={downloadCSV} disabled={isDownloading} className="cstm-btn">
+            <i className="fa fa-file-download"></i> {/* Download icon */}
+            Download Users CSV
+          </button>
+        </div>
       </div>
       <table className="cstm-table">
         <thead>
@@ -136,50 +140,50 @@ export default function UserManagement() {
             <th className="">Action</th>
           </tr>
         </thead>
-          <tbody>
-            {list.length > 0 ?list.map((user) => (
-              <tr key={user._id}>
-                <td>{user.name}</td>
-                <td>{user.email}</td>
-                <td>{user.primaryPhone}</td>
-                <td>{user.modules.userType}</td>
-                <td>
+        <tbody>
+          {list.length > 0 ? list.map((user) => (
+            <tr key={user._id}>
+              <td>{user.name}</td>
+              <td>{user.email}</td>
+              <td>{user.primaryPhone}</td>
+              <td>{user.modules.userType}</td>
+              <td>
+                <button
+                  onClick={() => toggleStatus(user._id)}
+                  className={`btn ${user.isActive ? "btn-success" : "btn-danger"}`}
+                >
+                  {user.isActive ? "Active" : "Inactive"}
+                </button>
+              </td>
+              <td className="d-flex align-items-center">
+                <Tooltip message={'Edit'} direction="bottom">
                   <button
-                    onClick={() => toggleStatus(user._id)}
-                    className={`btn ${user.isActive ? "btn-success" : "btn-danger"}`}
+                    onClick={() => getUserById(user._id)}
+                    className="icon-btn me-2"
+                    type="button"
                   >
-                    {user.isActive ? "Active" : "Inactive"}
+                    <i className="fa fa-edit"></i>
                   </button>
-                </td>
-                <td className="d-flex align-items-center">
-                  <Tooltip message={'Edit'} direction="bottom">
-                    <button
-                      onClick={() => getUserById(user._id)}
-                      className="icon-btn me-2"
-                      type="button"
-                    >
-                      <i className="fa fa-edit"></i>
-                    </button>
-                  </Tooltip>
-                  <Tooltip message={'View More'} direction="bottom">
-                    <button
-                      onClick={() => openViewModal(user)}
-                      className="icon-btn me-2"
-                      type="button"
-                    >
-                      <i className="fa fa-eye"></i>
-                    </button>
-                  </Tooltip>
-                </td>
-              </tr>
-            )):
+                </Tooltip>
+                <Tooltip message={'View More'} direction="bottom">
+                  <button
+                    onClick={() => openViewModal(user)}
+                    className="icon-btn me-2"
+                    type="button"
+                  >
+                    <i className="fa fa-eye"></i>
+                  </button>
+                </Tooltip>
+              </td>
+            </tr>
+          )) :
             <tr className='no-data'>
-            <td colspan="100%">
-              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
-            </td>
-          </tr>
+              <td colspan="100%">
+                <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
+              </td>
+            </tr>
           }
-          </tbody>
+        </tbody>
       </table>
       <Modal isOpen={isOpen} onClose={closeModal} title={'Add/Edit User'}>
         <form onSubmit={handleSubmit(saveUser)}>
@@ -192,7 +196,7 @@ export default function UserManagement() {
                   {...register("name", {
                     required: "Name is required",
                     pattern: namePattern,
-                })}
+                  })}
                   className="cstm-select-input"
                   placeholder="Enter name"
                 />
@@ -207,7 +211,7 @@ export default function UserManagement() {
                   {...register("email", {
                     required: "Email is required",
                     pattern: emailPattern,
-                })}
+                  })}
                   className="cstm-select-input"
                   placeholder="Enter email"
                 />
@@ -231,7 +235,7 @@ export default function UserManagement() {
                 <label htmlFor="secondaryPhone">Secondary Phone</label>
                 <input
                   type="text"
-                  {...register("secondaryPhone",phoneNumberValidation)}
+                  {...register("secondaryPhone", phoneNumberValidation)}
                   className="cstm-select-input"
                   placeholder="Enter secondary phone"
                 />
@@ -250,22 +254,25 @@ export default function UserManagement() {
                 )}
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
-              {!isEdit && (
-                <div>
+                {!isEdit && (
+                  <div>
                     <label htmlFor="password">Password</label>
                     <input
-                    type="password"
-                    {...register("password")}
-                    className="cstm-select-input"
-                    placeholder="Enter password"
+                      type="password"
+                      {...register("password")}
+                      className="cstm-select-input"
+                      placeholder="Enter password"
                     />
-                </div>
+                  </div>
                 )}
               </div>
             </div>
           </div>
           <div className="d-flex justify-content-end pt-2">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" disabled={isSubmitting} className="btn btn-primary">
+            {isSubmitting && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
+            </div>}
               {isEdit ? "Update" : "Save"}
             </button>
           </div>

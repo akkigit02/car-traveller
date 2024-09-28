@@ -9,6 +9,7 @@ const paymentSchema = new mongoose.Schema({
     payableAmount: { type: Number },
     dueAmount: { type: Number },
     isPayLater: { type: Boolean },
+    invoiceNo: { type: Number, default: 1 },
     isAdvancePaymentCompleted: { type: Boolean },
     isPaymentCompleted: { type: Boolean },
     comments: { type: String },

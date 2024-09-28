@@ -111,10 +111,11 @@ const getVehicleById = async (req, res) => {
 
 const getBookingInfo = async (req, res) => {
     try {
-        const bookings = await RideModel.find({}).populate('userId', 'primaryPhone')
+        const query = req.query
+        const bookings = await RideModel.find({rideStatus: 'completed'}).populate('userId', 'primaryPhone').sort({createdOn: -1}).skip(parseInt(query.skip)).limit(parseInt(query.limit))
         res.status(200).send({ bookings })
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error })
+        logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error, userId: req?.userId })
         res.status(500).send({ message: 'Server Error' })
     }
 }
@@ -191,7 +192,7 @@ const saveBooking = async (req, res) => {
         const info = await RideModel.create(rideInfo);
         res.status(201).send({ message: 'Booking created successfully', booking: info });
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> saveBooking', { error: error });
+        logger.log('server/managers/admin.manager.js-> saveBooking', { error: error, userId: req?.userId });
         res.status(500).send({ message: 'Server Error' });
     }
 };

@@ -34,7 +34,7 @@ function AdminRoute() {
                   Component={VehiclePricing}
                   exact
                 />
-                <Route path={`/booking`} Component={Booking} exact />
+                <Route path={`/booking-info`} Component={Booking} exact />
                 <Route path={`/enquire-package`} Component={EnquirePackage} exact />
                 <Route path={`/referral`} Component={ReferralCode} exact />
                 <Route path={`/profile`} Component={Profile} exact />

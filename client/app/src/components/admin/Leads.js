@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import ConfirmationModal from "../common/ConfirmationModal"
 
 export default function Leads() {
   const [list, setList] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [confirmationOpen, setConfirmationOpen] = useState(false)
+  const [selectedId, setSelectedId] = useState(null)
 
   useEffect(() => {
     getLeads();
@@ -24,8 +27,6 @@ export default function Leads() {
   };
 
   const confirmCall = async (leadId) => {
-    const confirmAction = window.confirm("Do you want to confirm the call?");
-    if (confirmAction) {
       try {
         const { data } = await axios.put(`/api/admin/leads/${leadId}`);
         toast.success(data.message);
@@ -34,11 +35,11 @@ export default function Leads() {
             lead._id === leadId ? { ...lead, isConnected: true } : lead
           )
         );
+        setSelectedId(null)
       } catch (error) {
         console.error(error);
         toast.error("Failed to confirm call");
       }
-    }
   };
 
   return (
@@ -76,11 +77,11 @@ export default function Leads() {
                   <td>
                     {lead?.dropCity?.length > 0
                       ? lead.dropCity.map((element, index) => (
-                          <span key={index}>
-                            {element.name}
-                            {index < lead.dropCity.length - 1 ? ", " : ""}
-                          </span>
-                        ))
+                        <span key={index}>
+                          {element.name}
+                          {index < lead.dropCity.length - 1 ? ", " : ""}
+                        </span>
+                      ))
                       : "N/A"}
                   </td>
                   <td>
@@ -95,7 +96,7 @@ export default function Leads() {
                     style={{
                       color: lead?.isConnected ? "green" : "red",
                       textAlign: "center",
-                      fontWeight:600,
+                      fontWeight: 600,
                     }}
                   >
                     {lead?.isConnected ? "Yes" : "No" || "N/A"}
@@ -103,7 +104,7 @@ export default function Leads() {
                   <td>
                     <button
                       className="btn btn-primary"
-                      onClick={() => confirmCall(lead._id)}
+                      onClick={() => {setSelectedId(lead._id); setConfirmationOpen(true)}}
                       disabled={lead?.isConnected}
                     >
                       {lead?.isConnected ? "Called" : "Confirm Call"}
@@ -113,14 +114,21 @@ export default function Leads() {
               ))
             ) : (
               <tr className='no-data'>
-            <td colspan="100%">
-              <div className='d-flex align-items-center justify-content-center'><div  className='no-data-content'></div></div>
-            </td>
-          </tr>
+                <td colspan="100%">
+                  <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
+                </td>
+              </tr>
             )}
           </tbody>
         </table>
       )}
+
+      <ConfirmationModal
+        isOpen={confirmationOpen}
+        onClose={() => setConfirmationOpen(false)}
+        onConfirm={confirmCall}
+        message="Are you sure you want to confirm the call?"
+      />
     </div>
   );
 }
