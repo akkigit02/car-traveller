@@ -20,7 +20,8 @@ const {
 const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/GooglePlaces.service");
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../services/phonepe.service');
-const { isSchedulabel, roundToDecimalPlaces, getNewBookingNumber } = require('../utils/format.util');
+const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
+const { incrementBookingNumber, incrementInvoiceNumber } = require('../services/common.service');
 const { getTotalPrice } = require('../services/calculation.service');
 const { sendBookingConfirmedSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
@@ -245,11 +246,11 @@ const getCars = async (req, res) => {
 
 const savePackage = async (req, res) => {
   try {
-      const package = await EnquirePackageModel.create(req.body)
-      res.status(201).send({ message: 'Package add successfully!', package })
+    const package = await EnquirePackageModel.create(req.body)
+    res.status(201).send({ message: 'Package add successfully!', package })
   } catch (error) {
-      logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
-      res.status(500).send({ message: 'Server Error' })
+    logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
+    res.status(500).send({ message: 'Server Error' })
   }
 }
 
@@ -303,9 +304,9 @@ const saveBooking = async (req, res) => {
         year: new Date(body?.bookingDetails?.returnDate).getFullYear(),
       }
     }
-    const lastBookingDetails = await RideModel.find({}).sort({ createdOn: -1 }).limit(1)
-    bookingData['bookingNo'] = getNewBookingNumber(lastBookingDetails[0]?.bookingNo)
+    // bookingData['bookingNo'] = getNewBookingNumber(lastBookingDetails[0]?.bookingNo)
     const ride = await RideModel.create(bookingData);
+    await incrementBookingNumber(ride._id)
     if (!res) {
       updatePriceAndSendNotification(body?.bookingDetails, ride._id)
       return { rideId: ride._id }
@@ -841,7 +842,7 @@ const generateFinalInvoice = async (req, res) => {
     const body = req?.body
 
     const ride = await RideModel.aggregate([{
-      $match: {_id: new ObjectId(rideId)}
+      $match: { _id: new ObjectId(rideId) }
     },
     {
       $lookup: {
@@ -870,7 +871,7 @@ const generateFinalInvoice = async (req, res) => {
         path: '$vehiclePrice',
         preserveNullAndEmptyArrays: true
       }
-    },{
+    }, {
       $lookup: {
         from: 'cities',
         localField: 'pickUpCity',
@@ -902,78 +903,78 @@ const generateFinalInvoice = async (req, res) => {
         cities: '$city'
       }
     }
-  ])
-  const rideInfo = ride[0]
-  const oldData = {
-        pickupDate: rideInfo?.pickupDate,
-        pickupTime: rideInfo?.pickupTime,
-        dropDate: rideInfo?.dropDate,
-        totalPrice: ride?.totalPrice,
-        totalDistance: ride?.totalDistance,
-        isInvoiceGenerate: ride?.isInvoiceGenerate,
-        payments: ride?.payments,
-        trip: ride?.trip,
-        rideStatus: ride?.rideStatus,
-  }
-  let extraAmount = 0
-  let distance = body?.finalDistance || 0
-  let extraDistance = (distance - rideInfo?.totalDistance) || 0;
-  if((extraDistance > 0) || (rideInfo?.trip?.tripType === 'hourly')) {
-
-    /**********************************************************************************************************/
-    if(rideInfo?.trip?.tripType === 'oneWay') {
-      let totalPrice = null
-      let metroCityPrice = 1
-      if (!rideInfo?.cities?.isMetroCity) metroCityPrice = 1.75
-      let extra = 1
-      if(rideInfo?.vehiclePrice?.vehicleType === 'Traveller') {
-        extra = 2
-      }
-      totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm * metroCityPrice * extra;
-      totalPrice = totalPrice - (totalPrice * rideInfo?.vehiclePrice?.discount)/100;
-      extraAmount = totalPrice
-    } else if(rideInfo?.trip?.tripType === 'roundTrip') {
-    /**********************************************************************************************************/
-      let totalPrice = null
-      totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm * metroCityPrice * extra;
-      totalPrice = totalPrice - (totalPrice * rideInfo?.vehiclePrice?.discount)/100;
-      extraAmount = totalPrice
-
-    } else if(rideInfo?.trip?.tripType === 'cityCab') {
-    /**********************************************************************************************************/
-
-    let totalPrice = null
-      const priceInfo = CITY_CAB_PRICE.find(info => info.max > extraDistance && info.min < extraDistance)
-      fromDetail = { name: data.from }
-      toDetail = [{ name: data.to }]
-      if (['Sedan'].includes(rideInfo?.vehiclePrice.vehicleType)) {
-        totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * extraDistance
-      } else if (['Hatchback'].includes(rideInfo?.vehiclePrice.vehicleType)) {
-        totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * extraDistance
-      } else {
-        totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * extraDistance
-      }
-      totalPrice = totalPrice - (totalPrice * rideInfo?.vehiclePrice?.discount)/100
-      extraAmount = totalPrice
-    } else if(rideInfo?.trip?.tripType === 'hourly') {
-      /*****************************************************************************************************/
-      let totalPrice = 0
-      let hourlyData = rideInfo?.vehiclePrice?.hourly.find(hr => hr.type === rideInfo?.trip?.hourlyType)
-      if (hourlyData) {
-        let extraHour = (body?.finalHour ?body?.finalHour: 0) - hourlyData?.hour
-        if(extraHour && extraHour > 0) {
-          totalPrice = extraHour * upToCostPerHour
-        }
-        if(extraDistance > 0)
-        totalPrice = totalPrice + (extraDistance * upToCostPerKm) || 0
-        totalPrice = totalPrice - (totalPrice * car?.discount)/100
-      }
-      extraAmount = totalPrice
+    ])
+    const rideInfo = ride[0]
+    const oldData = {
+      pickupDate: rideInfo?.pickupDate,
+      pickupTime: rideInfo?.pickupTime,
+      dropDate: rideInfo?.dropDate,
+      totalPrice: ride?.totalPrice,
+      totalDistance: ride?.totalDistance,
+      isInvoiceGenerate: ride?.isInvoiceGenerate,
+      payments: ride?.payments,
+      trip: ride?.trip,
+      rideStatus: ride?.rideStatus,
     }
+    let extraAmount = 0
+    let distance = body?.finalDistance || 0
+    let extraDistance = (distance - rideInfo?.totalDistance) || 0;
+    if ((extraDistance > 0) || (rideInfo?.trip?.tripType === 'hourly')) {
 
-  } else {
-    extraAmount = 0
-  }
+      /**********************************************************************************************************/
+      if (rideInfo?.trip?.tripType === 'oneWay') {
+        let totalPrice = null
+        let metroCityPrice = 1
+        if (!rideInfo?.cities?.isMetroCity) metroCityPrice = 1.75
+        let extra = 1
+        if (rideInfo?.vehiclePrice?.vehicleType === 'Traveller') {
+          extra = 2
+        }
+        totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm * metroCityPrice * extra;
+        totalPrice = totalPrice - (totalPrice * rideInfo?.vehiclePrice?.discount) / 100;
+        extraAmount = totalPrice
+      } else if (rideInfo?.trip?.tripType === 'roundTrip') {
+        /**********************************************************************************************************/
+        let totalPrice = null
+        totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm * metroCityPrice * extra;
+        totalPrice = totalPrice - (totalPrice * rideInfo?.vehiclePrice?.discount) / 100;
+        extraAmount = totalPrice
+
+      } else if (rideInfo?.trip?.tripType === 'cityCab') {
+        /**********************************************************************************************************/
+
+        let totalPrice = null
+        const priceInfo = CITY_CAB_PRICE.find(info => info.max > extraDistance && info.min < extraDistance)
+        fromDetail = { name: data.from }
+        toDetail = [{ name: data.to }]
+        if (['Sedan'].includes(rideInfo?.vehiclePrice.vehicleType)) {
+          totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * extraDistance
+        } else if (['Hatchback'].includes(rideInfo?.vehiclePrice.vehicleType)) {
+          totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * extraDistance
+        } else {
+          totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * extraDistance
+        }
+        totalPrice = totalPrice - (totalPrice * rideInfo?.vehiclePrice?.discount) / 100
+        extraAmount = totalPrice
+      } else if (rideInfo?.trip?.tripType === 'hourly') {
+        /*****************************************************************************************************/
+        let totalPrice = 0
+        let hourlyData = rideInfo?.vehiclePrice?.hourly.find(hr => hr.type === rideInfo?.trip?.hourlyType)
+        if (hourlyData) {
+          let extraHour = (body?.finalHour ? body?.finalHour : 0) - hourlyData?.hour
+          if (extraHour && extraHour > 0) {
+            totalPrice = extraHour * upToCostPerHour
+          }
+          if (extraDistance > 0)
+            totalPrice = totalPrice + (extraDistance * upToCostPerKm) || 0
+          totalPrice = totalPrice - (totalPrice * car?.discount) / 100
+        }
+        extraAmount = totalPrice
+      }
+
+    } else {
+      extraAmount = 0
+    }
 
   } catch (error) {
     logger.log('server/managers/client.manager.js-> generateFinalInvoice', { error: error });

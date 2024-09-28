@@ -5,7 +5,7 @@ const Schema = mongoose.Schema;
 // Define the Ride schema
 const rideSchema = new Schema({
   name: { type: String },
-  bookingNo: { type: Schema.Types.String,require:true },
+  bookingNo: { type: Schema.Types.String },
   driverId: { type: Schema.Types.ObjectId, ref: "user" },
   vehicleId: { type: Schema.Types.ObjectId, ref: "price" },
   userId: { type: Schema.Types.ObjectId, ref: "user" },

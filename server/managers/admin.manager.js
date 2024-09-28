@@ -449,9 +449,10 @@ const downloadUsersCSV = async (req, res) => {
 
 const getRecentNotification = async (req, res) => {
     try {
-        const notification = await NotificationModel.find({ userId: req.user._id }).sort({ createdOn: -1 })
-        console.log(notification)
-        res.status(200).send({notification})
+        const { skip, limit } = req.query
+        const notification = await NotificationModel.find({ userId: req.user._id }).sort({ createdOn: -1 }).skip(Number(skip)).limit(Number(limit))
+        // console.log(notification)
+        res.status(200).send({ notification })
     } catch (error) {
         console.error("Error downloading CSV:", error);
         res.status(500).send('Error generating CSV');
