@@ -1,10 +1,11 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import style from '../assets/css/header.css'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import store from '../store'
 import logo from '../assets/img/logomain.png';
 import user from '../assets/img/user.png';
+import axios from 'axios'
 
 function AppTopNav() {
 
@@ -13,7 +14,7 @@ function AppTopNav() {
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isModalExpanded, setModalExpanded] = useState(false);
-  
+
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -36,16 +37,57 @@ function AppTopNav() {
     setDropdownOpen(false);
     setTimeout(() => {
       setModalExpanded(true);
-    }, 100); 
+    }, 100);
   };
 
   const closeModal = () => {
     setModalExpanded(false);
   };
 
+  const [notificationList, setNotificationList] = useState([])
+  const getNotification = async () => {
+    try {
+      const { data } = await axios({
+        url: '/api/admin/notification',
+        method: 'GET',
+      })
+      console.log(data)
+      setNotificationList(data.notification)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const getNotificationText = (notification) => {
+    switch (notification.type) {
+      case 'NEW_LEAD':
+        return `New Lead Generated: Lead ID #${notification.data.bookingId}. Review the lead details and initiate follow-up actions to convert it into a confirmed booking.`
+
+      case 'NEW_BOOKING':
+        return `New Booking Received: Booking ID #${notification.data.bookingId}. Please schedule the driver and proceed with the necessary booking workflows.`
+
+      case 'DUE_PAYMENT_RECEIVED':
+        return `Payment Received: Booking ID #${notification.data.bookingId} has a pending payment of ${notification.data.duePayment} successfully completed. Update the booking status accordingly.`
+
+      case 'BOOKING_CANCEL':
+        return `Booking Canceled: Booking ID #${notification.data.bookingId} has been canceled. Verify the details and initiate any required refund or cancellation procedures.`
+
+      case 'BOOKING_RESCHEDULED':
+        return `Booking Rescheduled: Booking ID #${notification.data.bookingId} has been rescheduled. Check the updated schedule and make the necessary adjustments in the system.`
+
+      default:
+        return ``
+    }
+  }
+
+
+  useEffect(() => {
+    getNotification()
+  }, [])
+
   return (
     <>
-    <div className='p-3 d-flex justify-content-between align-items-center border-bottom shadow'>
+      <div className='p-3 d-flex justify-content-between align-items-center border-bottom shadow'>
         <div className='d-flex align-items-center'>
           <div className="offcanvas__logo">
             <a href="index.html">
@@ -60,53 +102,50 @@ function AppTopNav() {
 
 
 
-        <div className="header-cstm">
-          <div className="notification-cstm">
-            <span className="notification-cstm-icon" onClick={toggleDropdown2}>
-              &#128276;
-            </span>
-            {isDropdownOpen && (
-              <div className={`dropdown-cstm ${isDropdownOpen ? 'transitioning' : ''}`}>
-                <ul>
-                  <li>Message 1</li>
-                  <li>Message 2</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                </ul>
-                <button id="expandButton" onClick={handleExpand}>
-                  Expand
+          <div className="header-cstm">
+            <div className="notification-cstm">
+              <span className="notification-cstm-icon" onClick={toggleDropdown2}>
+                &#128276;
+              </span>
+              {isDropdownOpen && (
+                <div className={`dropdown-cstm ${isDropdownOpen ? 'transitioning' : ''}`}>
+                  <ul>
+                    {notificationList.map((item) => <li>
+                      {item.title}
+                      {getNotificationText(item)}
+                    </li>
+                    )}
+
+                  </ul>
+                  <button id="expandButton" onClick={handleExpand}>
+                    Expand
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+
+
+
+          <div className="dropdown" ref={dropdownRef}>
+            <button onClick={toggleDropdown} className="cstm-dropdown-toggle">
+              <img src={user} />
+            </button>
+            {isOpen && (
+              <div className="dropdown-menu right-0">
+                <Link to={`/profile`} className="dropdown-item" onClick={closeDropdown}>
+                  <span>Profile</span>
+                </Link>
+                <button onClick={handleLogout} className="dropdown-item">
+                  Logout
                 </button>
-              </div>
-            )}
+              </div>)}
           </div>
         </div>
+      </div>
 
-
-
-
-        <div className="dropdown" ref={dropdownRef}>
-          <button onClick={toggleDropdown} className="cstm-dropdown-toggle">
-            <img src={user}/>
-          </button>
-          {isOpen && (
-            <div className="dropdown-menu right-0">
-              <Link to={`/profile`} className="dropdown-item" onClick={closeDropdown}>
-                <span>Profile</span>
-              </Link>
-              <button onClick={handleLogout} className="dropdown-item">
-                Logout
-              </button>
-            </div>)}
-        </div>
-        </div>
-    </div>
-
-    {isModalExpanded && <div className="modal-overlay-cstm"></div>}
+      {isModalExpanded && <div className="modal-overlay-cstm"></div>}
 
       {isModalExpanded && (
         <div className={`modal-content-expanded ${isModalExpanded ? 'active' : ''}`}>
@@ -114,16 +153,16 @@ function AppTopNav() {
           <h2>Expanded Notification Details</h2>
           <p>This is the expanded modal with more content...</p>
           <ul>
-                  <li>Message 1</li>
-                  <li>Message 2</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                  <li>Message 3</li>
-                </ul>
+            <li>Message 1</li>
+            <li>Message 2</li>
+            <li>Message 3</li>
+            <li>Message 3</li>
+            <li>Message 3</li>
+            <li>Message 3</li>
+            <li>Message 3</li>
+            <li>Message 3</li>
+            <li>Message 3</li>
+          </ul>
         </div>
       )}
     </>

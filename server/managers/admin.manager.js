@@ -7,6 +7,7 @@ const CouponModel = require('../models/coupon.model');
 const UserModel = require('../models/user.model');
 const { getTotalPrice } = require('../services/calculation.service');
 const CitiesModel = require('../models/cities.model');
+const NotificationModel = require('../models/notification.model')
 const { createCSVFile } = require('../utils/csv.util');
 
 const saveVehiclePrice = async (req, res) => {
@@ -112,7 +113,7 @@ const getVehicleById = async (req, res) => {
 const getBookingInfo = async (req, res) => {
     try {
         const query = req.query
-        const bookings = await RideModel.find({rideStatus: 'completed'}).populate('userId', 'primaryPhone').sort({createdOn: -1}).skip(parseInt(query.skip)).limit(parseInt(query.limit))
+        const bookings = await RideModel.find({ rideStatus: 'completed' }).populate('userId', 'primaryPhone').sort({ createdOn: -1 }).skip(parseInt(query.skip)).limit(parseInt(query.limit))
         res.status(200).send({ bookings })
     } catch (error) {
         logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error, userId: req?.userId })
@@ -125,10 +126,10 @@ const saveBooking = async (req, res) => {
         const body = req?.body
         const { name, primaryPhone, } = req.body;
 
-        const pickUpCity = await CitiesModel.findOne({_id: body?.pickupCityId}, {isMetroCity: 1});
+        const pickUpCity = await CitiesModel.findOne({ _id: body?.pickupCityId }, { isMetroCity: 1 });
 
-        if(pickUpCity && !pickUpCity?.isMetroCity) {
-            return res.status(400).send({ message: 'Please select metro city!'});
+        if (pickUpCity && !pickUpCity?.isMetroCity) {
+            return res.status(400).send({ message: 'Please select metro city!' });
         }
 
         let user = await UserModel.findOne({ primaryPhone });
@@ -345,49 +346,49 @@ const confirmCall = async (req, res) => {
         logger.log('server/managers/admin.manager.js -> confirmCall', { error: error });
         res.status(500).send({ message: 'Server Error' });
     }
-  };
-  
-  const getUsers = async (req, res) => {
-    try {
-      const users = await UserModel.find({ 'modules.userType': { $ne: 'ADMIN' } });
-      res.status(200).json({ users });
-    } catch (error) {
-      logger.log('server/managers/admin.manager.js -> getUsers', { error: error });
-      res.status(500).send({ message: 'Server Error' });
-    }
-  };
+};
 
-  const getUserById = async(req,res) => {
+const getUsers = async (req, res) => {
+    try {
+        const users = await UserModel.find({ 'modules.userType': { $ne: 'ADMIN' } });
+        res.status(200).json({ users });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> getUsers', { error: error });
+        res.status(500).send({ message: 'Server Error' });
+    }
+};
+
+const getUserById = async (req, res) => {
     try {
         const user = await UserModel.findById(req.params.id);
         res.status(200).json({ user });
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> getUsers', { error: error });
-      res.status(500).send({ message: 'Server Error' });
+        res.status(500).send({ message: 'Server Error' });
     }
-  }
+}
 
-  const saveUser = async(req,res) =>{
+const saveUser = async (req, res) => {
     try {
         const user = await UserModel.create(req.body)
-        res.status(201).send({ message: 'User add successfully!', user })    
+        res.status(201).send({ message: 'User add successfully!', user })
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> saveUser', { error: error });
-        res.status(500).send({ message: 'Server Error' }); 
+        res.status(500).send({ message: 'Server Error' });
     }
-  }
+}
 
-  const updateUser = async(req,res) =>{
+const updateUser = async (req, res) => {
     try {
         await UserModel.updateOne({ _id: req.params.id }, req.body)
         res.status(200).send({ message: 'User update successfully!' })
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> updateUser', { error: error });
-        res.status(500).send({ message: 'Server Error' }); 
+        res.status(500).send({ message: 'Server Error' });
     }
-  }
-  
-  const getVehicleByBookingType = async (req, res) => {
+}
+
+const getVehicleByBookingType = async (req, res) => {
     try {
         const type = req?.params?.type;
         const vehicleList = await PricingModel.find({}, { vehicleType: 1, _id: 1 })
@@ -410,10 +411,10 @@ const confirmBooking = async (req, res) => {
         const id = req?.params?.id
         const body = req?.body
 
-        const booking = await RideModel.findOne({ _id: id}, { totalPrice: 1, payablePrice: 1})
+        const booking = await RideModel.findOne({ _id: id }, { totalPrice: 1, payablePrice: 1 })
 
-        const advancePercent = (body?.advanceAmount/booking?.payablePrice) * 100;
-        await RideModel.updateOne({ _id: id}, {
+        const advancePercent = (body?.advanceAmount / booking?.payablePrice) * 100;
+        await RideModel.updateOne({ _id: id }, {
             advancePercent: advancePercent?.toFixed(2),
             paymentStatus: advanced
         })
@@ -445,6 +446,19 @@ const downloadUsersCSV = async (req, res) => {
         res.status(500).send('Error generating CSV');
     }
 };
+
+const getRecentNotification = async (req, res) => {
+    try {
+        const notification = await NotificationModel.find({ userId: req.user._id }).sort({ createdOn: -1 })
+        console.log(notification)
+        res.status(200).send({notification})
+    } catch (error) {
+        console.error("Error downloading CSV:", error);
+        res.status(500).send('Error generating CSV');
+    }
+}
+
+
 
 module.exports = {
     saveVehiclePrice,
@@ -488,6 +502,7 @@ module.exports = {
 
 
     getVehicleByBookingType,
-    confirmBooking
+    confirmBooking,
+    getRecentNotification
 
 }

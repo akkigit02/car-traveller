@@ -1,6 +1,8 @@
 const router = require('express').Router()
 const AdminManager = require('../managers/admin.manager')
 const DashboardManager = require('../managers/dashboard.manager')
+const { jwtUserAuthentication } = require('../utils/api-key-middleware')
+
 router.get('/driver', (req, res) => {
 
 })
@@ -52,6 +54,9 @@ router.post('/users',AdminManager.saveUser)
 router.put('/users/:id',AdminManager.updateUser)
 router.get('/user/csv-dowload',AdminManager.downloadUsersCSV)
 router.get('/vehicle-type/:type', AdminManager.getVehicleByBookingType)
+
+
+router.get('/notification',jwtUserAuthentication,AdminManager.getRecentNotification)
 
 
 module.exports = router
