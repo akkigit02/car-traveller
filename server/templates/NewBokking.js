@@ -7,7 +7,7 @@ const template = ({ fullName, payload }) => {
     pickupDate,
     pickupTime,
     payableAmount,
-    advancePayment,
+    advancePercent,
     bookingType,
     vehicleType,
     vehicleName,
@@ -29,7 +29,7 @@ const template = ({ fullName, payload }) => {
   - **Vehicle Name**: ${vehicleName}
   - **Payment Type**: ${paymentType}
   ${paymentType == 'Advanced' ? '- **Total Payable Amount**: Rs. ' + payableAmount : ''}
-  - **Advance Payment**: ${advancePayment}
+  - **Advance percent**: ${advancePercent}
   
   Please review the booking details.
   
