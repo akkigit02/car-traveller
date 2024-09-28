@@ -45,7 +45,7 @@ function AdminRoute() {
             </div>
           </div>
         </div>
-        <footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0">
+        <footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
           <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
         </footer>
       </main>
