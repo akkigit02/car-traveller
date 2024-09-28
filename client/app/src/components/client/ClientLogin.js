@@ -72,7 +72,7 @@ function Login() {
                                 <form className="register-form" onSubmit={handleSubmit(login)}>
                                     <div className="form-group-login">
                                         <label for="your_name">
-                                            <i class="fa fa-mobile-alt"></i>
+                                            <i className="fa fa-mobile-alt"></i>
                                         </label>
                                         <input
                                             type="text"
@@ -87,8 +87,8 @@ function Login() {
                                     </div>
                                     <div className="form-group-login form-button">
                                         <button disabled={isSubmitting} className="form-submit">
-                                            {isSubmitting && <div class="spinner-border text-primary" role="status">
-                                                <span class="sr-only"></span>
+                                            {isSubmitting && <div className="spinner-border text-primary" role="status">
+                                                <span className="sr-only"></span>
                                             </div>}
                                             Log in
                                         </button>

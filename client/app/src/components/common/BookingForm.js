@@ -398,8 +398,8 @@ function BookingForm() {
                                                     </div>}
                                                     <div className="col-lg-12 d-flex justify-content-end">
                                                         <button className="theme-btn-2 d-flex align-items-center" type="submit">
-                                                            {isSubmitting && <div class="spinner-border spinner-border-sm text-white me-2" role="status">
-                                                                <span class="sr-only">Loading...</span>
+                                                            {isSubmitting && <div className="spinner-border spinner-border-sm text-white me-2" role="status">
+                                                                <span className="sr-only">Loading...</span>
                                                             </div>}
                                                             <p className='mb-0'>{userInfo ? 'Book Now' : 'Send Otp'}</p>
                                                         </button>
@@ -425,8 +425,8 @@ function BookingForm() {
                         />
                     </div>
                     <div className='d-flex justify-content-end'> <button className="cstm-btn-red" disabled={isButtonLoad} onClick={verifyOtp}>
-                        {isButtonLoad && <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
+                        {isButtonLoad && <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
                         </div>}
                         Verify
                     </button>

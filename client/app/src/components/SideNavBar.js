@@ -51,7 +51,7 @@ export default function SideNavBar() {
             to={`/referral`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/referral` ? 'active-admin' : ''}`}
           >
-            <i class="fas fa-people-arrows me-3"></i>
+            <i className="fas fa-people-arrows me-3"></i>
             <span>Referral Code</span>
           </Link>
           <Link
@@ -86,7 +86,7 @@ export default function SideNavBar() {
         <a href="index.html">
               <img className='w-100 h-60p' src={logo} alt="logo-img" />
             </a>
-          <i class="fas fa-times close-btn"></i>
+          <i className="fas fa-times close-btn"></i>
           </div>
         <div className="list-group list-group-flush">
           <Link
@@ -128,7 +128,7 @@ export default function SideNavBar() {
             to={`/referral`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/referral` ? 'active-admin' : ''}`}
           >
-            <i class="fas fa-people-arrows me-3"></i>
+            <i className="fas fa-people-arrows me-3"></i>
             <span>Referral Code</span>
           </Link>
           <Link

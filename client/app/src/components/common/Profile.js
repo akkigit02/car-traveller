@@ -203,8 +203,8 @@ const Profile = () => {
         <div className='d-flex justify-content-end'>
           <button type='button' className='cstm-btn-trans me-2' onClick={() => resetProfile()}>reset</button>
           <button className='cstm-btn' disabled={isSubmitting} type="submit">
-            {isSubmitting && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only"></span>
+            {isSubmitting && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only"></span>
             </div>}
             Submit
           </button>
@@ -220,8 +220,8 @@ const Profile = () => {
               placeholder="Enter your OTP"
             />
             <button className="cstm-btn-red" disabled={isButtonLoad} onClick={() => updateProfile(formData)}>
-            {isButtonLoad && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only"></span>
+            {isButtonLoad && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only"></span>
             </div>}
               Verify</button>
           </div>

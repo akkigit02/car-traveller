@@ -466,7 +466,7 @@ export default function BookingManagement() {
                         type="button"
                         disabled={li.isInvoiceGenerate}
                       >
-                        <i class="fas fa-share-square"></i>
+                        <i className="fas fa-share-square"></i>
                       </button>
                     </Tooltip>
                     <Tooltip message={'Mark Full Payment'} direction='bottom'>
@@ -475,7 +475,7 @@ export default function BookingManagement() {
                         disabled={li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate}
                         onClick={() => {setPaymentId(li.paymentId); setIsFullPaymentConfirm(true)}}
                       >
-                        <i class="fas fa-money-check"></i>
+                        <i className="fas fa-money-check"></i>
                       </button>
                     </Tooltip>
                     <Tooltip message={'Cancel'} direction='bottom'>
@@ -536,7 +536,7 @@ export default function BookingManagement() {
                   className="cstm-select-input"
                 >
                   <option value='' disabled>Please Select</option>
-                 {vehicleList.map(vehicle => (<option value={vehicle._id}>{VEHICLE_TYPE.find(li => li.value === vehicle.vehicleType)?.name}</option>))}
+                 {vehicleList.map(vehicle => (<option key={'vhl'+vehicle._id} value={vehicle._id}>{VEHICLE_TYPE.find(li => li.value === vehicle.vehicleType)?.name}</option>))}
                 </select>
                 {errors?.vehicleId && (
                   <span className="text-danger">{errors.vehicleId.message}</span>

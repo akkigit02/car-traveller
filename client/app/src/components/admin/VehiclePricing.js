@@ -211,27 +211,27 @@ export default function VehiclePricing() {
       </table> */}
 
 
-      <div class="cstm-table-container">
-        <div class="cstm-table-row cstm-header">
-          <div class="cstm-table-cell">Image</div>
-          <div class="cstm-table-cell">Type</div>
-          <div class="cstm-table-cell">Name</div>
-          <div class="cstm-table-cell">Minimum Fare</div>
-          <div class="cstm-table-cell">Cost per km (One Way)</div>
-          <div class="cstm-table-cell">Cost per km (Round Trip)</div>
-          <div class="cstm-table-cell">Cost per hour</div>
-          <div class="cstm-table-cell">Action</div>
+      <div className="cstm-table-container">
+        <div className="cstm-table-row cstm-header">
+          <div className="cstm-table-cell">Image</div>
+          <div className="cstm-table-cell">Type</div>
+          <div className="cstm-table-cell">Name</div>
+          <div className="cstm-table-cell">Minimum Fare</div>
+          <div className="cstm-table-cell">Cost per km (One Way)</div>
+          <div className="cstm-table-cell">Cost per km (Round Trip)</div>
+          <div className="cstm-table-cell">Cost per hour</div>
+          <div className="cstm-table-cell">Action</div>
         </div>
         {list.length > 0 ? list.map((li, index) => (
-          <div key={"list" + index} class="cstm-table-row">
-            <div class="cstm-table-cell" data-label="Image"><img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle" /></div>
-            <div class="cstm-table-cell" data-label="Type">{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</div>
-            <div class="cstm-table-cell" data-label="Name">{li.vehicleName}</div>
-            <div class="cstm-table-cell" data-label="Minimum Fare">{li.minimumFare}</div>
-            <div class="cstm-table-cell" data-label="Cost per km (One Way)">{li.costPerKmOneWay}</div>
-            <div class="cstm-table-cell" data-label="Cost per km (Round Trip)">{li.costPerKmRoundTrip}</div>
-            <div class="cstm-table-cell" data-label="Cost per hour">{li.costPerHour}</div>
-            <div class="cstm-table-cell" data-label="Action">
+          <div key={"list" + index} className="cstm-table-row">
+            <div className="cstm-table-cell" data-label="Image"><img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle" /></div>
+            <div className="cstm-table-cell" data-label="Type">{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</div>
+            <div className="cstm-table-cell" data-label="Name">{li.vehicleName}</div>
+            <div className="cstm-table-cell" data-label="Minimum Fare">{li.minimumFare}</div>
+            <div className="cstm-table-cell" data-label="Cost per km (One Way)">{li.costPerKmOneWay}</div>
+            <div className="cstm-table-cell" data-label="Cost per km (Round Trip)">{li.costPerKmRoundTrip}</div>
+            <div className="cstm-table-cell" data-label="Cost per hour">{li.costPerHour}</div>
+            <div className="cstm-table-cell" data-label="Action">
               <div className="d-flex align-items-center">
                 <Tooltip message={'Edit'} direction="bottom">
                   <button
@@ -548,8 +548,8 @@ export default function VehiclePricing() {
 
           </div>
           <div className="d-flex justify-content-end pt-2"> <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-          {isSubmitting && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only"></span>
+          {isSubmitting && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only"></span>
             </div>}
             {isEdit ? "Update" : "Save"}
           </button>

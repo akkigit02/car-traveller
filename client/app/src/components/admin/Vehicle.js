@@ -366,8 +366,8 @@ export default function VehiclePricing() {
           </div>
           <div className="d-flex justify-content-end border-top mt-3 pt-2">
             <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-            {isSubmitting && <div class="spinner-border text-primary" role="status">
-              <span class="sr-only"></span>
+            {isSubmitting && <div className="spinner-border text-primary" role="status">
+              <span className="sr-only"></span>
             </div>}
               Add
             </button>

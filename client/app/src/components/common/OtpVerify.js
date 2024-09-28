@@ -40,7 +40,7 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
            
             <div className="form-group-login">
                 <label>
-                    <i class="fa fa-key"></i>
+                    <i className="fa fa-key"></i>
                 </label>
                 <input
                     value={otp}
@@ -50,8 +50,8 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
             </div>
             <div className="form-group-login form-button">
                 <button onClick={verifyOtp} disabled={isButtonLoad} className="form-submit">
-                    {isButtonLoad && <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only"></span>
+                    {isButtonLoad && <div className="spinner-border text-primary" role="status">
+                        <span className="sr-only"></span>
                     </div>}
                     Verify
                 </button>

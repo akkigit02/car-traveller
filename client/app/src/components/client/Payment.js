@@ -273,8 +273,8 @@ function Payment() {
 
                       {/* <div className="d-flex flex-column align-items-end mb-sm pt-2">
                         <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
-                          {isButtonLoad === 'isPaylater' && <div class="spinner-border text-primary" role="status">
-                            <span class="sr-only">Loading...</span>
+                          {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
                           </div>}
                           Pay Later
                         </button>
@@ -310,8 +310,8 @@ function Payment() {
                       Payable amount:<span className="font-22"> &#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</span>
                     </div>
                     {/* <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
-                      {isButtonLoad === 'isPaylater' && <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
+                      {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
+                        <span className="sr-only">Loading...</span>
                       </div>}
                       Pay Later
                     </button> */}
@@ -329,14 +329,14 @@ function Payment() {
                     <div className="d-flex flex-column align-items-end mb-sm pt-2">
                       {advancePercentage === 0 ? 
                       <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
-                      {isButtonLoad === 'isPaylater' && <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
+                      {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
+                        <span className="sr-only">Loading...</span>
                       </div>}
                       Pay Later
                     </button>:
                     <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
-                    {isButtonLoad === 'payment' && <div class="spinner-border text-primary" role="status">
-                      <span class="sr-only">Loading...</span>
+                    {isButtonLoad === 'payment' && <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
                     </div>}
                     Proceed to pay
                   </button>}
@@ -357,8 +357,8 @@ function Payment() {
                 </div>
                 <div className="d-flex flex-column align-items-end mb-sm">
                   <button className="cstm-btn" disabled={isButtonLoad} onClick={submitForDuePayment}>
-                    {isButtonLoad === 'duePayment' && <div class="spinner-border text-primary" role="status">
-                      <span class="sr-only">Loading...</span>
+                    {isButtonLoad === 'duePayment' && <div className="spinner-border text-primary" role="status">
+                      <span className="sr-only">Loading...</span>
                     </div>}
                     Proceed to pay
                   </button>

@@ -72,7 +72,7 @@ function AdminLogin() {
                                 <form className="register-form" onSubmit={handleSubmit(login)}>
                                     <div className="form-group-login">
                                         <label for="your_name">
-                                            <i class="fa fa-user"></i>
+                                            <i className="fa fa-user"></i>
                                         </label>
                                         <input type="text" placeholder="Email"
                                             {...register("userName", {
@@ -86,7 +86,7 @@ function AdminLogin() {
                                     </div>
                                     <div className="form-group-login">
                                         <label for="your_pass">
-                                            <i class="fa fa-lock"></i>
+                                            <i className="fa fa-lock"></i>
                                         </label>
                                         <input type="password" placeholder="Password"
                                             {...register("password", {
