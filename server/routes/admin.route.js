@@ -56,6 +56,7 @@ router.get('/user/csv-dowload',AdminManager.downloadUsersCSV)
 router.get('/vehicle-type/:type', AdminManager.getVehicleByBookingType)
 
 router.post('/publish-invoice', AdminManager.generateFinalInvoice)
+router.patch('/payment-confirmation/:paymentId', AdminManager.confirmFullPayment);
 
 
 router.get('/notification',jwtUserAuthentication,AdminManager.getRecentNotification)

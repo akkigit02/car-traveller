@@ -183,18 +183,21 @@ const getBookingInfo = async (req, res) => {
                 dropDate: 1,
                 payableAmount: '$bookingPayment.payableAmount',
                 dueAmount: '$bookingPayment.dueAmount',
+                isPaymentCompleted: '$bookingPayment.isPaymentCompleted',
                 totalPrice: 1,
                 rideStatus: 1,
                 phone: '$user.primaryPhone',
                 isInvoiceGenerate: 1,
                 name: 1,
+                paymentId: 1,
                 pickUpCity: 1,
                 pickupCityName: '$city.name',
                 pickupLocation: 1,
                 pickupTime: 1,
                 rideStatus: 1,
                 totalDistance: 1,
-                dropoffLocation: 1
+                dropoffLocation: 1,
+                bookingNo: 1
 
               }
             }])
@@ -696,6 +699,22 @@ const generateFinalInvoice = async (req, res) => {
     }
 }
 
+const confirmFullPayment = async (req, res) => {
+    try {
+        const paymentId = req?.params?.paymentId
+
+        await PaymentModel.updateOne({ _id: new ObjectId(paymentId) }, {
+            $set: {
+                isPaymentCompleted: true
+            }
+        })
+        res.status(200).send({ message: 'Payment confirmation successfully!'});
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> confirmFullPayment', { error: error, userId: req.userId });
+        res.status(500).send({ message: 'Server Error' });
+    }
+}
+
 module.exports = {
     saveVehiclePrice,
     getVehiclePrice,
@@ -740,6 +759,8 @@ module.exports = {
     getVehicleByBookingType,
     confirmBooking,
     getRecentNotification,
-    generateFinalInvoice
+    generateFinalInvoice,
+
+    confirmFullPayment
 
 }

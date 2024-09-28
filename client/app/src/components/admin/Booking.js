@@ -8,6 +8,7 @@ import Tooltip from "../Tooltip";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { toast } from 'react-toastify';
 import { phoneNumberValidation } from "../../constants/Validation.constant";
+import ConfirmationModal from "../common/ConfirmationModal";
 
 export default function BookingManagement() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +27,8 @@ export default function BookingManagement() {
   const [advanceAmountError, setAdvanceAmountError] = useState('')
   const [isConfirmBooking, setIsConfirmBooking] = useState(false)
   const [isInvoiceGenerate, setIsInvoiceGenerate] = useState(false)
-
+  const [isFullPaymentConfirm, setIsFullPaymentConfirm] = useState(false)
+  const [paymentId, setPaymentId] = useState(null)
   const [suggestions, setSuggestions] = useState({
     pickupLocationId: '',
     dropLocationId: '',
@@ -131,7 +133,7 @@ export default function BookingManagement() {
       }
       const res = await axios.get("/api/admin/bookings", {params: {limit: scrollBar.limit, skip: scrollBar.skip}});
       const list1 = res.data.bookings.map(ele => {
-        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime);
+        ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime) || ele.isInvoiceGenerate || ['cancelled'].includes(ele.rideStatus);
         return ele;
       });
 
@@ -352,7 +354,6 @@ export default function BookingManagement() {
         data: value
       })
 
-      console.log(data)
       setList(old => old.map((li) => {
 
         if(li._id == value.id) {
@@ -366,6 +367,27 @@ export default function BookingManagement() {
       reset1({})
       toast.success(data?.message);
       setIsInvoiceGenerate(false)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const handleFullPayment = async () => {
+    try {
+      const { data } = await axios({
+        method: 'PATCH',
+        url: '/api/admin/payment-confirmation/'+paymentId
+      })
+
+      setList(old => old.map(li => {
+        if(li.paymentId === paymentId) {
+          li['isPaymentCompleted'] = true
+        }
+
+        return li
+      }))
+      setPaymentId(null)
+      toast.success(data?.message);
     } catch (error) {
       console.error(error)
     }
@@ -405,6 +427,7 @@ export default function BookingManagement() {
         <table className="cstm-table table">
           <thead>
             <tr>
+              <th>#Booking Id</th>
               <th>Client Name</th>
               <th>Booking Type</th>
               <th>Mobile Number</th>
@@ -418,12 +441,13 @@ export default function BookingManagement() {
             <tbody>
               {list.map((li, index) => (
                 <tr key={index}>
+                  <td>#{li.bookingNo}</td>
                   <td>{li.name}</td>
                   <td>{TRIP_TYPE.find(ele => ele.value === li.trip.tripType)?.name}</td>
                   <td>{li?.phone}</td>
                   <td>{getDateAndTimeString(li.pickupDate)}</td>
                   <td> &#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
-                  <td >&#8377; {roundToDecimalPlaces(li?.dueAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
+                  <td >&#8377; {!li.isPaymentCompleted ? (roundToDecimalPlaces(li?.dueAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'): '0'}</td>
                   <td className="d-flex align-items-center">
                     <Tooltip message={'View More'} direction="bottom">
                       <button
@@ -437,12 +461,21 @@ export default function BookingManagement() {
                     </Tooltip>
                     <Tooltip message={'Publish Invoice'} direction="bottom">
                       <button
-                        // onClick={() => deleteVehiclePrice(li._id)}
+                        className={`icon-btn ${li.isInvoiceGenerate ? 'disabled' : ''}`}
                         onClick={() => getDataForInvoice(li)}
-                        className="icon-btn me-2"
                         type="button"
+                        disabled={li.isInvoiceGenerate}
                       >
-                        <i className="fa fa-eye"></i>
+                        <i class="fas fa-share-square"></i>
+                      </button>
+                    </Tooltip>
+                    <Tooltip message={'Mark Full Payment'} direction='bottom'>
+                      <button
+                        className={`icon-btn ${(li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate) ? 'disabled' : ''}`}
+                        disabled={li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate}
+                        onClick={() => {setPaymentId(li.paymentId); setIsFullPaymentConfirm(true)}}
+                      >
+                        <i class="fas fa-money-check"></i>
                       </button>
                     </Tooltip>
                     <Tooltip message={'Cancel'} direction='bottom'>
@@ -890,6 +923,13 @@ export default function BookingManagement() {
           </div>
         </form>
         </Modal>}
+
+        <ConfirmationModal
+          isOpen={isFullPaymentConfirm}
+          onClose={() => {setIsFullPaymentConfirm(false); setPaymentId(null)}}
+          onConfirm={() => handleFullPayment()}
+          message="Are you sure you want to confirm full payment?"
+        />
     </div>
   );
 }
