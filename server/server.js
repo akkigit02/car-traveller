@@ -16,7 +16,7 @@ app.use(requestIp.mw());
 app.use(userAgent.express());
 app.use(cors());
 app.use('/api/', require('./routes/index.js'));
-app.get('*', (req, res) => {
+app.get('*', (req, res) => {    
     res.status(404).json({
         msg: 'Sorry, This route is not found on this server',
     });

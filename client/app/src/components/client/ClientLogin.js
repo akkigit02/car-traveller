@@ -62,9 +62,13 @@ function Login() {
                                 <a href="https://dddcabs.com/index.html" rel="noopener noreferrer"><img className="h-60p mb-3" src={logo} alt="logo-img" /></a>
                             </div>
                             {otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
-                                <h4 className="form-title">
+                            <h4 className="form-title ">
                                     User Login
                                 </h4>
+                                <p className="form-title">
+                                Enjoy affordable rides with the freedom to explore <br></br> anywhere, anytime—experience limitless journeys<br></br> with our car rental service!
+                                </p> 
+                                
                                 <form className="register-form" onSubmit={handleSubmit(login)}>
                                     <div className="form-group-login">
                                         <label for="your_name">

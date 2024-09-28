@@ -74,7 +74,7 @@ function Payment() {
 
   const submitForPayment = async (isPayLater) => {
     try {
-      setIsButtonLoad(isPayLater?'paylater':'payment')
+      setIsButtonLoad(isPayLater ? 'paylater' : 'payment')
       const { data } = await axios({
         url: '/api/client/initiate-payment',
         method: 'POST',
@@ -87,7 +87,7 @@ function Payment() {
       })
       if (data.paymentUrl)
         window.location.href = data.paymentUrl
-      if(isPayLater) {
+      if (isPayLater) {
         getBookingDetails()
       }
     } catch (error) {
@@ -140,59 +140,52 @@ function Payment() {
             <h4 className="title">Booking Summary</h4>
 
             <div className="p-3 height-300c">
-              <div className="col-lg-12 col-md-12 col-12 pe-0 d-flex">
+              {/* <div className="col-lg-12 col-md-12 col-12 pe-0 d-flex">
                 <label>Name: </label>
                 <p className="mb-3 ps-2">
-                    {bookingDetails?.name}
+                  {bookingDetails?.name}
                 </p>
-              </div>
-              {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className=" mb-4">
-                <p className="mb-0 destination-details">
-                  {bookingDetails?.pickUpCity?.name}
-                </p>
-                {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) &&
+              </div> */}
+              <div className="client-summery">
+                <div className="pick-text">Pick-up</div>
+                <div className="mb-2">
+                  {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
+                  {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
+                  {bookingDetails?.pickupDate?.year} , {bookingDetails?.pickupTime}
+                </div>
+                {['cityCab'].includes(bookingDetails?.trip?.tripType) && <p>{bookingDetails?.pickupLocation}</p>}
+                {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="">
+                  <p className="fw-bold">
+                    {bookingDetails?.pickUpCity?.name}
+                  </p>
+                  <p>{bookingDetails?.pickupLocation}</p>
+                  {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) &&
 
-                  <div>
-                    {bookingDetails?.dropCity?.map((item, index) => (
-                      <div>
-                        <div className='d-flex justify-content-center py-2'><i class="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
-                        <p key={index} className="mb-0 destination-details">
-                          {item.name}
-                        </p>
-                      </div>
-                    ))}
-                  </div>}
-              </div>}
-              {<div className="mb-4">
-                <p> Pickup Address:- <p className="mb-0 desti-details-2">{bookingDetails?.pickupLocation}</p></p>
-                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p> Drop Address:- <p className="mb-0 desti-details-2">{bookingDetails?.dropoffLocation}</p></p>}
-              </div>}
-              <div className="row m-0 pb-5">
-                <div className="col-lg-6 col-md-6 col-12 ps-0">
-                  <label>Pickup Date</label>
-                  <p className="mb-0 desti-details-2">
-                    {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
-                    {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
-                    {bookingDetails?.pickupDate?.year}
-                  </p>
-                </div>
-                {bookingDetails?.trip?.tripType === "roundTrip" && (
-                  <div className="col-lg-6 col-md-6 col-12 ps-0">
-                    <label>Return Date</label>
-                    <p className="mb-0 desti-details-2">
-                      {bookingDetails?.dropDate?.date?.padStart(2, "0")}/
-                      {bookingDetails?.dropDate?.month?.padStart(2, "0")}/
-                      {bookingDetails?.dropDate?.year}
-                    </p>
-                  </div>
-                )}
-                <div className="col-lg-6 col-md-6 col-12 pe-0">
-                  <label>Time</label>
-                  <p className="mb-0 desti-details-2">
-                    {bookingDetails?.pickupTime}
-                  </p>
-                </div>
+                    <div>
+                      {bookingDetails?.dropCity?.map((item, index) => (
+                        <div className="round-text">
+                          <div className="round-circle"></div>
+                          <p key={index} className="fw-bold mb-0">
+                            {item.name}
+                          </p>
+                        </div>
+                      ))}
+                    </div>}
+                </div>}
+                <div className="drop-text">Drop-off</div>
               </div>
+              {bookingDetails?.trip?.tripType === "roundTrip" && (
+                <div className="">
+                  {bookingDetails?.dropDate?.date?.padStart(2, "0")}/
+                  {bookingDetails?.dropDate?.month?.padStart(2, "0")}/
+                  {bookingDetails?.dropDate?.year}
+                </div>
+              )}
+              {<div className="mb-4">
+                {/* <p>{bookingDetails?.pickupLocation}</p> */}
+                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p>{bookingDetails?.dropoffLocation}</p>}
+              </div>}
+
               <div>
                 <p>
                   <strong>Trip type:</strong>{" "}
@@ -213,11 +206,6 @@ function Payment() {
                   {bookingDetails?.vehicleId?.vehicleType}(
                   {bookingDetails?.vehicleId?.vehicleName}) or similar
                 </p>
-                {/* <p>
-                  <strong>Car type:</strong>{" "}
-                  {bookingDetails?.vehicleId?.vehicleType}(
-                  {bookingDetails?.vehicleId?.vehicleName}) or similar
-                </p> */}
                 <p>
                   <strong>Included:</strong> {bookingDetails?.totalDistance} Km
                 </p>
@@ -225,101 +213,142 @@ function Payment() {
                   <strong>Total Fare:</strong> {Math.ceil(bookingDetails?.totalPrice)}
                 </p>
               </div>
-              <ul>
-                <li>
-                  Your trip comes with a kilometer limit. If you go over this
-                  limit, you'll incur additional charges for the extra distance
-                  traveled.
-                </li>
-                <li>
-                  If your trip involves hill climbs, the cab's air conditioning
-                  may be turned off during those sections.
-                </li>
-                <li>
-                  Your trip covers one pickup in the Pick-up City and one
-                  drop-off at the Destination City. It does not include any
-                  travel within the city.
-                </li>
-              </ul>
+
             </div>
           </div>
         </div>
-        <div className="col-lg-8 col-md-8 col-sm-12">
+        <div className="col-lg-8 col-md-8 col-sm-12 p-sm-0">
           {bookingDetails?.rideStatus === 'none' &&
-            <>
+            <div className="border rounded">
               <div className="mb-3">
-                {/* <p className="border-bottom pb-2"> <b>Flexible Payment Options:</b> Choose from Various Percentage Breakdown</p> */}
+                <p className="border-bottom p-3 fw-bold h5">Payment Summary</p>
                 <div className="row m-0">
-                  <div className="col-lg-4 col-md-4 col-12 d-flex align-items-center">
-                    <img className="w-100" src={carImg} alt="car-book" />
-                  </div>
-                  <div className="col-lg-8 col-md-8 col-12">
-                    <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
+                  <div className="col-12">
+                    {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
-                      payment gateways, ensuring a smooth and secure transaction process for the customer.</p>
-                    <div className="row m-0">
-                      {[10, 25, 50, 100].map(ele => (
-                        <div className="col-lg-6 col-md-6 col-12 pe-0">
-                          <div className={`payment-percentage ${advancePercentage === ele ? 'active' : ''}`}>
-                            <label className="d-flex align-items-center p-4">
-                              <input
-                                type="radio"
-                                name="advancePayment"
-                                value={ele} // Update value to match `ele` (not `advancePercentage`)
-                                checked={advancePercentage === ele}
-                                onChange={() => setAdvancePercentage(ele)}
-                              />
-                              <span className="ps-2">{ele === 100 ? 'Full Payment' : ele + '%'}</span>
-                            </label>
+                      payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
+                    <div className="border p-2 rounded">
+                      <div className="d-flex justify-content-between border-bottom py-2">
+                        <div>Estimated KM</div>
+                        <div className="fw-bold">{bookingDetails?.totalDistance} Km</div>
+                      </div>
+                      <div className="d-flex justify-content-between border-bottom py-2">
+                        <div>Total Fare</div>
+                        <div className="fw-bold">&#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</div>
+                      </div>
+                      <div className="row m-0 py-2 border-bottom">
+                        <div className="col-lg-3 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
+                        <div className="col-lg-9 col-md-9 col-12 row m-0">
+                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                        </div>
+                      </div>
+
+
+                      <div className="py-2">
+                        <div className="d-flex justify-content-between align-items-center flex-wrap">
+                          <p className="mb-0">Coupon Code</p>
+                          <div className="d-flex align-items-end">
+                            <div className="">
+                              <input className="cstm-select-input" placeholder="Enter coupan code" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
+                                setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
+                              }} />
+                              {coupon.error && <p> {coupon.error}</p>}
+                            </div>
+                            {!coupon.isApply ?
+                              <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
+                              <>
+                                <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
+                              </>}
                           </div>
                         </div>
-                      ))}
-                    </div>
-                    <div className="d-flex align-items-end justify-content-end pt-2">
-                      <div className="col-md-9">
-                        <label htmlFor="">Coupon</label>
-                        <input className="cstm-select-input" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
-                          setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
-                        }} />
-                        {coupon.error && <p> {coupon.error}</p>}
                       </div>
-                      {!coupon.isApply ?
-                        <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
-                        <>
-                          <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
-                        </>}
+                      {coupon.isApply && <div className="d-flex justify-content-between py-2 border-bottom">
+                        <p className="mb-0">coupon discount price:</p>
+                        <div className="fw-bold ">
+                          {coupon.discountAmount}
+                        </div></div>}
+
+                      {/* <div className="d-flex flex-column align-items-end mb-sm pt-2">
+                        <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
+                          {isButtonLoad === 'isPaylater' && <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                          </div>}
+                          Pay Later
+                        </button>
+                      </div> */}
                     </div>
-                    {coupon.isApply && <div className="d-flex justify-content-end pt-2">
-                      coupon discount price: {coupon.discountAmount}
-                    </div>}
+
                   </div>
                 </div>
               </div>
-              <div className="d-flex flex-column align-items-end border-top pt-2">
-                <div className="mb-2 font-bold">
-                  Total Payment amount:<span className="font-22"> &#x20b9;  {payblePrice}</span>
+
+              <div className="border rounded mx-3 mb-3">
+                <div className="row m-0 py-2">
+                  {[0, 10, 25, 50, 100].map(ele => (
+                    <div className="col-lg-3 col-md-6 col-12">
+                      <div className={`payment-percentage ${advancePercentage === ele ? 'active' : ''}`}>
+                        <label className="d-flex align-items-center p-2">
+                          <input
+                            type="radio"
+                            name="advancePayment"
+                            value={ele}
+                            checked={advancePercentage === ele}
+                            onChange={() => setAdvancePercentage(ele)}
+                          />
+                          <span className="ps-2">{ele === 100 ? 'Full Payment' : ele + '%'}</span>
+                        </label>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="d-flex justify-content-between  border-top align-items-center flex-wrap">
+                  <div className="d-flex flex-column align-items-end mb-sm pt-2 ps-2">
+                    <div className="mb-2 font-bold">
+                      Payable amount:<span className="font-22"> &#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</span>
+                    </div>
+                    {/* <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
+                      {isButtonLoad === 'isPaylater' && <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>}
+                      Pay Later
+                    </button> */}
+
+                
+
+                  </div>
+                  <div className="d py-3 justify-content-end pe-2 ">
+                    <div className="d-flex flex-column align-items-end pt-2 pe-3">
+                      <div className="mb-2 font-bold">
+                        Advance amount:<span className="font-22"> &#x20b9;  {payblePrice}</span>
+                      </div>
+                    </div>
+
+                    <div className="d-flex flex-column align-items-end mb-sm pt-2">
+                      {advancePercentage === 0 ? 
+                      <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
+                      {isButtonLoad === 'isPaylater' && <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                      </div>}
+                      Pay Later
+                    </button>:
+                    <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
+                    {isButtonLoad === 'payment' && <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>}
+                    Proceed to pay
+                  </button>}
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
-                  {isButtonLoad==='isPaylater' && <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>}
-                  Pay Later
-                </button>
-              </div>
-              <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
-                {isButtonLoad==='payment' && <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>}
-                  Proceed to pay
-                </button>
-              </div>
-            </>
+
+            </div>
           }
           {
-            bookingDetails?.rideStatus === 'booked' && <>
+            !bookingDetails?.rideStatus === 'booked' && <>
               <div>
                 <div className="d-flex flex-column align-items-end border-top pt-2">
                   <div className="mb-2 font-bold">
@@ -328,9 +357,9 @@ function Payment() {
                 </div>
                 <div className="d-flex flex-column align-items-end mb-sm">
                   <button className="cstm-btn" disabled={isButtonLoad} onClick={submitForDuePayment}>
-                  {isButtonLoad==='duePayment' && <div class="spinner-border text-primary" role="status">
-                    <span class="sr-only">Loading...</span>
-                  </div>}
+                    {isButtonLoad === 'duePayment' && <div class="spinner-border text-primary" role="status">
+                      <span class="sr-only">Loading...</span>
+                    </div>}
                     Proceed to pay
                   </button>
                 </div>
@@ -339,6 +368,24 @@ function Payment() {
             </>
           }
         </div>
+        {/* <div className="col-12">
+          <ul>
+            <li>
+              Your trip comes with a kilometer limit. If you go over this
+              limit, you'll incur additional charges for the extra distance
+              traveled.
+            </li>
+            <li>
+              If your trip involves hill climbs, the cab's air conditioning
+              may be turned off during those sections.
+            </li>
+            <li>
+              Your trip covers one pickup in the Pick-up City and one
+              drop-off at the Destination City. It does not include any
+              travel within the city.
+            </li>
+          </ul>
+        </div> */}
       </div >
     </>
   );

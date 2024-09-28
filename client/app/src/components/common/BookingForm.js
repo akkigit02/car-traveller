@@ -182,16 +182,36 @@ function BookingForm() {
                     <div className="car-list-sidebar h-100">
                         <h4 className="title">Booking Form</h4>
                         <div className='p-3 book-form-height'>
-                            <div className='d-flex align-items-center flex-column justify-content-between mb-4'>
-                                <div className='mb-0 destination-details'>{bookingDetails?.from?.name}</div>
+
+
+                        <div className="client-summery">
+                        <div className="pick-text">Pick-up</div>
+
+
+                        <p className='mb-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}, {bookingDetails?.pickUpTime}</p>
+                                <div className='fw-bold mb-0'>{bookingDetails?.from?.name}</div>
+
+
                                 {bookingDetails?.to?.map((item, index) => (
-                                    <div className=' w-100' key={index} >
-                                        <div className='d-flex justify-content-center py-2'><i className="fas fa-long-arrow-alt-down font-30 text-blue"></i></div>
-                                        <div className='mb-0 destination-details'>{item.name}</div>
+                                    <div className="round-text">
+                                        <div className="round-circle"></div>
+                                        <div key={index} className="fw-bold mb-0" >
+                                            {item.name}
+                                        </div>
                                     </div>
                                 ))}
-                            </div>
-                            <div className='row m-0 pb-5'>
+
+                            <div className="drop-text">Drop-off</div>
+                            
+              </div>
+              {bookingDetails?.tripType === 'roundTrip' &&
+                                    <p>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
+                               }
+
+
+
+
+                            {/* <div className='row m-0 pb-5'>
                                 <div className='col-lg-6 col-md-6 col-12 ps-0'>
                                     <label>Pickup Date</label>
                                     <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
@@ -204,8 +224,18 @@ function BookingForm() {
                                     <label>Time</label>
                                     <p className='mb-0 desti-details-2'>{bookingDetails?.pickUpTime}</p>
                                 </div>
-                            </div>
-                            <div>
+                            </div> */}
+
+
+
+
+
+
+
+
+
+
+                            <div className='pt-3'>
                                 <p>
                                     <strong>Trip type:</strong>{" "}
                                     {bookingDetails?.type}
@@ -367,11 +397,11 @@ function BookingForm() {
                                                         </div>
                                                     </div>}
                                                     <div className="col-lg-12 d-flex justify-content-end">
-                                                        <button className="theme-btn-2" type="submit">
-                                                            {isSubmitting && <div class="spinner-border text-primary" role="status">
+                                                        <button className="theme-btn-2 d-flex align-items-center" type="submit">
+                                                            {isSubmitting && <div class="spinner-border spinner-border-sm text-white me-2" role="status">
                                                                 <span class="sr-only">Loading...</span>
                                                             </div>}
-                                                            {userInfo ? 'Book Now' : 'Send Otp'}
+                                                            <p className='mb-0'>{userInfo ? 'Book Now' : 'Send Otp'}</p>
                                                         </button>
                                                     </div>
                                                 </div>
