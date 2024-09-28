@@ -140,10 +140,10 @@ function Payment() {
             <h4 className="title">Booking Summary</h4>
 
             <div className="p-3 height-300c">
-              <div className="col-lg-12 col-md-12 col-12 pe-0">
-                <label>Name</label>
-                <p className="mb-3 desti-details-2 text-center">
-                  {bookingDetails?.name}
+              <div className="col-lg-12 col-md-12 col-12 pe-0 d-flex">
+                <label>Name: </label>
+                <p className="mb-3 ps-2">
+                    {bookingDetails?.name}
                 </p>
               </div>
               {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className=" mb-4">

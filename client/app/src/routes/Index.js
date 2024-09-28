@@ -26,7 +26,7 @@ function Index() {
           },
         });
         const pathName = window.location.pathname
-        if (data.session?.modules.userType !== 'CLIENT' && (pathName.includes('car-list') || pathName.includes('booking'))) {
+        if (data.session?.modules.userType !== 'CLIENT' && (pathName.includes('car-list') || pathName === 'booking')) {
           clearLocalStorage()
         } else {
           setTokenToLocal(data.session.jwtToken)

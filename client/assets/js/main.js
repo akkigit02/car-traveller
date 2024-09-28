@@ -230,7 +230,7 @@ Js TABLE OF CONTENTS
         new WOW().init();
 
         //>> Nice Select Start <<//
-        $('select').niceSelect();
+        // $('select').niceSelect();
 
         //>> Car Rentals Slider Start <<//
         if($('.car-rentals-slider').length > 0) {

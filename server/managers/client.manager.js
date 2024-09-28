@@ -9,6 +9,9 @@ const EnquirePackageModel = require("../models/enquire.package.model")
 const PaymentModel = require('../models/payment.model');
 const NewBokkingTemplate = require('../templates/NewBokking')
 const NewLeadTemplate = require('../templates/NewLead')
+const DuePaymentTemplate = require('../templates/DuePaymentRecived')
+const BookingCancelTemplate = require('../templates/BookingCancel')
+const BookingReshuduledTemplate = require('../templates/BookingReshuduled')
 const NotificationModel = require('../models/notification.model')
 const {
   estimateRouteDistance,
@@ -573,7 +576,8 @@ const sendNotificationToAdmin = async (bookingId, type) => {
     vehicleType: bookingDetails.vehicleId.vehicleType,
     vehicleName: bookingDetails.vehicleId.vehicleName,
     bookingType: bookingDetails.trip.tripType,
-    paymentType: bookingDetails.paymentId?.isPayLater ? 'Pay Latter' : bookingDetails.paymentId.isAdvancePaymentCompleted ? 'Advanced' : ''
+    paymentType: bookingDetails.paymentId?.isPayLater ? 'Pay Latter' : bookingDetails?.paymentId?.isAdvancePaymentCompleted ? 'Advanced' : '',
+    cancellationReason: bookingDetails.reason,
   }
   const notificationData = {
     type,
@@ -592,8 +596,22 @@ const sendNotificationToAdmin = async (bookingId, type) => {
     else if (type === 'NEW_LEAD') {
       emailData['subject'] = `New Lead Received - Lead ID: #${bookingDetails.bookingNo}`
       emailData['html'] = NewLeadTemplate({ fullName: admin.name, payload })
-
       notificationData['title'] = 'New Lead Recived';
+    }
+    else if (type === 'DUE_PAYMENT_RECEIVED') {
+      emailData['subject'] = `Due Payment Received - Booking ID: #${bookingDetails.bookingNo}`
+      emailData['html'] = DuePaymentTemplate({ fullName: admin.name, payload })
+      notificationData['title'] = 'Due Payment Recived';
+    }
+    else if (type === 'BOOKING_CANCEL') {
+      emailData['subject'] = `Booking Cancel - Booking ID: #${bookingDetails.bookingNo}`
+      emailData['html'] = BookingCancelTemplate({ fullName: admin.name, payload })
+      notificationData['title'] = 'Booking Cancel Recived';
+    }
+    else if (type === 'BOOKING_RESCHEDULED') {
+      emailData['subject'] = `Booking Cancel - Booking ID: #${bookingDetails.bookingNo}`
+      emailData['html'] = BookingReshuduledTemplate({ fullName: admin.name, payload })
+      notificationData['title'] = 'Booking Cancel Recived';
     }
     await new SMTPService().sendMail(emailData)
     await NotificationModel.create(notificationData)
@@ -661,10 +679,14 @@ const changePaymentStatus = async (req, res) => {
       if (billing.paymentType === 'advanced') {
         paymentUpdateData['isAdvancePaymentCompleted'] = true
         await RideModel.updateOne({ _id: billing.bookingId }, { $set: { rideStatus: 'booked' } })
+        await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
+        sendNotificationToAdmin(billing.bookingId, 'NEW_BOOKING')
       }
-      else if (['due', 'full'].includes(billing.paymentType))
+      else if (['due', 'full'].includes(billing.paymentType)) {
         paymentUpdateData['isPaymentCompleted'] = true
-      await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
+        await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
+        sendNotificationToAdmin(billing.bookingId, billing.paymentType === 'due' ? 'DUE_PAYMENT_RECEIVED' : 'NEW_BOOKING')
+      }
     }
     return res.status(200).send({ message: result.message, bookingId: billing.bookingId })
   } catch (error) {
@@ -690,6 +712,9 @@ const bookingCancel = async (req, res) => {
         }
       })
     }
+
+    await sendNotificationToAdmin(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
+
     // add refund payment
 
     return res.status(200).send({ message: 'Booking cancel successfull' })
