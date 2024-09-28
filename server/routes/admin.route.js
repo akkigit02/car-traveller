@@ -53,5 +53,7 @@ router.put('/users/:id',AdminManager.updateUser)
 router.get('/user/csv-dowload',AdminManager.downloadUsersCSV)
 router.get('/vehicle-type/:type', AdminManager.getVehicleByBookingType)
 
+router.post('/publish-invoice', AdminManager.generateFinalInvoice)
+
 
 module.exports = router

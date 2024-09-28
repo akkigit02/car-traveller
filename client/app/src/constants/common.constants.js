@@ -105,14 +105,20 @@ const HOURLY_TYPE = [
   {
     name: "8 Hours| 80 Km",
     value: "8hr80km",
+    hour: '8',
+    distance: '80'
   },
   {
     name: "10 Hours| 100 Km",
     value: "10hr100km",
+    hour: '8',
+    distance: '80'
   },
   {
     name: "12 Hours| 120 Km",
     value: "12hr120km",
+    hour: '8',
+    distance: '80'
   },
 ];
 

@@ -7,6 +7,7 @@ const paymentSchema = new mongoose.Schema({
     totalDistance: { type: Number },
     advancePercent: { type: Number },
     payableAmount: { type: Number },
+    extraAmount: {type: Number},
     dueAmount: { type: Number },
     isPayLater: { type: Boolean },
     invoiceNo: { type: Number, default: 1 },

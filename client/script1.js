@@ -366,14 +366,14 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`https://app.dddcabs.com/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
                 let data = await response.json();
                 suggestions = data.address
             } else {
-                response = await fetch(`https://app.dddcabs.com/api/client/cities?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();
@@ -493,7 +493,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const option = document.createElement('option');
             option.value = displayTime;
             option.textContent = displayTime;
-            console.log(displayTime)
             if (date.getHours() === now.getHours() && date.getMinutes() === now.getMinutes()) {
                 option.selected = true;
             }
