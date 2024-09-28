@@ -351,15 +351,18 @@ export default function BookingManagement() {
         url: '/api/admin/publish-invoice',
         data: value
       })
-      setList(old => {
-        if(old._id == value.id) {
-          old['payableAmount'] = data?.payableAmount
-          old['dueAmount'] = data?.dueAmount
-          old['isInvoiceGenerate'] = data?.isInvoiceGenerate
+
+      console.log(data)
+      setList(old => old.map((li) => {
+
+        if(li._id == value.id) {
+          li['payableAmount'] = data?.booking?.payableAmount
+          li['dueAmount'] = data?.booking?.dueAmount
+          li['isInvoiceGenerate'] = data?.booking?.isInvoiceGenerate
         }
 
-        return old
-      })
+        return li
+      }))
       reset1({})
       toast.success(data?.message);
       setIsInvoiceGenerate(false)
