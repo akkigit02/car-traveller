@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
+import ConfirmationModal from "../common/ConfirmationModal"
 
 export default function Leads() {
   const [list, setList] = useState([]);

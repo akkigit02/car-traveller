@@ -4,6 +4,7 @@ const RideModel = require("../models/ride.model");
 const PricingModel = require("../models/pricing.model");
 const CouponModel = require("../models/coupon.model");
 const UserModel = require("../models/user.model");
+const PackageModel = require("../models/enquire.package.model")
 const BillingModel = require('../models/billing.model')
 const EnquirePackageModel = require("../models/enquire.package.model")
 const PaymentModel = require('../models/payment.model');
@@ -239,6 +240,16 @@ const getCars = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 };
+
+const savePackage = async (req, res) => {
+  try {
+      const package = await PackageModel.create(req.body)
+      res.status(201).send({ message: 'Package add successfully!', package })
+  } catch (error) {
+      logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
+      res.status(500).send({ message: 'Server Error' })
+  }
+}
 
 
 const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
@@ -962,5 +973,6 @@ module.exports = {
   bookingReshuduled,
   getCoupons,
   changePaymentStatus,
-  initiateDuePayment
+  initiateDuePayment,
+  savePackage
 };
