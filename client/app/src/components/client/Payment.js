@@ -147,11 +147,14 @@ function Payment() {
                 </p>
               </div> */}
               <div className="client-summery">
-                <div className="pick-text">Pick-up</div>
-                <div className="mb-2">
-                  {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
-                  {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
-                  {bookingDetails?.pickupDate?.year} , {bookingDetails?.pickupTime}
+
+                <div className="pick-text">
+                  <div className="d-flex justify-content-between">
+                    <p className="font-20 fw-bold">Pick-up</p>
+                    <div className="pt-1"> {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
+                      {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
+                      {bookingDetails?.pickupDate?.year} , {bookingDetails?.pickupTime}</div>
+                  </div>
                 </div>
                 {['cityCab'].includes(bookingDetails?.trip?.tripType) && <p>{bookingDetails?.pickupLocation}</p>}
                 {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="">
@@ -159,23 +162,24 @@ function Payment() {
                     {bookingDetails?.pickUpCity?.name}
                   </p>
                   <p>{bookingDetails?.pickupLocation}</p>
-                  {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) &&
-
-                    <div>
-                      {bookingDetails?.dropCity?.map((item, index) => (
-                        <div className="round-text">
-                          <div className="round-circle"></div>
-                          <p key={index} className="fw-bold mb-0">
-                            {item.name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>}
+                  {['roundTrip'].includes(bookingDetails?.trip?.tripType) && <>
+                    {bookingDetails?.dropCity?.filter(li => li._id !== bookingDetails?.pickUpCity?._id).map((city, index) => (
+                      <div className="round-text">
+                        <div className="round-circle"></div>
+                        <p key={index} className="fw-bold mb-0">
+                          {city.name}
+                        </p>
+                      </div>
+                    ))}
+                  </>}
                 </div>}
                 <div className="drop-text">Drop-off</div>
               </div>
+              {['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="ps-4">{bookingDetails?.dropCity?.[0]?.name} </div>}
+              {['oneWay'].includes(bookingDetails?.trip?.tripType) && <div className="ps-4">{bookingDetails?.dropCity?.[0]?.name} </div>}
+              {['roundTrip'].includes(bookingDetails?.trip?.tripType) && <div className="ps-4">{bookingDetails?.dropCity?.[bookingDetails?.dropCity?.length - 1]?.name} </div>}
               {bookingDetails?.trip?.tripType === "roundTrip" && (
-                <div className="">
+                <div className="ps-4">
                   {bookingDetails?.dropDate?.date?.padStart(2, "0")}/
                   {bookingDetails?.dropDate?.month?.padStart(2, "0")}/
                   {bookingDetails?.dropDate?.year}
@@ -217,7 +221,7 @@ function Payment() {
             </div>
           </div>
         </div>
-        <div className="col-lg-8 col-md-8 col-sm-12 p-sm-0">
+        <div className="col-lg-8 col-md-8 col-sm-12 p-sm0">
           {bookingDetails?.rideStatus === 'none' &&
             <div className="border rounded">
               <div className="mb-3">
@@ -316,7 +320,7 @@ function Payment() {
                       Pay Later
                     </button> */}
 
-                
+
 
                   </div>
                   <div className="d py-3 justify-content-end pe-2 ">

@@ -355,7 +355,7 @@ a {
 .d-none-M{
     display: block !important;
 }
-.p-sm-0{
+.p-sm0{
     padding: 0 !important;
 }
 
@@ -654,7 +654,7 @@ input {
 
 .car-list-sidebar .title {
     color: var(--white);
-    padding: 30px;
+    padding: 20px;
     background-color: var(--theme2);
     border-radius: 10px 10px 0 0;
 }
@@ -1043,8 +1043,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 .client-summery .pick-text{
     position: absolute;
     top: -15px;
-    font-size: 20px;
-    font-weight: 600;
+    width: -webkit-fill-available;
 }
 .client-summery .drop-text{
     position: absolute;

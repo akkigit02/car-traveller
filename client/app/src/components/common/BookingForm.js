@@ -182,60 +182,37 @@ function BookingForm() {
                     <div className="car-list-sidebar h-100">
                         <h4 className="title">Booking Form</h4>
                         <div className='p-3 book-form-height'>
-
-
-                        <div className="client-summery">
-                        <div className="pick-text">Pick-up</div>
-
-
-                        <p className='mb-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}, {bookingDetails?.pickUpTime}</p>
-                                <div className='fw-bold mb-0'>{bookingDetails?.from?.name}</div>
-
-
-                                {bookingDetails?.to?.map((item, index) => (
-                                    <div className="round-text">
-                                        <div className="round-circle"></div>
-                                        <div key={index} className="fw-bold mb-0" >
-                                            {item.name}
-                                        </div>
+                            <div className="client-summery">
+                                <div className="pick-text">
+                                    <div className="d-flex justify-content-between">
+                                        <p className="font-20 fw-bold">Pick-up</p>
+                                        <div className="pt-1">{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}, {bookingDetails?.pickUpTime}</div>
                                     </div>
-                                ))}
-
-                            <div className="drop-text">Drop-off</div>
-                            
-              </div>
-              {bookingDetails?.tripType === 'roundTrip' &&
-                                    <p>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
-                               }
-
-
-
-
-                            {/* <div className='row m-0 pb-5'>
-                                <div className='col-lg-6 col-md-6 col-12 ps-0'>
-                                    <label>Pickup Date</label>
-                                    <p className='mb-0 desti-details-2'>{moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")}</p>
                                 </div>
-                                {bookingDetails?.tripType === 'roundTrip' && <div className='col-lg-6 col-md-6 col-12 ps-0'>
-                                    <label>Return Date</label>
-                                    <p className='mb-0 desti-details-2'>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
-                                </div>}
-                                <div className='col-lg-6 col-md-6 col-12 pe-0 pe-sm'>
-                                    <label>Time</label>
-                                    <p className='mb-0 desti-details-2'>{bookingDetails?.pickUpTime}</p>
-                                </div>
-                            </div> */}
+                                <div className="fw-bold mb-0" > {bookingDetails?.from?.name}</div>
+                        {['roundTrip'].includes(bookingDetails?.tripType) && <>
+                          {bookingDetails?.to?.filter(li => li._id !== bookingDetails?.from?._id).map((city, index) => (
+                            <div className="round-text">
+                              <div className="round-circle"></div>
+                              <p key={index} className="fw-bold mb-0">
+                                {city.name}
+                              </p>
+                            </div>
+                          ))}
+                        </>}
+                        <div className="drop-text">Drop-off</div>
+                      </div>
+                      {['cityCab'].includes(bookingDetails?.tripType) && <div className="ps-4">{bookingDetails?.to?.[0]?.name} </div>}
+                      {['oneWay'].includes(bookingDetails?.tripType) && <div className="ps-4">{bookingDetails?.to?.[0]?.name} </div>}
+                      {['roundTrip'].includes(bookingDetails?.tripType) && <div className="ps-4">{bookingDetails?.to?.[bookingDetails?.to?.length - 1]?.name} </div>}
+                            {bookingDetails?.tripType === 'roundTrip' &&
+                                <p className='ps-4'>{moment(bookingDetails.returnDate).format("DD/MM/YYYY")}</p>
+                            }
 
 
 
 
-
-
-
-
-
-
-                            <div className='pt-3'>
+                            <div className='pt-3 border-top'>
                                 <p>
                                     <strong>Trip type:</strong>{" "}
                                     {bookingDetails?.type}
