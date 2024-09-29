@@ -32,15 +32,13 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
     };
     return (
         <>
-            <h4 className="mb-4">
+            {/* <h6 className="mb-4">
                 Verify OTP
-            </h4>
-            <p className=" mb-3">
-            Verify OTP for quick, secure access. Protect your<br></br> account with a simple code, ensuring<br></br> safety and preventing unauthorized entry. </p> 
-           
-            <div className="form-group-login">
+            </h6> */}
+            
+            <div className="cstm-login-input mt-5">
                 <label>
-                    <i className="fa fa-key"></i>
+                    OTP
                 </label>
                 <input
                     value={otp}
@@ -50,10 +48,10 @@ function OtpVerify({ otpDetails, handleOtpVerify }) {
             </div>
             <div className="form-group-login form-button">
                 <button onClick={verifyOtp} disabled={isButtonLoad} className="form-submit">
-                    {isButtonLoad && <div className="spinner-border text-primary" role="status">
+                    Verify
+                    {isButtonLoad && <div className="spinner-border spinner-border-sm text-white ms-2" role="status">
                         <span className="sr-only"></span>
                     </div>}
-                    Verify
                 </button>
             </div>
         </>

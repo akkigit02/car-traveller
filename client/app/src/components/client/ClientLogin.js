@@ -62,7 +62,7 @@ function Login() {
                                 <div className="w-100 d-flex justify-content-center pt-3">
                                     <a href="https://dddcabs.com/index.html" rel="noopener noreferrer"><img className="h-60p mb-3" src={logo} alt="logo-img" /></a>
                                 </div>
-                                {otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
+                                {!otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
                                     
 
                                     <form className="register-form" onSubmit={handleSubmit(login)}>
@@ -83,10 +83,10 @@ function Login() {
                                         </div>
                                         <div className="form-group-login form-button">
                                             <button disabled={isSubmitting} className="form-submit">
-                                                {isSubmitting && <div className="spinner-border text-primary" role="status">
+                                                Log in
+                                                {isSubmitting && <div className="spinner-border spinner-border-sm text-white ms-2" role="status">
                                                     <span className="sr-only"></span>
                                                 </div>}
-                                                Log in
                                             </button>
                                         </div>
                                     </form>
