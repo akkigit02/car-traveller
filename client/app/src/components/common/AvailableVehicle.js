@@ -80,7 +80,7 @@ export default function AvailableVehicle() {
         {isLoading ? <div>
           <Loader />
         </div> :
-          <div className="row m-0 flex-wrap">
+          <div className="row m-0 flex-wrap page-height-mob">
             <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
               <div className="height-car-list mt-3 car-list-items car-list-sidebar">
                 <div className=" bg-blue d-flex justify-content-between  text-center fw-bold text-light brd_radius-t">
@@ -161,7 +161,7 @@ export default function AvailableVehicle() {
               </div>
             </div>
 
-            <div className="col-lg-9 col-md-9 col-sm-12 mt-3 p-sm">
+            <div className="col-lg-9 col-md-9 col-sm-12 mt-3 p-sm pe-0">
               {bookingDetails?.hourlyDetails?.length > 0 && <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
                 {bookingDetails?.hourlyDetails?.map((list, idx) => (
                   <div
@@ -179,7 +179,7 @@ export default function AvailableVehicle() {
                   </div>
                 ))}
               </div>}
-              <div className="col-lg-12 cstm-calHeight">
+              <div className="col-lg-12 cstm-calHeight pe-0">
                 {carList.map((item, idx) => (
                   <div className="car-list-items mb-3" key={idx}>
                     <div className="d-flex flex-column-sm">

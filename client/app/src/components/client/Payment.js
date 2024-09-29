@@ -248,12 +248,12 @@ function Payment() {
                       </div>
                       {bookingDetails?.rideStatus === 'none' && <>
                         <div className="row m-0 py-2 border-bottom">
-                          <div className="col-lg-3 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
-                          <div className="col-lg-9 col-md-9 col-12 row m-0">
-                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                          <div className="col-lg-2 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
+                          <div className="col-lg-10 col-md-9 col-12 row m-0">
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
                           </div>
                         </div>
 
@@ -316,9 +316,9 @@ function Payment() {
                     </div>
                   ))}
                 </div>
-                <div className="d-flex justify-content-between  border-top align-items-center flex-wrap">
+                <div className="d-flex justify-content-between-mob border-top align-items-center flex-wrap">
                   <div className="d-flex flex-column align-items-end mb-sm pt-2 ps-2">
-                    <div className="mb-2 font-bold">
+                    <div className="mb-2 font-bold pe-2">
                       Payable amount:<span className="font-22"> &#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</span>
                     </div>
                     {/* <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>

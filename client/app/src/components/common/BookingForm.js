@@ -177,8 +177,9 @@ function BookingForm() {
 
     return (
         <>
+        <div className='page-height-mob'>
             <div className="row m-0 col-reverse-sm flex-wrap mt-3">
-                <div className="col-lg-4 col-md-4 col-sm-12 pe-0">
+                <div className="col-lg-4 col-md-4 col-sm-12 pe-sm2">
                     <div className="car-list-sidebar h-100">
                         <h4 className="title">Booking Form</h4>
                         <div className='p-3 book-form-height'>
@@ -391,6 +392,7 @@ function BookingForm() {
                     </section >
                 </div >
             </div >
+            </div>
             {isOtpSent && <div>
                 <Popup isOpen={isPopupOpen} handleClose={togglePopup}>
                     <h5 className='border-bottom pb-2'>OTP <span>*</span> </h5>
@@ -402,7 +404,7 @@ function BookingForm() {
                         />
                     </div>
                     <div className='d-flex justify-content-end'> <button className="cstm-btn-red" disabled={isButtonLoad} onClick={verifyOtp}>
-                        {isButtonLoad && <div className="spinner-border text-primary" role="status">
+                        {isButtonLoad && <div className="spinner-border spinner-border-sm text-white me-2" role="status">
                             <span className="sr-only">Loading...</span>
                         </div>}
                         Verify
