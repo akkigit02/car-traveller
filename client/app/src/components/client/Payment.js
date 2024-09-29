@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
 import { toast } from "react-toastify";
+import Invoice from "./Invoice";
+import Modal from "../Modal";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
   const { bookingId } = useParams();
@@ -11,6 +13,7 @@ function Payment() {
   const [payblePrice, setPayblePrice] = useState(0)
   const [isButtonLoad, setIsButtonLoad] = useState('')
   const [isApplyCoupon, setIsApplyCoupon] = useState(false)
+  const [isInvoicePreview, setIsInvoicePreview] = useState()
   const [coupon, setCopouns] = useState({
     code: '',
     error: '',
@@ -221,8 +224,8 @@ function Payment() {
             </div>
           </div>
         </div>
-        <div className="col-lg-8 col-md-8 col-sm-12 p-sm0">
-          {bookingDetails?.rideStatus === 'none' &&
+        <div className="col-lg-8 col-md-8 col-sm-12 p-sm-0">
+          {
             <div className="border rounded">
               <div className="mb-3">
                 <p className="border-bottom p-3 fw-bold h5">Payment Summary</p>
@@ -231,6 +234,9 @@ function Payment() {
                     {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
+                    {bookingDetails?.isInvoiceGenerate && <button onClick={() => setIsInvoicePreview(true)} className="cstm-btn">
+                      Preview Invoice
+                    </button>}
                     <div className="border p-2 rounded">
                       <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Estimated KM</div>
@@ -240,42 +246,43 @@ function Payment() {
                         <div>Total Fare</div>
                         <div className="fw-bold">&#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</div>
                       </div>
-                      <div className="row m-0 py-2 border-bottom">
-                        <div className="col-lg-3 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
-                        <div className="col-lg-9 col-md-9 col-12 row m-0">
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                        </div>
-                      </div>
-
-
-                      <div className="py-2">
-                        <div className="d-flex justify-content-between align-items-center flex-wrap">
-                          <p className="mb-0">Coupon Code</p>
-                          <div className="d-flex align-items-end">
-                            <div className="">
-                              <input className="cstm-select-input" placeholder="Enter coupan code" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
-                                setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
-                              }} />
-                              {coupon.error && <p> {coupon.error}</p>}
-                            </div>
-                            {!coupon.isApply ?
-                              <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
-                              <>
-                                <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
-                              </>}
+                      {bookingDetails?.rideStatus === 'none' && <>
+                        <div className="row m-0 py-2 border-bottom">
+                          <div className="col-lg-3 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
+                          <div className="col-lg-9 col-md-9 col-12 row m-0">
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
                           </div>
                         </div>
-                      </div>
-                      {coupon.isApply && <div className="d-flex justify-content-between py-2 border-bottom">
-                        <p className="mb-0">coupon discount price:</p>
-                        <div className="fw-bold ">
-                          {coupon.discountAmount}
-                        </div></div>}
 
-                      {/* <div className="d-flex flex-column align-items-end mb-sm pt-2">
+
+                        <div className="py-2">
+                          <div className="d-flex justify-content-between align-items-center flex-wrap">
+                            <p className="mb-0">Coupon Code</p>
+                            <div className="d-flex align-items-end">
+                              <div className="">
+                                <input className="cstm-select-input" placeholder="Enter coupan code" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
+                                  setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
+                                }} />
+                                {coupon.error && <p> {coupon.error}</p>}
+                              </div>
+                              {!coupon.isApply ?
+                                <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
+                                <>
+                                  <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
+                                </>}
+                            </div>
+                          </div>
+                        </div>
+                        {coupon.isApply && <div className="d-flex justify-content-between py-2 border-bottom">
+                          <p className="mb-0">coupon discount price:</p>
+                          <div className="fw-bold ">
+                            {coupon.discountAmount}
+                          </div></div>}
+
+                        {/* <div className="d-flex flex-column align-items-end mb-sm pt-2">
                         <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
                           {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
                             <span className="sr-only">Loading...</span>
@@ -283,13 +290,14 @@ function Payment() {
                           Pay Later
                         </button>
                       </div> */}
+                      </>}
                     </div>
 
                   </div>
                 </div>
               </div>
 
-              <div className="border rounded mx-3 mb-3">
+              {!['completed'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
                 <div className="row m-0 py-2">
                   {[0, 10, 25, 50, 100].map(ele => (
                     <div className="col-lg-3 col-md-6 col-12">
@@ -331,23 +339,23 @@ function Payment() {
                     </div>
 
                     <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                      {advancePercentage === 0 ? 
-                      <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
-                      {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
-                      </div>}
-                      Pay Later
-                    </button>:
-                    <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
-                    {isButtonLoad === 'payment' && <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>}
-                    Proceed to pay
-                  </button>}
+                      {advancePercentage === 0 ?
+                        <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
+                          {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
+                          </div>}
+                          Pay Later
+                        </button> :
+                        <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
+                          {isButtonLoad === 'payment' && <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
+                          </div>}
+                          Proceed to pay
+                        </button>}
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>}
 
             </div>
           }
@@ -371,26 +379,34 @@ function Payment() {
               </div>
             </>
           }
+          <div className="col-12">
+            <ul>
+              <li>
+                Your trip comes with a kilometer limit. If you go over this
+                limit, you'll incur additional charges for the extra distance
+                traveled.
+              </li>
+              <li>
+                If your trip involves hill climbs, the cab's air conditioning
+                may be turned off during those sections.
+              </li>
+              <li>
+                Your trip covers one pickup in the Pick-up City and one
+                drop-off at the Destination City. It does not include any
+                travel within the city.
+              </li>
+            </ul>
+          </div>
         </div>
-        {/* <div className="col-12">
-          <ul>
-            <li>
-              Your trip comes with a kilometer limit. If you go over this
-              limit, you'll incur additional charges for the extra distance
-              traveled.
-            </li>
-            <li>
-              If your trip involves hill climbs, the cab's air conditioning
-              may be turned off during those sections.
-            </li>
-            <li>
-              Your trip covers one pickup in the Pick-up City and one
-              drop-off at the Destination City. It does not include any
-              travel within the city.
-            </li>
-          </ul>
-        </div> */}
       </div >
+      {
+        isInvoicePreview && <Modal isOpen={isInvoicePreview} onClose={() => setIsInvoicePreview(false)} title="Invoice">
+          <div className="invoice-width">
+            <div className="d-flex justify-content-end py-2"> <i className="fa fa-download"></i></div>
+            <Invoice bookingId={bookingDetails._id} />
+          </div>
+        </Modal>
+      }
     </>
   );
 }

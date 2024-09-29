@@ -18,4 +18,7 @@ router.post('/initiate-due-payment', jwtUserAuthentication, ClientManager.initia
 router.put('/payment-status/:transactionId', jwtUserAuthentication, ClientManager.changePaymentStatus)
 router.post('/reshedule/:bookingId', jwtUserAuthentication, ClientManager.bookingReshuduled)
 router.get('/coupons', jwtUserAuthentication, ClientManager.getCoupons)
+
+router.get('/invoice/:id', jwtUserAuthentication, ClientManager.getInvoiceInfo)
+
 module.exports = router

@@ -317,8 +317,8 @@ function BookingHistory() {
             </div>
             <div className="d-flex justify-content-end border-top mt-3 pt-2">
               <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-                {isSubmitting && <div className="spinner-border text-primary" role="status">
-                  <span className="sr-only"></span>
+                {isSubmitting && <div class="spinner-border text-primary" role="status">
+                  <span class="sr-only"></span>
                 </div>}
                 Reshedule
               </button>
@@ -342,8 +342,8 @@ function BookingHistory() {
               Cancel
             </button>
             <button type="button" className="btn btn-primary" disabled={isConfirmSubmit} onClick={() => confirmCancel()}>
-            {isConfirmSubmit && <div className="spinner-border text-primary" role="status">
-              <span className="sr-only"></span>
+            {isConfirmSubmit && <div class="spinner-border text-primary" role="status">
+              <span class="sr-only"></span>
             </div>}
               Confirm
             </button>

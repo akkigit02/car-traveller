@@ -835,6 +835,24 @@ const getCoupons = async (req, res) => {
   }
 }
 
+const getInvoiceInfo = async (req, res) => {
+  try {
+    const bookingId = req?.params?.id
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
+    .populate([
+      { path: 'pickUpCity', select: 'name' },
+      { path: 'dropCity', select: 'name' },
+      { path: 'vehicleId', select: 'vehicleType vehicleName' },
+      { path: 'paymentId', select: 'dueAmount' },
+      { path: 'userId', select: 'primaryPhone email'}
+    ]).lean();
+
+    return res.status(200).send({ bookingDetails });
+  } catch (error) {
+    logger.log('server/managers/client.manager.js-> getInvoiceInfo', { error: error, userId: req?.userId });
+    res.status(500).send({ message: 'Server Error' });
+  }
+}
 
 module.exports = {
   getCities,
@@ -851,5 +869,6 @@ module.exports = {
   getCoupons,
   changePaymentStatus,
   initiateDuePayment,
-  savePackage
+  savePackage,
+  getInvoiceInfo
 };

@@ -25,7 +25,7 @@ export default function ClientRoute() {
               <Route path={`/booking-list`} Component={BookingHistory} exact />
               <Route path={`/profile`} Component={Profile} exact />
               <Route path={`/payment-redirect/:transactionId`} Component={PaymentRedirect} exact />
-              <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
+              <Route path={`/*`} element={<Navigate to="/booking-list" />} exact />
             </Routes>
           </div>
         </div>

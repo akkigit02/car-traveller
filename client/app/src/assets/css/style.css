@@ -1070,3 +1070,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     border-radius: 4px;
     background: #ecf0f4;
 }
+.invoice-width{
+   height: calc(100vh - 200px);
+   overflow-y: auto;
+   padding-right: 10px;
+    margin: 0 auto;
+}
