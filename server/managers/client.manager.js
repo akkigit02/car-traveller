@@ -25,6 +25,7 @@ const { incrementBookingNumber, incrementInvoiceNumber } = require('../services/
 const { getTotalPrice } = require('../services/calculation.service');
 const { sendBookingConfirmedSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
+const { sendDriverAllotedMessage, sendBookingConfirmWhatsapp, sendCancelByPassenger } = require('../services/whatsapp.service');
 
 const getCities = async (req, res) => {
   try {
@@ -544,8 +545,8 @@ const initiatePayment = async (req, res) => {
       }
       await RideModel.updateOne({ _id: bookingDetails._id }, { $set: { paymentId: paymentId, rideStatus: 'booked' } })
       if (process.env.NODE_ENV === 'development') {
-        // sendBookingConfirmedSms(req.user.primaryPhone, { bookingId: "DDD1001", name: req.user.name })
         sendNotificationToAdmin(bookingDetails._id, 'NEW_BOOKING')
+        sendNotificationToClient(bookingDetails._id, 'BOOKING_CONFIRM')
       }
       return res.status(200).send({ message: 'Ride Bokked successfully' })
     }
@@ -554,6 +555,47 @@ const initiatePayment = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 }
+
+const sendNotificationToClient = async (bookingId, type) => {
+  const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
+    .populate([
+      { path: 'pickUpCity', select: 'name' },
+      { path: 'dropCity', select: 'name' },
+      { path: 'vehicleId', select: 'vehicleType vehicleName' },
+      { path: 'paymentId' }
+    ]).lean();
+  const user = await UserModel.findOne({ _id: bookingDetails.userId })
+  const payload = {
+    bookingId: bookingDetails.bookingNo,
+    clientName: bookingDetails.name,
+    phoneNo: user.primaryPhone,
+    pickupLocation: bookingDetails.pickupLocation,
+    dropLocation: bookingDetails.dropoffLocation,
+    pickupDate: `${bookingDetails.pickupDate.date}/${bookingDetails.pickupDate.month}/${bookingDetails.pickupDate.year}`,
+    pickupTime: bookingDetails.pickupTime,
+    payableAmount: bookingDetails?.paymentId?.payableAmount || bookingDetails.totalPrice,
+    advancePercent: bookingDetails?.paymentId?.advancePercent,
+    vehicleType: bookingDetails.vehicleId.vehicleType,
+    vehicleName: bookingDetails.vehicleId.vehicleName,
+    bookingType: bookingDetails.trip.tripType,
+    paymentType: bookingDetails.paymentId?.isPayLater ? 'Pay Latter' : bookingDetails?.paymentId?.isAdvancePaymentCompleted ? 'Advanced' : '',
+    cancellationReason: bookingDetails.reason,
+  }
+  if (type === 'BOOKING_CONFIRM') {
+    await sendBookingConfirmedSms(req.user.primaryPhone, payload)
+    await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
+  }
+  else if (type === 'DRIVER_ALLOTED') {
+    await sendDriverAllotedMessage(`91${user.primaryPhone}`, payload)
+  }
+  else if (type === 'BOOKING_CANCEL') {
+    await sendCancelByPassenger(`91${user.primaryPhone}`, payload)
+  }
+  else if (type === 'BOOKING_RESCHEDULED') {
+    await sendRescheduledToPassenger(`91${user.primaryPhone}`, payload)
+  }
+}
+
 
 const sendNotificationToAdmin = async (bookingId, type) => {
   const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
@@ -715,8 +757,7 @@ const bookingCancel = async (req, res) => {
     }
 
     await sendNotificationToAdmin(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
-
-    // add refund payment
+    await sendNotificationToClient(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
 
     return res.status(200).send({ message: 'Booking cancel successfull' })
   } catch (error) {

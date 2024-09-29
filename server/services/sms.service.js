@@ -34,13 +34,13 @@ const sendOtpSms = async (mobile, otp) => {
 }
 const sendBookingConfirmedSms = async (mobile, payload) => {
     try {
-        const { name, bookingId } = payload;
+        const { clientName, bookingId } = payload;
         const smsBody = {
             template_id: "66f10da7d6fc053cb465c262",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
-                "var1": `${name}`,
+                "var1": `${clientName}`,
                 "var2": `${bookingId}`
             }]
         }
