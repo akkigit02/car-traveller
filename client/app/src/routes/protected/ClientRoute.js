@@ -15,7 +15,7 @@ export default function ClientRoute() {
       <ClientHeaderBar />
       <div className="row mx-0 mt-3 page-height">
         <div className="col-lg-12 col-md-12 col-12">
-          <div className="border rounded shadow p-3 h-100">
+          <div className="border rounded shadow p-3-mob h-100">
             <Routes>
               <Route path={`/`} element={<Navigate to="/booking-list" />} exact />
               {/* <Route path={`/dashboard`} Component={AdminDashboard} exact /> */}

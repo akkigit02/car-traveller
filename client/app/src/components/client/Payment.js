@@ -138,7 +138,7 @@ function Payment() {
   return (
     <>
       <div className="row m-0 col-reverse-sm flex-wrap">
-        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 pe-0" : "col-lg-4 col-md-4 col-sm-12 pe-0 mb-5"}>
+        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 " : "col-lg-4 col-md-4 col-sm-12 mb-5"}>
           <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100" : "car-list-sidebar mt-0 h-100"}>
             <h4 className="title">Booking Summary</h4>
 
@@ -190,7 +190,7 @@ function Payment() {
               )}
               {<div className="mb-4">
                 {/* <p>{bookingDetails?.pickupLocation}</p> */}
-                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p>{bookingDetails?.dropoffLocation}</p>}
+                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p className="ps-4">{bookingDetails?.dropoffLocation}</p>}
               </div>}
 
               <div>

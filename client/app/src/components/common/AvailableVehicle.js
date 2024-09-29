@@ -161,7 +161,7 @@ export default function AvailableVehicle() {
               </div>
             </div>
 
-            <div className="col-lg-9 col-md-9 col-sm-12 mt-3 p-sm pe-0">
+            <div className="col-lg-9 col-md-9 col-sm-12 mt-3 p-sm">
               {bookingDetails?.hourlyDetails?.length > 0 && <div className="d-flex justify-content-between w-100 mb-3 hour-nav bg-blue-light align-items-center border rounded">
                 {bookingDetails?.hourlyDetails?.map((list, idx) => (
                   <div
