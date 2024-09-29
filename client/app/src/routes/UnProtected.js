@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Navigate, Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import ClientLogin from '../components/client/ClientLogin'
 import AvailableVehicle from '../components/common/AvailableVehicle'
 import BookingForm from '../components/common/BookingForm'
@@ -7,9 +7,10 @@ import ClientHeaderBar from '../components/client/ClientHeaderBar'
 import AdminLogin from '../components/admin/AdminLogin'
 
 function UnProtected() {
+  const location=useLocation()
   return (
     <>
-      <ClientHeaderBar />
+      {location.pathname!=='/login'&&<ClientHeaderBar />}
       <Routes>
         <Route path="/" element={<Navigate to='/login' />} exact />
         <Route path="/login" Component={ClientLogin} exact />
@@ -19,11 +20,10 @@ function UnProtected() {
         <Route path="/booking/:query" Component={BookingForm} exact />
         <Route path="/*" element={<Navigate to='/login' />} exact />
       </Routes>
-      <footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
+      {location.pathname!=='/login'&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
         <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
-      </footer>
+      </footer>}
     </>
-
   )
 }
 

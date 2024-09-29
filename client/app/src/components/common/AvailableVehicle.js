@@ -80,7 +80,7 @@ export default function AvailableVehicle() {
         {isLoading ? <div>
           <Loader />
         </div> :
-          <div className="row m-0 flex-wrap">
+          <div className="row m-0 flex-wrap page-height-mob">
             <div className="col-lg-3 col-md-3 col-sm-12 pe-0">
               <div className="height-car-list mt-3 car-list-items car-list-sidebar">
                 <div className=" bg-blue d-flex justify-content-between  text-center fw-bold text-light brd_radius-t">
@@ -93,25 +93,31 @@ export default function AvailableVehicle() {
                   <div className="d-flex p-3 justify-content-center mb-2">
                     <div className="w-100">
                       <div className="client-summery">
-                        <div className="pick-text">Pick-up</div>
-                        <div className="mb-2"> {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")},  {bookingDetails.pickUpTime}</div>
-                        <div className="fw-bold mb-0" > {bookingDetails?.from?.name}</div>
-                        {bookingDetails?.to?.map((city, index) => (
-                          <div className="round-text">
-                            <div className="round-circle"></div>
-                            <p key={index} className="fw-bold mb-0">
-                              {city.name}
-                            </p>
+                        <div className="pick-text">
+                          <div className="d-flex justify-content-between">
+                            <p className="font-20 fw-bold">Pick-up</p>
+                            <div className="pt-1"> {moment(bookingDetails.pickUpDate).format("DD/MM/YYYY")},  {bookingDetails.pickUpTime}</div>
                           </div>
-                          
-                        ))}
-
-
+                        </div>
+                        <div className="fw-bold mb-0" > {bookingDetails?.from?.name}</div>
+                        {['roundTrip'].includes(decodedQuery?.tripType) && <>
+                          {bookingDetails?.to?.filter(li => li._id !== bookingDetails?.from?._id).map((city, index) => (
+                            <div className="round-text">
+                              <div className="round-circle"></div>
+                              <p key={index} className="fw-bold mb-0">
+                                {city.name}
+                              </p>
+                            </div>
+                          ))}
+                        </>}
                         <div className="drop-text">Drop-off</div>
                       </div>
+                      {['cityCab'].includes(decodedQuery?.tripType) && <div className="ps-4">{bookingDetails?.to?.[0]?.name} </div>}
+                      {['oneWay'].includes(decodedQuery?.tripType) && <div className="ps-4">{bookingDetails?.to?.[0]?.name} </div>}
+                      {['roundTrip'].includes(decodedQuery?.tripType) && <div className="ps-4">{bookingDetails?.to?.[bookingDetails?.to?.length - 1]?.name} </div>}
 
                       {decodedQuery?.tripType === "roundTrip" && (
-                        <div className="mb-2">
+                        <div className="mb-2 ps-4">
                           {moment(bookingDetails.returnDate).format("DD/MM/YYYY")}
                         </div>
                       )}
@@ -145,7 +151,7 @@ export default function AvailableVehicle() {
                       </div>
                     </div> */}
 
-                    {/* <div className="d-flex justify-content-end">
+                  {/* <div className="d-flex justify-content-end">
                   <a href={CLIENT_URL}>
                     <button className="cstm-btn-red">Change</button>
                   </a>
@@ -173,7 +179,7 @@ export default function AvailableVehicle() {
                   </div>
                 ))}
               </div>}
-              <div className="col-lg-12 cstm-calHeight">
+              <div className="col-lg-12 cstm-calHeight pe-0">
                 {carList.map((item, idx) => (
                   <div className="car-list-items mb-3" key={idx}>
                     <div className="d-flex flex-column-sm">

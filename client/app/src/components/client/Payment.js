@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.constants";
 import { toast } from "react-toastify";
+import Invoice from "./Invoice";
+import Modal from "../Modal";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
   const { bookingId } = useParams();
@@ -11,6 +13,7 @@ function Payment() {
   const [payblePrice, setPayblePrice] = useState(0)
   const [isButtonLoad, setIsButtonLoad] = useState('')
   const [isApplyCoupon, setIsApplyCoupon] = useState(false)
+  const [isInvoicePreview, setIsInvoicePreview] = useState()
   const [coupon, setCopouns] = useState({
     code: '',
     error: '',
@@ -135,7 +138,7 @@ function Payment() {
   return (
     <>
       <div className="row m-0 col-reverse-sm flex-wrap">
-        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 pe-0" : "col-lg-4 col-md-4 col-sm-12 pe-0 mb-5"}>
+        <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "col-lg-4 col-md-4 col-sm-12 " : "col-lg-4 col-md-4 col-sm-12 mb-5"}>
           <div className={['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) ? "car-list-sidebar h-100" : "car-list-sidebar mt-0 h-100"}>
             <h4 className="title">Booking Summary</h4>
 
@@ -147,11 +150,14 @@ function Payment() {
                 </p>
               </div> */}
               <div className="client-summery">
-                <div className="pick-text">Pick-up</div>
-                <div className="mb-2">
-                  {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
-                  {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
-                  {bookingDetails?.pickupDate?.year} , {bookingDetails?.pickupTime}
+
+                <div className="pick-text">
+                  <div className="d-flex justify-content-between">
+                    <p className="font-20 fw-bold">Pick-up</p>
+                    <div className="pt-1"> {bookingDetails?.pickupDate?.date?.padStart(2, "0")}/
+                      {bookingDetails?.pickupDate?.month?.padStart(2, "0")}/
+                      {bookingDetails?.pickupDate?.year} , {bookingDetails?.pickupTime}</div>
+                  </div>
                 </div>
                 {['cityCab'].includes(bookingDetails?.trip?.tripType) && <p>{bookingDetails?.pickupLocation}</p>}
                 {!['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="">
@@ -159,23 +165,24 @@ function Payment() {
                     {bookingDetails?.pickUpCity?.name}
                   </p>
                   <p>{bookingDetails?.pickupLocation}</p>
-                  {['oneWay', 'roundTrip'].includes(bookingDetails?.trip?.tripType) &&
-
-                    <div>
-                      {bookingDetails?.dropCity?.map((item, index) => (
-                        <div className="round-text">
-                          <div className="round-circle"></div>
-                          <p key={index} className="fw-bold mb-0">
-                            {item.name}
-                          </p>
-                        </div>
-                      ))}
-                    </div>}
+                  {['roundTrip'].includes(bookingDetails?.trip?.tripType) && <>
+                    {bookingDetails?.dropCity?.filter(li => li._id !== bookingDetails?.pickUpCity?._id).map((city, index) => (
+                      <div className="round-text">
+                        <div className="round-circle"></div>
+                        <p key={index} className="fw-bold mb-0">
+                          {city.name}
+                        </p>
+                      </div>
+                    ))}
+                  </>}
                 </div>}
                 <div className="drop-text">Drop-off</div>
               </div>
+              {['cityCab'].includes(bookingDetails?.trip?.tripType) && <div className="ps-4">{bookingDetails?.dropCity?.[0]?.name} </div>}
+              {['oneWay'].includes(bookingDetails?.trip?.tripType) && <div className="ps-4">{bookingDetails?.dropCity?.[0]?.name} </div>}
+              {['roundTrip'].includes(bookingDetails?.trip?.tripType) && <div className="ps-4">{bookingDetails?.dropCity?.[bookingDetails?.dropCity?.length - 1]?.name} </div>}
               {bookingDetails?.trip?.tripType === "roundTrip" && (
-                <div className="">
+                <div className="ps-4">
                   {bookingDetails?.dropDate?.date?.padStart(2, "0")}/
                   {bookingDetails?.dropDate?.month?.padStart(2, "0")}/
                   {bookingDetails?.dropDate?.year}
@@ -183,7 +190,7 @@ function Payment() {
               )}
               {<div className="mb-4">
                 {/* <p>{bookingDetails?.pickupLocation}</p> */}
-                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p>{bookingDetails?.dropoffLocation}</p>}
+                {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <p className="ps-4">{bookingDetails?.dropoffLocation}</p>}
               </div>}
 
               <div>
@@ -218,7 +225,7 @@ function Payment() {
           </div>
         </div>
         <div className="col-lg-8 col-md-8 col-sm-12 p-sm-0">
-          {bookingDetails?.rideStatus === 'none' &&
+          {
             <div className="border rounded">
               <div className="mb-3">
                 <p className="border-bottom p-3 fw-bold h5">Payment Summary</p>
@@ -227,6 +234,9 @@ function Payment() {
                     {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
+                    {bookingDetails?.isInvoiceGenerate && <button onClick={() => setIsInvoicePreview(true)} className="cstm-btn">
+                      Preview Invoice
+                    </button>}
                     <div className="border p-2 rounded">
                       <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Estimated KM</div>
@@ -236,42 +246,43 @@ function Payment() {
                         <div>Total Fare</div>
                         <div className="fw-bold">&#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</div>
                       </div>
-                      <div className="row m-0 py-2 border-bottom">
-                        <div className="col-lg-3 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
-                        <div className="col-lg-9 col-md-9 col-12 row m-0">
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                          <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">List-1</div></div>
-                        </div>
-                      </div>
-
-
-                      <div className="py-2">
-                        <div className="d-flex justify-content-between align-items-center flex-wrap">
-                          <p className="mb-0">Coupon Code</p>
-                          <div className="d-flex align-items-end">
-                            <div className="">
-                              <input className="cstm-select-input" placeholder="Enter coupan code" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
-                                setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
-                              }} />
-                              {coupon.error && <p> {coupon.error}</p>}
-                            </div>
-                            {!coupon.isApply ?
-                              <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
-                              <>
-                                <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
-                              </>}
+                      {bookingDetails?.rideStatus === 'none' && <>
+                        <div className="row m-0 py-2 border-bottom">
+                          <div className="col-lg-2 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
+                          <div className="col-lg-10 col-md-9 col-12 row m-0">
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
+                            <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
                           </div>
                         </div>
-                      </div>
-                      {coupon.isApply && <div className="d-flex justify-content-between py-2 border-bottom">
-                        <p className="mb-0">coupon discount price:</p>
-                        <div className="fw-bold ">
-                          {coupon.discountAmount}
-                        </div></div>}
 
-                      {/* <div className="d-flex flex-column align-items-end mb-sm pt-2">
+
+                        <div className="py-2">
+                          <div className="d-flex justify-content-between align-items-center flex-wrap">
+                            <p className="mb-0">Coupon Code</p>
+                            <div className="d-flex align-items-end">
+                              <div className="">
+                                <input className="cstm-select-input" placeholder="Enter coupan code" disabled={coupon.isApply} type="text" value={coupon.code} onChange={(event) => {
+                                  setCopouns(old => ({ ...old, error: '', code: event.target.value || '' }))
+                                }} />
+                                {coupon.error && <p> {coupon.error}</p>}
+                              </div>
+                              {!coupon.isApply ?
+                                <button className="cstm-btn-trans ms-2" disabled={isApplyCoupon} onClick={() => applyCopoun(true)}>Apply</button> :
+                                <>
+                                  <button className="cstm-btn ms-2" onClick={() => resetCoupon()}>Reset</button>
+                                </>}
+                            </div>
+                          </div>
+                        </div>
+                        {coupon.isApply && <div className="d-flex justify-content-between py-2 border-bottom">
+                          <p className="mb-0">coupon discount price:</p>
+                          <div className="fw-bold ">
+                            {coupon.discountAmount}
+                          </div></div>}
+
+                        {/* <div className="d-flex flex-column align-items-end mb-sm pt-2">
                         <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
                           {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
                             <span className="sr-only">Loading...</span>
@@ -279,13 +290,14 @@ function Payment() {
                           Pay Later
                         </button>
                       </div> */}
+                      </>}
                     </div>
 
                   </div>
                 </div>
               </div>
 
-              <div className="border rounded mx-3 mb-3">
+              {!['completed'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
                 <div className="row m-0 py-2">
                   {[0, 10, 25, 50, 100].map(ele => (
                     <div className="col-lg-3 col-md-6 col-12">
@@ -304,9 +316,9 @@ function Payment() {
                     </div>
                   ))}
                 </div>
-                <div className="d-flex justify-content-between  border-top align-items-center flex-wrap">
+                <div className="d-flex justify-content-between-mob border-top align-items-center flex-wrap">
                   <div className="d-flex flex-column align-items-end mb-sm pt-2 ps-2">
-                    <div className="mb-2 font-bold">
+                    <div className="mb-2 font-bold pe-2">
                       Payable amount:<span className="font-22"> &#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</span>
                     </div>
                     {/* <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
@@ -316,7 +328,7 @@ function Payment() {
                       Pay Later
                     </button> */}
 
-                
+
 
                   </div>
                   <div className="d py-3 justify-content-end pe-2 ">
@@ -327,23 +339,23 @@ function Payment() {
                     </div>
 
                     <div className="d-flex flex-column align-items-end mb-sm pt-2">
-                      {advancePercentage === 0 ? 
-                      <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
-                      {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
-                        <span className="sr-only">Loading...</span>
-                      </div>}
-                      Pay Later
-                    </button>:
-                    <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
-                    {isButtonLoad === 'payment' && <div className="spinner-border text-primary" role="status">
-                      <span className="sr-only">Loading...</span>
-                    </div>}
-                    Proceed to pay
-                  </button>}
+                      {advancePercentage === 0 ?
+                        <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
+                          {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
+                          </div>}
+                          Pay Later
+                        </button> :
+                        <button className="cstm-btn" disabled={isButtonLoad} onClick={() => { submitForPayment() }}>
+                          {isButtonLoad === 'payment' && <div className="spinner-border text-primary" role="status">
+                            <span className="sr-only">Loading...</span>
+                          </div>}
+                          Proceed to pay
+                        </button>}
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>}
 
             </div>
           }
@@ -367,26 +379,34 @@ function Payment() {
               </div>
             </>
           }
+          <div className="col-12">
+            <ul>
+              <li>
+                Your trip comes with a kilometer limit. If you go over this
+                limit, you'll incur additional charges for the extra distance
+                traveled.
+              </li>
+              <li>
+                If your trip involves hill climbs, the cab's air conditioning
+                may be turned off during those sections.
+              </li>
+              <li>
+                Your trip covers one pickup in the Pick-up City and one
+                drop-off at the Destination City. It does not include any
+                travel within the city.
+              </li>
+            </ul>
+          </div>
         </div>
-        {/* <div className="col-12">
-          <ul>
-            <li>
-              Your trip comes with a kilometer limit. If you go over this
-              limit, you'll incur additional charges for the extra distance
-              traveled.
-            </li>
-            <li>
-              If your trip involves hill climbs, the cab's air conditioning
-              may be turned off during those sections.
-            </li>
-            <li>
-              Your trip covers one pickup in the Pick-up City and one
-              drop-off at the Destination City. It does not include any
-              travel within the city.
-            </li>
-          </ul>
-        </div> */}
       </div >
+      {
+        isInvoicePreview && <Modal isOpen={isInvoicePreview} onClose={() => setIsInvoicePreview(false)} title="Invoice">
+          <div className="invoice-width">
+            <div className="d-flex justify-content-end py-2"> <i className="fa fa-download"></i></div>
+            <Invoice bookingId={bookingDetails._id} />
+          </div>
+        </Modal>
+      }
     </>
   );
 }
