@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!isPickupValid || !isDropValid || !isValidePickupDate || !isValideDropDate || !isValidePickupTime || !isValideMultiTo) return;
             const jsonString = JSON.stringify(formData);
             const encodedString = btoa(jsonString);
-            window.location.href = `http://192.168.15.173:3000/car-list/${encodedString}`
+            window.location.href = `http://127.0.0.1:3000/car-list/${encodedString}`
         })
 
     };
@@ -366,14 +366,14 @@ document.addEventListener('DOMContentLoaded', () => {
             let response
             let suggestions = []
             if(query?.tripType === 'cityCab') {
-                response = await fetch(`http://192.168.15.173:5000/api/client/places-suggestion?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/places-suggestion?search=${search}`, {
                     method: "GET",
                 });
 
                 let data = await response.json();
                 suggestions = data.address
             } else {
-                response = await fetch(`http://192.168.15.173:5000/api/client/cities?search=${search}`, {
+                response = await fetch(`http://127.0.0.1:5000/api/client/cities?search=${search}`, {
                     method: "GET",
                 });
                 let data = await response.json();

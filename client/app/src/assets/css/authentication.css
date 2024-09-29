@@ -129,11 +129,51 @@ h2{
     align-items: center;
     justify-content: end;
 }
+.login-card-bg{
+    background: #ebf3ff;
+}
+.login-text{
+    font-size: 38px;
+    font-weight: 700;
+}
+.rounded-LTB{
+    border-radius: 18px 0 0 18px;
+}
+.register-form{
+    width: 100%;
+    margin-top: 40px;
+}
+.cstm-login-input input{
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.3s;
+    font-family: Poppins;
+    box-sizing: border-box;
+    outline: none;
+}
+.cstm-login-input label{
+    font-size: 16px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .container-login{
-    /* width: 900px; */
+    width: 700px;
     background: #fff;
-    margin: 0 70px;
-    /* margin: 0 auto; */
+    /* margin: 0 70px; */
+    margin: 0 auto;
     box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
     -moz-box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
     -webkit-box-shadow: 0px 15px 16.83px 0.17px rgba(0, 0, 0, 0.05);
@@ -190,9 +230,7 @@ figure{
     font-family: Poppins;
     font-size: 20px;
 }
-.register-form{
-    width: 100%;
-}
+
 .social-login{
     align-items: center;
     -moz-align-items: center;
