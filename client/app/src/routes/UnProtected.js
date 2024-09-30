@@ -11,6 +11,7 @@ function UnProtected() {
   return (
     <>
       {location.pathname!=='/login'&&<ClientHeaderBar />}
+      {location.pathname!=='/admin-login'&&<ClientHeaderBar />}
       <Routes>
         <Route path="/" element={<Navigate to='/login' />} exact />
         <Route path="/login" Component={ClientLogin} exact />
@@ -21,6 +22,9 @@ function UnProtected() {
         <Route path="/*" element={<Navigate to='/login' />} exact />
       </Routes>
       {location.pathname!=='/login'&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
+        <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
+      </footer>}
+      {location.pathname!=='/admin-login'&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
         <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
       </footer>}
     </>
