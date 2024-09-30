@@ -53,7 +53,7 @@ function AdminLogin() {
                 <div className="container-login">
 
 
-                    <div className="row m-0">
+                <div className="row m-0">
                         <div className="col-lg-6 col-md-6 col-12 px-4 py-5 login-card-bg rounded-LTB In-mob">
                             <div className="my-5 ps-3">
                                 <p className="login-text">Welcome <br></br> Back !</p>
@@ -68,21 +68,20 @@ function AdminLogin() {
                                 {otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
 
 
-                                    <form className="register-form" onSubmit={handleSubmit(login)}>
-                                        <div className="cstm-login-input">
+                                    <form className="w-100" onSubmit={handleSubmit(login)}>
+                                        <div className="cstm-login-input mb-2">
                                             <label>
-                                                Mobile Number
+                                                Email
                                             </label>
-                                            <input
-                                                type="text"
-                                                placeholder="Enter your number"
-                                                {...register("phoneNumber", {
-                                                    required: "Phone Number is required",
-                                                })}
-                                            />
-                                            {errors?.phoneNumber?.message && (
-                                                <span>{errors?.phoneNumber?.message}</span>
-                                            )}
+                                            <input type="text" placeholder="Enter your email"
+                                            {...register("userName", {
+                                                required: "Email is required",
+                                                pattern: emailPattern,
+                                            })}
+                                        />
+                                        {errors?.userName?.message && (
+                                            <span>{errors?.userName?.message}</span>
+                                        )}
                                         </div>
                                         <div className="cstm-login-input">
                                             <label>
@@ -101,6 +100,9 @@ function AdminLogin() {
                                                 <span>{errors?.password?.message}</span>
                                             )}
                                         </div>
+                                        <div className="form-group-login d-flex justify-content-end">
+                                        <p className="">Forgot Password</p>
+                                    </div>
                                         <div className="form-group-login form-button">
                                             <button className="form-submit">
                                                 Log in
@@ -117,26 +119,27 @@ function AdminLogin() {
 
 
 
-{/* 
-                    <div className="signin-content">
+
+                    
+                    {/* <div className="signin-content">
 
                         <div className="signin-form">
                             <div className="w-100 d-flex justify-content-center">
                                 <a href="https://dddcabs.com/index.html" rel="noopener noreferrer"><img className="h-60p mb-3" src={logo} alt="logo-img" /></a>
                             </div>
                             {otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
-                                <h3 className="mb-4">
+                            <h3 className="mb-4">
                                     Login
                                 </h3 >
                                 <p className="mb-3">
-                                    Enjoy affordable rides with the freedom to explore <br></br> anywhere, anytime—experience limitless journeys<br></br> with our car rental service!
-                                </p>
+                                Enjoy affordable rides with the freedom to explore <br></br> anywhere, anytime—experience limitless journeys<br></br> with our car rental service!
+                                </p> 
                                 <form className="register-form" onSubmit={handleSubmit(login)}>
-                                    <div className="cstm-login-input">
-                                        <label>
-                                            Email
+                                    <div className="form-group-login">
+                                        <label for="your_name">
+                                            <i className="fa fa-user"></i>
                                         </label>
-                                        <input type="text" placeholder="Enter your email"
+                                        <input type="text" placeholder="Email"
                                             {...register("userName", {
                                                 required: "Email is required",
                                                 pattern: emailPattern,
