@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, Fragment } from "react";
 import { HOURLY_TYPE, TRIP_TYPE } from "../../constants/common.constants";
 import axios from 'axios';
 import generatePDF, { Resolution } from 'react-to-pdf';
-import { getDateAndTimeString } from "../../utils/format.util";
+import { getDateAndTimeString, roundToDecimalPlaces } from "../../utils/format.util";
 
 
 const Invoice = ({ bookingId }) => {
@@ -28,7 +28,7 @@ const Invoice = ({ bookingId }) => {
 
     return (
         <>
-            <div className="d-flex justify-content-end py-2" onClick={() => generatePDF(targetRef, { filename: 'page.pdf', resolution: 2,page:{margin:5} })}> <i className="fa fa-download"></i></div>
+            <div className="d-flex justify-content-end py-2" onClick={() => generatePDF(targetRef, { filename: 'DDDCABS-INVOICE.pdf', resolution: 2,page:{margin:5} })}> <i className="fa fa-download"></i></div>
             <div ref={targetRef}>
                 <div style={{ display: "flex" }}>
                     <div style={{ flex: 1, background: "#37858D", padding: 20 }}>
@@ -463,7 +463,7 @@ const Invoice = ({ bookingId }) => {
                                     fontWeight: "bold"
                                 }}
                             >
-                                &#8377; {bookingDetails?.paymentId?.dueAmount}
+                                &#8377; {roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount)}
                             </td>
                         </tr>
                     </tfoot>
