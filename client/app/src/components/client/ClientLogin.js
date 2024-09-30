@@ -62,7 +62,7 @@ function Login() {
                                 <div className="w-100 d-flex justify-content-center pt-3">
                                     <a href="https://dddcabs.com/index.html" rel="noopener noreferrer"><img className="h-60p mb-3" src={logo} alt="logo-img" /></a>
                                 </div>
-                                {!otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
+                                {otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
                                     
 
                                     <form className="register-form" onSubmit={handleSubmit(login)}>
