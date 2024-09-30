@@ -28,6 +28,7 @@ export default function BookingManagement() {
   const [isConfirmBooking, setIsConfirmBooking] = useState(false)
   const [isInvoiceGenerate, setIsInvoiceGenerate] = useState(false)
   const [isFullPaymentConfirm, setIsFullPaymentConfirm] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('');
   const [paymentId, setPaymentId] = useState(null)
   const [suggestions, setSuggestions] = useState({
     pickupLocationId: '',
@@ -50,6 +51,8 @@ export default function BookingManagement() {
     isScrollLoading: false
   })
 
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
   const { register, handleSubmit, reset, setValue, control, watch, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -67,8 +70,9 @@ export default function BookingManagement() {
   });
 
   useEffect(() => {
-    getBookings();
-  }, []);
+    getBookings(false);
+  }, [debouncedSearchQuery]);
+
 
   useEffect(() => {
     const date = new Date()
@@ -84,6 +88,22 @@ export default function BookingManagement() {
     getVehicleList()
     // setValue('reshedulePickupTime', data.pickupTime);
   }, [isOpen])
+
+  function useDebounce(value, delay) {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+  
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+  
+    return debouncedValue;
+  }
 
   const saveBooking = async (data) => {
     try {
@@ -128,26 +148,40 @@ export default function BookingManagement() {
 
   const getBookings = async (isScroll) => {
     try {
-      if(!isScroll) {
-        setScrollBar(old => ({...old, skip: 0}))
+      if (!isScroll) {
+        setScrollBar((old) => ({ ...old, skip: 0 }));
       }
-      const res = await axios.get("/api/admin/bookings", {params: {limit: scrollBar.limit, skip: scrollBar.skip}});
+      const res = await axios.get("/api/admin/bookings", {
+        params: {
+          limit: scrollBar.limit,
+          skip: scrollBar.skip,
+          search: debouncedSearchQuery,
+        },
+      });
+      
       const list1 = res.data.bookings.map(ele => {
         ele['isCancelable'] = isSchedulabel(ele.pickupDate, ele.pickupTime) || ele.isInvoiceGenerate || ['cancelled'].includes(ele.rideStatus);
         return ele;
       });
 
-      if(isScroll) {
-        setList(old => old.concat(list1));
+      if (isScroll) {
+        setList((old) => old.concat(list1));
       } else {
         setList(list1);
       }
-   
-      setScrollBar(old => ({...old, skip: (old.skip + scrollBar.limit), hasMore: (list1.length === scrollBar.limit)}))
-  
+
+      setScrollBar((old) => ({
+        ...old,
+        skip: old.skip + scrollBar.limit,
+        hasMore: list1.length === scrollBar.limit,
+      }));
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   const getVehicleList = async () => {
@@ -416,86 +450,96 @@ export default function BookingManagement() {
           </button>
         </div>
       </div>
+      <div>
+      <div className="d-flex mb-3">
+        <input
+          type="text"
+          placeholder="Search by Booking No, Name or Phone"
+          className="form-control"
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+      </div>
+
       <div className="table-responsive">
-      <InfiniteScroll
+        <InfiniteScroll
           dataLength={list.length}
           next={() => getBookings(true)}
           hasMore={scrollBar.hasMore}
           loader={<h6>Loading...</h6>}
-          endMessage={<p className='py-2'>No more data to show.</p>}
+          endMessage={<p className="py-2">No more data to show.</p>}
         >
-        <table className="cstm-table table">
-          <thead>
-            <tr>
-              <th>#Booking Id</th>
-              <th>Client Name</th>
-              <th>Booking Type</th>
-              <th>Mobile Number</th>
-              <th>Booking Date</th>
-              <th>Booking Amount</th>
-              <th>Due Amount</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          {list.length > 0 && (
-            <tbody>
-              {list.map((li, index) => (
-                <tr key={index}>
-                  <td>#{li.bookingNo}</td>
-                  <td>{li.name}</td>
-                  <td>{TRIP_TYPE.find(ele => ele.value === li.trip.tripType)?.name}</td>
-                  <td>{li?.phone}</td>
-                  <td>{getDateAndTimeString(li.pickupDate)}</td>
-                  <td> &#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
-                  <td >&#8377; {!li.isPaymentCompleted ? (roundToDecimalPlaces(li?.dueAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'): '0'}</td>
-                  <td className="d-flex align-items-center">
-                    <Tooltip message={'View More'} direction="bottom">
-                      <button
-                        // onClick={() => deleteVehiclePrice(li._id)}
-                        onClick={() => setPreviewData(li)}
-                        className="icon-btn me-2"
-                        type="button"
-                      >
-                        <i className="fa fa-eye"></i>
-                      </button>
-                    </Tooltip>
-                    <Tooltip message={'Publish Invoice'} direction="bottom">
-                      <button
-                        className={`icon-btn ${li.isInvoiceGenerate ? 'disabled' : ''}`}
-                        onClick={() => getDataForInvoice(li)}
-                        type="button"
-                        disabled={li.isInvoiceGenerate}
-                      >
-                        <i className="fas fa-share-square"></i>
-                      </button>
-                    </Tooltip>
-                    <Tooltip message={'Mark Full Payment'} direction='bottom'>
-                      <button
-                        className={`icon-btn ${(li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate) ? 'disabled' : ''}`}
-                        disabled={li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate}
-                        onClick={() => {setPaymentId(li.paymentId); setIsFullPaymentConfirm(true)}}
-                      >
-                        <i className="fas fa-money-check"></i>
-                      </button>
-                    </Tooltip>
-                    <Tooltip message={'Cancel'} direction='bottom'>
-                      <button
-                        className={`icon-btn ${li.isCancelable ? 'disabled' : ''}`}
-                        disabled={li.isCancelable}
-                        onClick={() => handleCancelClick(li._id)}
-                      >
-                        <i className="fa fa-times" aria-hidden="true"></i>
-                      </button>
-                    </Tooltip>
-
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          )}
-        </table>
+          <table className="cstm-table table">
+            <thead>
+              <tr>
+                <th>#Booking Id</th>
+                <th>Client Name</th>
+                <th>Booking Type</th>
+                <th>Mobile Number</th>
+                <th>Booking Date</th>
+                <th>Booking Amount</th>
+                <th>Due Amount</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            {list.length > 0 && (
+              <tbody>
+                {list.map((li, index) => (
+                  <tr key={index}>
+                    <td>#{li.bookingNo}</td>
+                    <td>{li.name}</td>
+                    <td>{TRIP_TYPE.find((ele) => ele.value === li.trip.tripType)?.name}</td>
+                    <td>{li?.phone}</td>
+                    <td>{getDateAndTimeString(li.pickupDate)}</td>
+                    <td>&#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
+                    <td>&#8377; {!li.isPaymentCompleted ? (roundToDecimalPlaces(li?.dueAmount) || roundToDecimalPlaces(li?.totalPrice) || '0') : '0'}</td>
+                    <td className="d-flex align-items-center">
+                      <Tooltip message={'View More'} direction="bottom">
+                        <button
+                          onClick={() => setPreviewData(li)}
+                          className="icon-btn me-2"
+                          type="button"
+                        >
+                          <i className="fa fa-eye"></i>
+                        </button>
+                      </Tooltip>
+                      <Tooltip message={'Publish Invoice'} direction="bottom">
+                        <button
+                          className={`icon-btn ${li.isInvoiceGenerate ? 'disabled' : ''}`}
+                          onClick={() => getDataForInvoice(li)}
+                          type="button"
+                          disabled={li.isInvoiceGenerate}
+                        >
+                          <i className="fas fa-share-square"></i>
+                        </button>
+                      </Tooltip>
+                      <Tooltip message={'Mark Full Payment'} direction="bottom">
+                        <button
+                          className={`icon-btn ${li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate ? 'disabled' : ''}`}
+                          disabled={li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate}
+                          onClick={() => { setPaymentId(li.paymentId); setIsFullPaymentConfirm(true); }}
+                        >
+                          <i className="fas fa-money-check"></i>
+                        </button>
+                      </Tooltip>
+                      <Tooltip message={'Cancel'} direction="bottom">
+                        <button
+                          className={`icon-btn ${li.isCancelable ? 'disabled' : ''}`}
+                          disabled={li.isCancelable}
+                          onClick={() => handleCancelClick(li._id)}
+                        >
+                          <i className="fa fa-times" aria-hidden="true"></i>
+                        </button>
+                      </Tooltip>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            )}
+          </table>
         </InfiniteScroll>
-        </div>
+      </div>
+    </div>
       <Modal isOpen={isOpen} onClose={closeModal} title="Add Booking">
         <form onSubmit={handleSubmit(saveBooking)} className="modal-dropdown">
           <div className="scroll-body">

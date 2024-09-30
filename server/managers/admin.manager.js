@@ -116,97 +116,112 @@ const getVehicleById = async (req, res) => {
 
 const getBookingInfo = async (req, res) => {
     try {
-        const query = req.query
+        const query = req.query;
+        const searchQuery = query.search || '';
+
+        const skipValue = searchQuery ? 0 : Number(query.skip);
+
+        const searchConditions = [
+            { rideStatus: { $in: ['completed', 'booked'] } }
+        ];
+
+        if (searchQuery) {
+            const searchRegex = { $regex: searchQuery, $options: 'i' };
+            searchConditions.push({
+                $or: [
+                    { bookingNo: searchRegex },
+                    { name: searchRegex },
+                    { 'user.primaryPhone': searchRegex }
+                ]
+            });
+        }
+
         const bookingList = await RideModel.aggregate([
             {
-              $match: { rideStatus: { $in: ['completed', 'booked'] } }
+                $match: { $and: searchConditions }
             },
             { $sort: { createdOn: -1 } },
-            { $skip: Number(query.skip) },
+            { $skip: skipValue },
             { $limit: Number(query.limit) },
             {
-              $lookup: {
-                from: 'payments',
-                localField: 'paymentId',
-                foreignField: '_id',
-                as: 'bookingPayment'
-              }
+                $lookup: {
+                    from: 'payments',
+                    localField: 'paymentId',
+                    foreignField: '_id',
+                    as: 'bookingPayment'
+                }
             },
             {
-              $unwind: {
-                path: '$bookingPayment',
-                preserveNullAndEmptyArrays: true
-              }
+                $unwind: {
+                    path: '$bookingPayment',
+                    preserveNullAndEmptyArrays: true
+                }
             },
             {
                 $lookup: {
-                  from: 'users',
-                  localField: 'userId',
-                  foreignField: '_id',
-                  as: 'user',
-                  pipeline: [{
-                    $project: {
-                    primaryPhone: 1
-                  }}]
+                    from: 'users',
+                    localField: 'userId',
+                    foreignField: '_id',
+                    as: 'user',
+                    pipeline: [{ $project: { primaryPhone: 1 } }]
                 }
-              },
-              {
-                $unwind: {
-                  path: '$user',
-                  preserveNullAndEmptyArrays: true
-                }
-              },
-              {
-                $lookup: {
-                  from: 'cities',
-                  localField: 'pickUpCity',
-                  foreignField: '_id',
-                  as: 'city',
-                  pipeline: [{
-                    $project: {
-                    name: 1
-                  }}]
-                }
-              },
-              {
-                $unwind: {
-                  path: '$city',
-                  preserveNullAndEmptyArrays: true
-                }
-              },
+            },
             {
-              $project: {
-                name: 1,
-                pickupDate: 1,
-                pickupTime: 1,
-                trip: 1,
-                dropDate: 1,
-                payableAmount: '$bookingPayment.payableAmount',
-                dueAmount: '$bookingPayment.dueAmount',
-                isPaymentCompleted: '$bookingPayment.isPaymentCompleted',
-                totalPrice: 1,
-                rideStatus: 1,
-                phone: '$user.primaryPhone',
-                isInvoiceGenerate: 1,
-                name: 1,
-                paymentId: 1,
-                pickUpCity: 1,
-                pickupCityName: '$city.name',
-                pickupLocation: 1,
-                pickupTime: 1,
-                rideStatus: 1,
-                totalDistance: 1,
-                dropoffLocation: 1,
-                bookingNo: 1
+                $unwind: {
+                    path: '$user',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $lookup: {
+                    from: 'cities',
+                    localField: 'pickUpCity',
+                    foreignField: '_id',
+                    as: 'city',
+                    pipeline: [{ $project: { name: 1 } }]
+                }
+            },
+            {
+                $unwind: {
+                    path: '$city',
+                    preserveNullAndEmptyArrays: true
+                }
+            },
+            {
+                $project: {
+                    name: 1,
+                    pickupDate: 1,
+                    pickupTime: 1,
+                    trip: 1,
+                    dropDate: 1,
+                    payableAmount: '$bookingPayment.payableAmount',
+                    dueAmount: '$bookingPayment.dueAmount',
+                    isPaymentCompleted: '$bookingPayment.isPaymentCompleted',
+                    totalPrice: 1,
+                    rideStatus: 1,
+                    phone: '$user.primaryPhone',
+                    isInvoiceGenerate: 1,
+                    name: 1,
+                    paymentId: 1,
+                    pickUpCity: 1,
+                    pickupCityName: '$city.name',
+                    pickupLocation: 1,
+                    pickupTime: 1,
+                    rideStatus: 1,
+                    totalDistance: 1,
+                    dropoffLocation: 1,
+                    bookingNo: 1
+                }
+            }
+        ]);
 
-              }
-            }])
-        res.status(200).send({ bookings: bookingList })
+        res.status(200).send({ bookings: bookingList });
     } catch (error) {
-        logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error, userId: req?.userId })
-        res.status(500).send({ message: 'Server Error' })
+        logger.log('server/managers/admin.manager.js-> getBookingInfo', { error: error, userId: req?.userId });
+        res.status(500).send({ message: 'Server Error' });
     }
-}
+};
+
 
 const saveBooking = async (req, res) => {
     try {
