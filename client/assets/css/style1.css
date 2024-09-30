@@ -1489,3 +1489,6 @@ h1, h2, h3, h4, h5, h6 {
 .why-choose-us-img-2 img {
     border: 15px solid white;
 }
+.text-red{
+	color: var(--theme);
+}

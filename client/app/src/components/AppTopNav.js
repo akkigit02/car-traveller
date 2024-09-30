@@ -111,15 +111,22 @@ function AppTopNav() {
                 <div className={`dropdown-cstm ${isDropdownOpen ? 'transitioning' : ''}`}>
                   <ul>
                     {notificationList.map((item) => <li>
-                      {item.title}
+                      <p className='fw-bold mb-1 border-bottom pb-2'>{item.title}</p>
                       {getNotificationText(item)}
                     </li>
                     )}
 
                   </ul>
-                  <button id="expandButton" onClick={handleExpand}>
+                  {/* <button id="expandButton" onClick={handleExpand}>
                     Expand
-                  </button>
+                  </button> */}
+
+
+                  <Link to={`/notification`} onClick={closeDropdown}>
+                    <button id="expandButton" >
+                      Expand
+                    </button>
+                  </Link>
                 </div>
               )}
             </div>

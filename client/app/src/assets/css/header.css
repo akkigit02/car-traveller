@@ -162,7 +162,7 @@
   position: absolute;
   top: 30px;
   right: 0;
-  width: 200px;
+  width: 280px;
   background-color: #fff;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -182,7 +182,9 @@
 
 .dropdown-cstm ul li {
   padding: 8px;
-  border-bottom: 1px solid #ddd;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin-bottom: 10px;
 }
 
 .dropdown-cstm ul li:hover {

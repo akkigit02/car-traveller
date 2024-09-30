@@ -66,12 +66,10 @@ export default function Notifiaction() {
 
   return (
     <>
-      <div className="d-flex justify-content-between pb-2">
-        <div>
+      <div className=" border-bottom mb-2 pb-2">
           <p className="cstm-title">Notification</p>
-        </div>
       </div>
-      <div style={{width:'100%',height:'68vh'}}>
+      <div className="notification-data-height">
         <InfiniteScroll
           dataLength={notificationList.length}
           next={() => getNotification(true)}
@@ -79,8 +77,8 @@ export default function Notifiaction() {
           loader={<h6>Loading...</h6>}
           endMessage={<p className='py-2'>No more bookings to show.</p>}
         >
-          {notificationList.map((item, index) => <div style={{ border: '1px solid black' }}>
-            <p className="font-20">{index + 1}:{item.title}</p>
+          {notificationList.map((item, index) => <div className="notification-data">
+            <p className="font-20 mb-1">{index + 1}. {item.title}</p>
             <p>{getNotificationText(item)}</p>
           </div>
           )}

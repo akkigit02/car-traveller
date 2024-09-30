@@ -88,6 +88,10 @@
     overflow-y: auto;
     padding-right: 10px;
 }
+.notification-data-height{
+    height: calc(100vh - 245px);
+    overflow-y: auto;
+}
 .flex-1{
     flex: 1;
 }
@@ -1121,4 +1125,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   ::-webkit-scrollbar-thumb {
     background: var(--theme);
     border-radius: 10px;
+  }
+  .notification-data{
+    border: 1px solid var(--text);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    padding: 10px;
   }

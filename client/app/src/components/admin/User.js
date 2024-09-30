@@ -114,6 +114,10 @@ export default function UserManagement() {
           <p className="cstm-title">User Management</p>
         </div>
         <div>
+        <button onClick={downloadCSV} disabled={isDownloading} className="cstm-btn-trans me-2">
+            <i className="fa fa-file-download"></i> {/* Download icon */}
+            Download Users CSV
+          </button>
           <button
             className="cstm-btn"
             onClick={() => {
@@ -123,10 +127,7 @@ export default function UserManagement() {
           >
             <i className="fa fa-plus"></i>
           </button>
-          <button onClick={downloadCSV} disabled={isDownloading} className="cstm-btn">
-            <i className="fa fa-file-download"></i> {/* Download icon */}
-            Download Users CSV
-          </button>
+         
         </div>
       </div>
       <table className="cstm-table">
