@@ -248,7 +248,9 @@ const getCars = async (req, res) => {
 const savePackage = async (req, res) => {
   try {
     const package = await EnquirePackageModel.create(req.body)
-    res.status(201).send({ message: 'Package add successfully!', package })
+    res.status(201).send({ message: `Enquiry Confirmed! 🎉 
+  Thanks,${req.body.name}. We’ve received your package enquiry and will get back to you soon!
+  - DDD CABS`, package })
   } catch (error) {
     logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
     res.status(500).send({ message: 'Server Error' })
