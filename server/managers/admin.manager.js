@@ -12,6 +12,8 @@ const { createCSVFile } = require('../utils/csv.util');
 const PaymentModel = require('../models/payment.model');
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { roundToDecimalPlaces } = require('../utils/format.util');
+const { dateDifference } = require('../utils/calculation.util');
+const { incrementInvoiceNumber } = require('../services/common.service');
 const { ObjectId } = require('mongoose').Types
 
 const saveVehiclePrice = async (req, res) => {
@@ -568,7 +570,7 @@ const generateFinalInvoice = async (req, res) => {
         const rideId = req?.body?.id
         delete req?.body?.id
         const body = req?.body
-
+        console.log(body,"=========-------")
         const ride = await RideModel.aggregate([{
             $match: { _id: new ObjectId(rideId) }
         },
@@ -648,7 +650,9 @@ const generateFinalInvoice = async (req, res) => {
         let extraAmount = 0
         let distance = parseFloat(body?.totalDistance) || 0
         let extraDistance = (distance - rideInfo?.totalDistance) || 0;
-        if ((extraDistance > 0) || (rideInfo?.trip?.tripType === 'hourly')) {
+        let extraHour = null
+        let extraDay = 0
+        if ((extraDistance > 0) || (['hourly','roundTrip'].includes(rideInfo?.trip?.tripType))) {
 
             /**********************************************************************************************************/
             if (rideInfo?.trip?.tripType === 'oneWay') {
@@ -663,8 +667,25 @@ const generateFinalInvoice = async (req, res) => {
                 extraAmount = totalPrice
             } else if (rideInfo?.trip?.tripType === 'roundTrip') {
                 /**********************************************************************************************************/
-                let totalPrice = null
-                totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm;
+
+                let pickupDate = `${rideInfo.pickupDate.year}-${rideInfo.pickupDate.month.padStart(2, '0')}-${rideInfo.pickupDate.date.padStart(2, '0')}`
+                let numberOfDay = dateDifference(pickupDate, body.newDropDate)
+                let dropDate = `${rideInfo.dropDate.year}-${rideInfo.dropDate.month.padStart(2, '0')}-${rideInfo.dropDate.date.padStart(2, '0')}`
+                let oldnumberOfDay = dateDifference(pickupDate, dropDate)
+                extraDay = numberOfDay - oldnumberOfDay
+                let totalPrice = 0
+                let pricesAdd = 0
+                if(extraDistance < 0) {
+                    extraDistance = 0
+                }
+                if (extraDay > 0) {
+                    if (numberOfDay > oldnumberOfDay) {
+                        if (numberOfDay * 250 > rideInfo?.totalDistance)
+                            pricesAdd = (numberOfDay - oldnumberOfDay) * rideInfo.vehicleId.driverAllowance
+                        extraDistance = 300 * extraDay
+                    }
+                }
+                totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm + pricesAdd;
                 extraAmount = totalPrice
 
             } else if (rideInfo?.trip?.tripType === 'cityCab') {
@@ -673,13 +694,13 @@ const generateFinalInvoice = async (req, res) => {
                 let totalPrice = null
                 const priceInfo = CITY_CAB_PRICE.find(info => info.max > extraDistance && info.min < extraDistance)
 
-       
+
                 if (['Sedan'].includes(rideInfo?.vehiclePrice.vehicleType)) {
-                    totalPrice = priceInfo.sedan.base + priceInfo.sedan.perKm * extraDistance
+                    totalPrice = priceInfo.sedan.perKm * extraDistance
                 } else if (['Hatchback'].includes(rideInfo?.vehiclePrice.vehicleType)) {
-                    totalPrice = priceInfo.hatchback.base + priceInfo.hatchback.perKm * extraDistance
+                    totalPrice = priceInfo.hatchback.perKm * extraDistance
                 } else {
-                    totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * extraDistance
+                    totalPrice = priceInfo.suv.perKm * extraDistance
                 }
 
                 extraAmount = totalPrice
@@ -688,7 +709,7 @@ const generateFinalInvoice = async (req, res) => {
                 let totalPrice = 0
                 let hourlyData = rideInfo?.vehiclePrice?.hourly.find(hr => hr.type === rideInfo?.trip?.hourlyType)
                 if (hourlyData) {
-                    let extraHour = (body?.totalHour ? parseFloat(body?.totalHour) : 0) - hourlyData?.hour
+                    extraHour = (body?.totalHour ? parseFloat(body?.totalHour) : 0) - hourlyData?.hour
 
                     if (extraHour && extraHour > 0) {
                         totalPrice = extraHour * rideInfo?.vehiclePrice?.upToCostPerHour
@@ -702,10 +723,22 @@ const generateFinalInvoice = async (req, res) => {
         } else {
             extraAmount = 0
         }
+
         let payableAmount = extraAmount + rideInfo?.payments?.payableAmount
-        let dueAmount = extraAmount + rideInfo?.payments?.payableAmount
-        await PaymentModel.updateOne({ _id: rideInfo?.payments?._id }, { extraAmount: roundToDecimalPlaces(extraAmount, 2), payableAmount: payableAmount, dueAmount: dueAmount })
-        await RideModel.updateOne({ _id: rideInfo?._id }, { $set: {rideStatus: 'completed', isInvoiceGenerate: true }, $push: {activity: oldData}})
+        let dueAmount = extraAmount + rideInfo?.payments?.dueAmount
+        console.log(extraAmount, extraDay, extraDistance)
+        await incrementInvoiceNumber(rideInfo?.payments?._id )
+        await PaymentModel.updateOne({ _id: rideInfo?.payments?._id }, {
+            extraAmount: roundToDecimalPlaces(extraAmount, 2),
+            payableAmount: roundToDecimalPlaces(payableAmount, 2),
+            dueAmount: roundToDecimalPlaces(dueAmount, 2),
+            extraAmount: roundToDecimalPlaces(extraAmount, 2),
+            extraHour: extraHour,
+            extraDistance: extraDistance,
+            newDropDate: body?.newDropDate,
+            extraDay: extraDay
+        })
+        await RideModel.updateOne({ _id: rideInfo?._id }, { $set: { rideStatus: 'completed', isInvoiceGenerate: true }, $push: { activity: oldData } })
 
         res.status(200).send({ message: 'Invoice publish successfully!', booking: { extraAmount: roundToDecimalPlaces(extraAmount, 2), isInvoiceGenerate: true, payableAmount, dueAmount } });
     } catch (error) {
@@ -723,7 +756,7 @@ const confirmFullPayment = async (req, res) => {
                 isPaymentCompleted: true
             }
         })
-        res.status(200).send({ message: 'Payment confirmation successfully!'});
+        res.status(200).send({ message: 'Payment confirmation successfully!' });
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> confirmFullPayment', { error: error, userId: req.userId });
         res.status(500).send({ message: 'Server Error' });

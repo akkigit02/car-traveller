@@ -15,7 +15,7 @@ const isSchedulabel = (dateObj, time) => {
     return diifrence < (RESCHEDULE_TIME * 60 * 1000)
 }
 const getDateAndTimeString = (dateObj, time) => {
-    return `${dateObj.date}/${dateObj.month}/${dateObj.year}${time ? (' ' + time) : ''}`
+    return `${dateObj?.date}/${dateObj?.month}/${dateObj?.year}${time ? (' ' + time) : ''}`
 }
 
 function roundToDecimalPlaces(number, decimalPlaces = 2) {

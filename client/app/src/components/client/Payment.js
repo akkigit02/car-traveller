@@ -402,7 +402,6 @@ function Payment() {
       {
         isInvoicePreview && <Modal isOpen={isInvoicePreview} onClose={() => setIsInvoicePreview(false)} title="Invoice">
           <div className="invoice-width">
-            <div className="d-flex justify-content-end py-2"> <i className="fa fa-download"></i></div>
             <Invoice bookingId={bookingDetails._id} />
           </div>
         </Modal>

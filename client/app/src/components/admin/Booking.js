@@ -373,6 +373,7 @@ export default function BookingManagement() {
         previousDistance: data?.totalDistance,
         id: data?._id,
         hourlyType: data?.trip?.hourlyType,
+        dropDate: data?.dropDate?.date ? data?.dropDate : null
       })
     } catch (error) {
       console.error(error)
@@ -942,6 +943,29 @@ export default function BookingManagement() {
                     )}
                   </div>
                 </>}
+
+              {watch1('tripType') === 'roundTrip' && 
+              <>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="hourlyType">Drop Date</label>
+                <div className="cstm-select-input" >
+                  {getDateAndTimeString(watch1('dropDate'))}
+                </div>
+              </div>
+
+              <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
+                <label htmlFor="hourlyType">New Drop Date</label>
+                <input
+                  {...register1("newDropDate", { required: 'New Drop Date is Required' })}
+                  type='date'
+                  className="cstm-select-input"
+                  placeholder="Please enter new drop date"
+                />
+                {errors1?.newDropDate && (
+                  <span className="text-danger">{errors1?.newDropDate?.message}</span>
+                )}
+              </div>
+              </>}
 
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="totalDistance"> Total Distance</label>

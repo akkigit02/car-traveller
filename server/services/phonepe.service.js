@@ -6,11 +6,12 @@ const { MERCHANT_ID, MERCHANT_USER_ID, PHONE_PAY_REDIRECT, PHONE_PE_HOST_URL, SA
 
 const initiatePhonepePayment = async ({ amount, merchantTransactionId }) => {
     try {
+
         let payLoad = {
             merchantId: MERCHANT_ID,
             merchantTransactionId: merchantTransactionId,
             merchantUserId: MERCHANT_USER_ID,
-            amount: amount * 100,
+            amount: Math.round(amount * 100),
             redirectUrl: `${PHONE_PAY_REDIRECT}/${merchantTransactionId}`,
             redirectMode: "REDIRECT",
             callbackUrl: `${PHONE_PAY_REDIRECT}/${merchantTransactionId}`,

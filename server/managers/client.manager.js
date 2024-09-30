@@ -881,15 +881,19 @@ const getCoupons = async (req, res) => {
 const getInvoiceInfo = async (req, res) => {
   try {
     const bookingId = req?.params?.id
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
+    let bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
     .populate([
       { path: 'pickUpCity', select: 'name' },
       { path: 'dropCity', select: 'name' },
       { path: 'vehicleId', select: 'vehicleType vehicleName' },
-      { path: 'paymentId', select: 'dueAmount' },
+      { path: 'paymentId', select: 'dueAmount invoiceNo advancePercent couponCode payableAmount extraAmount totalDistance totalPrice extraDistance isPaymentCompleted '  },
       { path: 'userId', select: 'primaryPhone email'}
     ]).lean();
-
+    if(bookingDetails?.paymentId?.couponCode) {
+      const refCoupon = await CouponModel.findOne({code: bookingDetails?.paymentId?.couponCode}, { discountValue: 1 })
+      console.log(refCoupon)
+      bookingDetails['discountValue'] = (refCoupon?.discountValue * bookingDetails?.paymentId?.totalPrice)/100
+    }
     return res.status(200).send({ bookingDetails });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getInvoiceInfo', { error: error, userId: req?.userId });
