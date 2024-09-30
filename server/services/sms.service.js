@@ -56,6 +56,80 @@ const sendBookingConfirmedSms = async (mobile, payload) => {
     }
 }
 
+const sendRideRescheduledSms = async (mobile, payload) => {
+    try {
+        const { clientName, bookingId, newPickupDateTime } = payload;
+        const smsBody = {
+            template_id: "66f980f5d6fc051a03386272",
+            short_url: 0,
+            recipients: [{
+                "mobiles": mobile,
+                "var1": `${clientName}`,
+                "var2": `${bookingId}`,
+                "var3": `${newPickupDateTime}`
+            }]
+        }
+        const { data } = await axios({
+            url: BASE_URL,
+            method: 'POST',
+            data: JSON.stringify(smsBody),
+            headers: getHeader()
+        })
+        console.log(data)
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-module.exports = { sendOtpSms, sendBookingConfirmedSms };
+const sendBookingCancelledByPassengerSms = async (mobile, payload) => {
+    try {
+        const { clientName, bookingId } = payload;
+        const smsBody = {
+            template_id: "66f975edd6fc05490a7388f2",
+            short_url: 0,
+            recipients: [{
+                "mobiles": mobile,
+                "var1": `${clientName}`,
+                "var2": `${bookingId}`
+            }]
+        }
+        const { data } = await axios({
+            url: BASE_URL,
+            method: 'POST',
+            data: JSON.stringify(smsBody),
+            headers: getHeader()
+        })
+        console.log(data)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const sendBookingCancelledByAdminSms = async (mobile, payload) => {
+    try {
+        const { clientName, cancellationReason, bookingId } = payload;
+        const smsBody = {
+            template_id: "66f9754cd6fc056f7a2b8113",
+            short_url: 0,
+            recipients: [{
+                "mobiles": mobile,
+                "var1": `${clientName}`,
+                "var2": `${cancellationReason}`,
+                "var3": `${bookingId}`
+            }]
+        }
+        const { data } = await axios({
+            url: BASE_URL,
+            method: 'POST',
+            data: JSON.stringify(smsBody),
+            headers: getHeader()
+        })
+        console.log(data)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
+module.exports = { sendOtpSms, sendBookingConfirmedSms, sendRideRescheduledSms, sendBookingCancelledByPassengerSms, sendBookingCancelledByAdminSms };
 
