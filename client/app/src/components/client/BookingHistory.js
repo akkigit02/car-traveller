@@ -215,7 +215,8 @@ function BookingHistory() {
           loader={<h6>Loading...</h6>}
           endMessage={<p className='py-2'>No more bookings to show.</p>}
         >
-          <table className='cstm-table'>
+          <div  style={{height:'300px', overflowY:'auto'}}>
+          <table className='cstm-table '>
             <thead>
               <tr>
                 <th>Name</th>
@@ -262,13 +263,14 @@ function BookingHistory() {
                 </tr>
               )) :
                 <tr className='no-data'>
-                  <td colspan="100%">
+                  <td colSpan="100%">
                     <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
                   </td>
                 </tr>
               }
             </tbody>
           </table>
+          </div>
         </InfiniteScroll>
 
         <Modal isOpen={isOpen} onClose={closeModal} title={'Reshedule'}>
