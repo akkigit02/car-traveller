@@ -570,7 +570,6 @@ const generateFinalInvoice = async (req, res) => {
         const rideId = req?.body?.id
         delete req?.body?.id
         const body = req?.body
-        console.log(body,"=========-------")
         const ride = await RideModel.aggregate([{
             $match: { _id: new ObjectId(rideId) }
         },

@@ -21,7 +21,7 @@ const { getAutoSearchPlaces, getDistanceBetweenPlaces } = require("../services/G
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../services/phonepe.service');
 const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
-const { incrementBookingNumber, incrementInvoiceNumber } = require('../services/common.service');
+const { incrementBookingNumber, incrementInvoiceNumber, generateInvoiceHTML, getPdfFromHtml } = require('../services/common.service');
 const { getTotalPrice } = require('../services/calculation.service');
 const { sendBookingConfirmedSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
@@ -248,9 +248,11 @@ const getCars = async (req, res) => {
 const savePackage = async (req, res) => {
   try {
     const package = await EnquirePackageModel.create(req.body)
-    res.status(201).send({ message: `Enquiry Confirmed! 🎉 
+    res.status(201).send({
+      message: `Enquiry Confirmed! 🎉 
   Thanks,${req.body.name}. We’ve received your package enquiry and will get back to you soon!
-  - DDD CABS`, package })
+  - DDD CABS`, package
+    })
   } catch (error) {
     logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
     res.status(500).send({ message: 'Server Error' })
@@ -404,7 +406,6 @@ const getBookingList = async (req, res) => {
           rideStatus: 1
         }
       }])
-      console.log(bookingList.length)
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error });
@@ -729,7 +730,6 @@ const changePaymentStatus = async (req, res) => {
         sendNotificationToAdmin(billing.bookingId, 'NEW_BOOKING')
       }
       else if (['due', 'full'].includes(billing.paymentType)) {
-        paymentUpdateData['isPaymentCompleted'] = true
         await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
         sendNotificationToAdmin(billing.bookingId, billing.paymentType === 'due' ? 'DUE_PAYMENT_RECEIVED' : 'NEW_BOOKING')
       }
@@ -773,7 +773,7 @@ const bookingCancel = async (req, res) => {
 const bookingReshuduled = async (req, res) => {
   try {
     const { params, body } = req
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId', 'driverAllowance')
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId', 'driverAllowance costPerKmRoundTrip')
     if (!bookingDetails) {
       return res.status(400).send({ message: "Booking not found" })
     }
@@ -797,11 +797,21 @@ const bookingReshuduled = async (req, res) => {
     }
     if (bookingDetails.trip.tripType === 'roundTrip') {
       let numberOfDay = dateDifference(body.reshedulePickupDate, body.resheduleReturnDate)
-      let pickupDate = `${bookingDetails.pickupDate.year}-${bookingDetails.pickupDate.month.padStart(2, '0')}-${bookingDetails.pickupDate.date.padStart(2, '0')}`
-      let dropDate = `${bookingDetails.dropDate.year}-${bookingDetails.dropDate.month.padStart(2, '0')}-${bookingDetails.dropDate.date.padStart(2, '0')}`
-      let oldnumberOfDay = dateDifference(pickupDate, dropDate)
-      let pricesAdd = (numberOfDay - oldnumberOfDay) * bookingDetails.vehicleId.driverAllowance
-      let totalPrice = bookingDetails.totalPrice + pricesAdd
+      // let pickupDate = `${bookingDetails.pickupDate.year}-${bookingDetails.pickupDate.month.padStart(2, '0')}-${bookingDetails.pickupDate.date.padStart(2, '0')}`
+      // let dropDate = `${bookingDetails.dropDate.year}-${bookingDetails.dropDate.month.padStart(2, '0')}-${bookingDetails.dropDate.date.padStart(2, '0')}`
+      // let oldnumberOfDay = dateDifference(pickupDate, dropDate)
+      // let extraDay = numberOfDay - oldnumberOfDay
+      let totalPrice = 0
+   
+          if (bookingDetails?.totalDistance <= numberOfDay * 250) {
+            totalPrice = numberOfDay * 300 * bookingDetails?.vehicleId?.costPerKmRoundTrip + numberOfDay * bookingDetails?.vehicleId?.driverAllowance;
+          } else {
+            totalPrice =
+              bookingDetails?.totalDistance * bookingDetails?.vehicleId?.costPerKmRoundTrip + (numberOfDay * bookingDetails?.vehicleId?.driverAllowance || 0);
+          }
+
+      // let pricesAdd = extraDistance * bookingDetails?.vehicleId?.costPerKmRoundTrip + (numberOfDay - oldnumberOfDay) * bookingDetails.vehicleId.driverAllowance
+      // let totalPrice = bookingDetails.totalPrice + pricesAdd
       data = {
         ...data,
         dropDate: {
@@ -824,9 +834,10 @@ const bookingReshuduled = async (req, res) => {
       $push: { activity: oldData }
     })
 
+
     // add refund payment
 
-    return res.status(200).send({ message: 'Bokking cancel successfull', booking: data })
+    return res.status(200).send({ message: 'Booking reschedule successfully', booking: data })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingReshuduled', { error: error })
     res.status(500).send({ message: 'Server Error' })
@@ -883,19 +894,22 @@ const getInvoiceInfo = async (req, res) => {
   try {
     const bookingId = req?.params?.id
     let bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
-    .populate([
-      { path: 'pickUpCity', select: 'name' },
-      { path: 'dropCity', select: 'name' },
-      { path: 'vehicleId', select: 'vehicleType vehicleName' },
-      { path: 'paymentId', select: 'dueAmount invoiceNo advancePercent couponCode payableAmount extraAmount totalDistance totalPrice extraDistance isPaymentCompleted '  },
-      { path: 'userId', select: 'primaryPhone email'}
-    ]).lean();
-    if(bookingDetails?.paymentId?.couponCode) {
-      const refCoupon = await CouponModel.findOne({code: bookingDetails?.paymentId?.couponCode}, { discountValue: 1 })
+      .populate([
+        { path: 'pickUpCity', select: 'name' },
+        { path: 'dropCity', select: 'name' },
+        { path: 'vehicleId', select: 'vehicleType vehicleName' },
+        { path: 'paymentId', select: 'dueAmount invoiceNo advancePercent couponCode payableAmount extraAmount totalDistance totalPrice extraDistance isPaymentCompleted ' },
+        { path: 'userId', select: 'primaryPhone email' }
+      ]).lean();
+    if (bookingDetails?.paymentId?.couponCode) {
+      const refCoupon = await CouponModel.findOne({ code: bookingDetails?.paymentId?.couponCode }, { discountValue: 1 })
       console.log(refCoupon)
-      bookingDetails['discountValue'] = (refCoupon?.discountValue * bookingDetails?.paymentId?.totalPrice)/100
+      bookingDetails['discountValue'] = (refCoupon?.discountValue * bookingDetails?.paymentId?.totalPrice) / 100
     }
-    return res.status(200).send({ bookingDetails });
+    const html = generateInvoiceHTML(bookingDetails)
+    let pdfContent = await getPdfFromHtml(html)
+    
+    return res.status(200).send(pdfContent);
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getInvoiceInfo', { error: error, userId: req?.userId });
     res.status(500).send({ message: 'Server Error' });

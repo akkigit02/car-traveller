@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { isSchedulabel, getDateAndTimeString, formatDateAndTime } from '../../utils/format.util';
+import { isSchedulabel, getDateAndTimeString, formatDateAndTime, roundToDecimalPlaces } from '../../utils/format.util';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import Modal from '../Modal';
@@ -232,8 +232,8 @@ function BookingHistory() {
                 <tr key={item._id}>
                   <td className='text-capitalize'>{item.name}</td>
                   <td>{getDateAndTimeString(item.pickupDate, item.pickupTime)}</td>
-                  <td> &#8377; {item?.payableAmount || item?.totalPrice || '0'}</td>
-                  <td >&#8377; {item?.dueAmount || item?.totalPrice || '0'}</td>
+                  <td> &#8377; {roundToDecimalPlaces(item?.payableAmount) || roundToDecimalPlaces(item?.totalPrice) || '0'}</td>
+                  <td >&#8377; {(item?.rideStatus === 'none' ? roundToDecimalPlaces(item?.totalPrice) : roundToDecimalPlaces(item?.dueAmount)) || '0'}</td>
                   <td className='text-capitalize'>{item.rideStatus}</td>
                   <td className='d-flex'>
                     <Tooltip message={'View Details'} direction='bottom'>
