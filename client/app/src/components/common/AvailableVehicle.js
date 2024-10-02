@@ -5,6 +5,7 @@ import { TRIP_TYPE } from "../../constants/common.constants";
 import moment from "moment";
 import { useSelector } from "react-redux";
 import Loader from "../Loader";
+import { roundToDecimalPlaces } from "../../utils/format.util";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 // import { icon } from "../../assets/css/icon.css";
 
@@ -227,7 +228,7 @@ export default function AvailableVehicle() {
                             </div>
                             <div>
                               <p className="mb-0 pb-0 pe-3 text-cut font-20 font-bold">
-                                &#8377; {Math.ceil(item.showPrice)}
+                                &#8377; {roundToDecimalPlaces(item.showPrice)}
                               </p>
                               {item?.discount > 0 && <p className="mb-0 pb-0 pe-3 font-20 font-bold">
                                 &#8517; {item?.discount} % OFF
@@ -246,7 +247,7 @@ export default function AvailableVehicle() {
                               }}
                             >
                               <h6 className="price mb-0">
-                                &#8377; {Math.ceil(item.totalPrice)}
+                                &#8377; {roundToDecimalPlaces(item.totalPrice)}
                               </h6>
                             </button>}
                           </div>

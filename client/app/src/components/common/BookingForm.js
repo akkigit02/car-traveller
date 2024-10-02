@@ -10,6 +10,7 @@ import store from '../../store';
 import { useSelector } from 'react-redux';
 import { HOURLY_TYPE } from '../../constants/common.constants';
 import Popup from '../Popup';
+import { roundToDecimalPlaces } from '../../utils/format.util';
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL
 function BookingForm() {
     const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm({
@@ -227,7 +228,7 @@ function BookingForm() {
 
                                 <p><strong>Car type:</strong> {bookingDetails?.vehicleType}({bookingDetails?.vehicleName}) or similar</p>
                                 <p><strong>Included:</strong> {bookingDetails?.distance} Km</p>
-                                <p><strong>Total Fare:</strong> {Math.ceil(bookingDetails?.totalPrice)}</p>
+                                <p><strong>Total Fare:</strong> {roundToDecimalPlaces(bookingDetails?.totalPrice)}</p>
                             </div>
                             <ul>
                                 <li>Your trip comes with a kilometer limit. If you go over this limit, you'll incur additional charges for the extra distance traveled.</li>

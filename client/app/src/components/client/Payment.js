@@ -5,6 +5,7 @@ import { HOURLY_TYPE, TRIP_TYPE, VEHICLE_TYPE } from "../../constants/common.con
 import { toast } from "react-toastify";
 import Invoice from "./Invoice";
 import Modal from "../Modal";
+import { roundToDecimalPlaces } from "../../utils/format.util";
 const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
   const { bookingId } = useParams();
@@ -23,7 +24,7 @@ function Payment() {
     discountAmount: 0,
   })
 
-  const carImg = require('../../assets/img/Group.png');
+  // const carImg = require('../../assets/img/12.mp4');
 
   const calculatePayablePrice = (bookingDetails) => {
     let discountPrice = 0
@@ -217,7 +218,7 @@ function Payment() {
                   <strong>Included:</strong> {bookingDetails?.totalDistance} Km
                 </p>
                 <p>
-                  <strong>Total Fare:</strong> {Math.ceil(bookingDetails?.totalPrice)}
+                  <strong>Total Fare:</strong> {roundToDecimalPlaces(bookingDetails?.totalPrice)}
                 </p>
               </div>
 
@@ -234,17 +235,29 @@ function Payment() {
                     {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
-                    
+                    {bookingDetails?.isInvoiceGenerate && 
+                    <div className="text-center mt-2 pb-5">
+                      <div className="pt-1">
+                      <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
+                      </div>
+                      {/* <img src={carImg} /> */}
+                      <h3 className="text-success fw-bold">Car Rental <br></br>Successfully Booked</h3>
+                      <p className="px-5">Thank you for booking with us! Your car rental is confirmed, and details will be emailed shortly. Contact our support team with any questions. We look forward to serving you. Safe travels!</p>
+                      </div>}
                     <div className="border p-2 rounded">
                       <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Estimated KM</div>
-                        <div className="fw-bold">{bookingDetails?.totalDistance} Km</div>
+                        <div className="fw-bold">{roundToDecimalPlaces(bookingDetails?.totalDistance)} Km</div>
                       </div>
                       <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Total Fare</div>
-                        <div className="fw-bold">&#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</div>
+                        <div className="fw-bold">&#x20b9;  {roundToDecimalPlaces(bookingDetails?.totalPrice)}</div>
                       </div>
-                      {bookingDetails?.isInvoiceGenerate && <div className="d-flex justify-content-end mt-2"><button onClick={() => setIsInvoicePreview(true)} className="cstm-btn">
+                      <div className="d-flex justify-content-between border-bottom py-2">
+                        <div>Due Amount</div>
+                        <div className="fw-bold">&#x20b9;  {roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount)}</div>
+                      </div>
+                      {bookingDetails?.isInvoiceGenerate && <div className="d-flex justify-content-end mt-2"><button onClick={() => setIsInvoicePreview(true)} className="cstm-btn-trans">
                       Preview Invoice
                     </button></div>}
                       {bookingDetails?.rideStatus === 'none' && <>
@@ -300,8 +313,8 @@ function Payment() {
 
               {!['completed'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
                 <div className="row m-0 py-2">
-                  {[0, 10, 25, 50, 100].map(ele => (
-                    <div className="col-lg-3 col-md-6 col-12">
+                  {[0, 10, 25, 50, 100].map((ele, index) => (
+                    <div key={'pay'+index} className="col-lg-3 col-md-6 col-12">
                       <div className={`payment-percentage ${advancePercentage === ele ? 'active' : ''}`}>
                         <label className="d-flex align-items-center p-2">
                           <input
@@ -320,7 +333,7 @@ function Payment() {
                 <div className="d-flex justify-content-between-mob border-top align-items-center flex-wrap">
                   <div className="d-flex flex-column align-items-end mb-sm pt-2 ps-2">
                     <div className="mb-2 font-bold pe-2">
-                      Payable amount:<span className="font-22"> &#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</span>
+                      Payable amount:<span className="font-22"> &#x20b9;  {roundToDecimalPlaces(bookingDetails?.totalPrice)}</span>
                     </div>
                     {/* <button className="cstm-btn-trans" disabled={isButtonLoad} onClick={() => { submitForPayment(true) }}>
                       {isButtonLoad === 'isPaylater' && <div className="spinner-border text-primary" role="status">
@@ -365,7 +378,7 @@ function Payment() {
               <div>
                 <div className="d-flex flex-column align-items-end border-top pt-2">
                   <div className="mb-2 font-bold">
-                    Due amount:<span className="font-22"> &#x20b9;  {bookingDetails.paymentId.dueAmount}</span>
+                    Due amount:<span className="font-22"> &#x20b9;  {roundToDecimalPlaces(bookingDetails.paymentId.dueAmount)}</span>
                   </div>
                 </div>
                 <div className="d-flex flex-column align-items-end mb-sm">
