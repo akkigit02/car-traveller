@@ -33,11 +33,15 @@ function BookingHistory() {
     try {
       const res = await axios.post(`/api/client/reshedule/${tripData._id}`, data);
       setBookingList(bookingList.map((li) => {
-        if (li._id === data._id) {
+        if (li._id === tripData._id) {
+
           li['pickupDate'] = res?.data?.booking?.pickupDate;
           li['pickupTime'] = res?.data?.booking?.pickupTime;
-          if (data?.trip?.tripType === 'roundTrip') {
+          if (res?.data?.booking?.trip?.tripType === 'roundTrip') {
             li['dropDate'] = res?.data?.booking?.dropDate;
+            li['payableAmount'] = res?.data?.booking?.payableAmount
+            li['totalPrice'] = res?.data?.booking?.totalPrice
+            li['dueAmount'] = res?.data?.booking?.dueAmount
           }
         }
         return li;
