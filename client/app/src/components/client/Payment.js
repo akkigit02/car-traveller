@@ -235,13 +235,13 @@ function Payment() {
                     {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
-                    {bookingDetails?.isInvoiceGenerate && 
+                    {['completed','booked'].includes(bookingDetails?.rideStatus) && 
                     <div className="text-center mt-2 pb-5">
                       <div className="pt-1">
                       <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
                       </div>
                       {/* <img src={carImg} /> */}
-                      <h3 className="text-success fw-bold">Car Rental <br></br>Successfully Booked</h3>
+                      <h3 className="text-success fw-bold">Car Rental <br></br>{['booked'].includes(bookingDetails?.rideStatus) ? 'Successfully Booked' : 'Successfully Completed'}</h3>
                       <p className="px-5">Thank you for booking with us! Your car rental is confirmed, and details will be emailed shortly. Contact our support team with any questions. We look forward to serving you. Safe travels!</p>
                       </div>}
                     <div className="border p-2 rounded">
@@ -311,7 +311,7 @@ function Payment() {
                 </div>
               </div>
 
-              {!['completed'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
+              {!['completed','booked'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
                 <div className="row m-0 py-2">
                   {[0, 10, 25, 50, 100].map((ele, index) => (
                     <div key={'pay'+index} className="col-lg-3 col-md-6 col-12">
@@ -374,7 +374,7 @@ function Payment() {
             </div>
           }
           {
-            !bookingDetails?.rideStatus === 'booked' && <>
+            bookingDetails?.rideStatus !== 'booked' && <>
               <div>
                 <div className="d-flex flex-column align-items-end border-top pt-2">
                   <div className="mb-2 font-bold">
