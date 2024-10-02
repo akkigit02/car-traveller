@@ -776,7 +776,12 @@ const bookingCancel = async (req, res) => {
 const bookingReshuduled = async (req, res) => {
   try {
     const { params, body } = req
-    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate('vehicleId', 'driverAllowance costPerKmRoundTrip')
+
+    const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate([
+      {path: 'vehicleId', select: 'driverAllowance costPerKmRoundTrip'},
+      { path: 'paymentId', select: 'dueAmount advancePercent couponCode payableAmount' },
+    ]).lean()
+
     if (!bookingDetails) {
       return res.status(400).send({ message: "Booking not found" })
     }
@@ -791,7 +796,8 @@ const bookingReshuduled = async (req, res) => {
         year: new Date(body.reshedulePickupDate).getFullYear(),
       },
       pickupTime: body.reshedulePickupTime,
-      rideStatus: 'resheduled'
+      rideStatus: 'booked',
+      trip: bookingDetails?.trip
     }
     let oldData = {
       pickupDate: bookingDetails?.pickupDate,
@@ -800,23 +806,30 @@ const bookingReshuduled = async (req, res) => {
     }
     if (bookingDetails.trip.tripType === 'roundTrip') {
       let numberOfDay = dateDifference(body.reshedulePickupDate, body.resheduleReturnDate)
-      // let pickupDate = `${bookingDetails.pickupDate.year}-${bookingDetails.pickupDate.month.padStart(2, '0')}-${bookingDetails.pickupDate.date.padStart(2, '0')}`
-      // let dropDate = `${bookingDetails.dropDate.year}-${bookingDetails.dropDate.month.padStart(2, '0')}-${bookingDetails.dropDate.date.padStart(2, '0')}`
-      // let oldnumberOfDay = dateDifference(pickupDate, dropDate)
-      // let extraDay = numberOfDay - oldnumberOfDay
       let totalPrice = 0
-   
-          if (bookingDetails?.totalDistance <= numberOfDay * 250) {
-            totalPrice = numberOfDay * 300 * bookingDetails?.vehicleId?.costPerKmRoundTrip + numberOfDay * bookingDetails?.vehicleId?.driverAllowance;
-          } else {
-            totalPrice =
-              bookingDetails?.totalDistance * bookingDetails?.vehicleId?.costPerKmRoundTrip + (numberOfDay * bookingDetails?.vehicleId?.driverAllowance || 0);
-          }
+      let totalDistance = 0
+      if (bookingDetails?.totalDistance <= numberOfDay * 250) {
+        totalDistance = numberOfDay * 300
+        totalPrice = numberOfDay * 300 * bookingDetails?.vehicleId?.costPerKmRoundTrip + numberOfDay * bookingDetails?.vehicleId?.driverAllowance;
+      } else {
+        totalDistance = bookingDetails?.totalDistance
+        totalPrice = bookingDetails?.totalDistance * bookingDetails?.vehicleId?.costPerKmRoundTrip + (numberOfDay * bookingDetails?.vehicleId?.driverAllowance || 0);
+      }
+      let coupanDiscount = 0
+      if (bookingDetails?.paymentId?.couponCode) {
+        const refCoupon = await CouponModel.findOne({ code: bookingDetails?.paymentId?.couponCode }, { discountValue: 1 })
+        coupanDiscount = roundToDecimalPlaces((refCoupon?.discountValue * totalPrice) / 100)
+      }
 
-      // let pricesAdd = extraDistance * bookingDetails?.vehicleId?.costPerKmRoundTrip + (numberOfDay - oldnumberOfDay) * bookingDetails.vehicleId.driverAllowance
-      // let totalPrice = bookingDetails.totalPrice + pricesAdd
+      let payableAmount = roundToDecimalPlaces(totalPrice - coupanDiscount)
+      let dueAmount = roundToDecimalPlaces(payableAmount - ((payableAmount * bookingDetails?.paymentId?.advancePercent)/100))
+
       data = {
         ...data,
+        payableAmount, 
+        dueAmount, 
+        totalPrice, 
+        totalDistance,
         dropDate: {
           date: new Date(body.resheduleReturnDate).getDate(),
           month: new Date(body.resheduleReturnDate).getMonth(),
@@ -829,16 +842,17 @@ const bookingReshuduled = async (req, res) => {
         dropDate: bookingDetails?.dropDate,
         totalPrice: totalPrice
       }
-    }
 
+      await PaymentModel.updateOne({_id: bookingDetails?.paymentId?._id}, {payableAmount: payableAmount, dueAmount: dueAmount})
+
+      console.log(payableAmount, dueAmount, totalPrice, totalDistance, coupanDiscount)
+    }
 
     await RideModel.updateOne({ _id: new ObjectId(params.bookingId) }, {
       $set: data,
       $push: { activity: oldData }
     })
 
-
-    // add refund payment
 
     return res.status(200).send({ message: 'Booking reschedule successfully', booking: data })
   } catch (error) {
@@ -911,7 +925,7 @@ const getInvoiceInfo = async (req, res) => {
     }
     const html = generateInvoiceHTML(bookingDetails)
     let pdfContent = await getPdfFromHtml(html)
-    
+
     return res.status(200).send(pdfContent);
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getInvoiceInfo', { error: error, userId: req?.userId });

@@ -1,5 +1,5 @@
 import moment from 'moment'
-const { RESCHEDULE_TIME } = process.env
+const { REACT_APP_RESCHEDULE_TIME } = process.env
 const formatDateAndTime = (date, format = 'MM/DD/yyyy hh:mm A') => {
     if (!date) return "";
     let _date = new Date(date)
@@ -12,7 +12,7 @@ const isSchedulabel = (dateObj, time) => {
     const diifrence = pickUpDate - curentDate
     if (diifrence < 0)
         return true
-    return diifrence < (RESCHEDULE_TIME * 60 * 1000)
+    return diifrence < (REACT_APP_RESCHEDULE_TIME * 60 * 1000)
 }
 const getDateAndTimeString = (dateObj, time) => {
     return `${dateObj?.date}/${dateObj?.month}/${dateObj?.year}${time ? (' ' + time) : ''}`
