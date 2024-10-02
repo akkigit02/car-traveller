@@ -12,6 +12,7 @@ const getHeader = () => {
 
 const sendOtpSms = async (mobile, otp) => {
     try {
+        
         const smsBody = {
             template_id: "66efd695d6fc050cab3d6f12",
             short_url: 0,
@@ -34,7 +35,7 @@ const sendOtpSms = async (mobile, otp) => {
 }
 const sendBookingConfirmedSms = async (mobile, payload) => {
     try {
-        const { clientName, bookingId } = payload;
+        const { clientName, bookingId } = payload; 
         const smsBody = {
             template_id: "66f10da7d6fc053cb465c262",
             short_url: 0,
@@ -58,7 +59,7 @@ const sendBookingConfirmedSms = async (mobile, payload) => {
 
 const sendRideRescheduledSms = async (mobile, payload) => {
     try {
-        const { clientName, bookingId, newPickupDateTime } = payload;
+        const { clientName, bookingId, pickupDate,pickupTime } = payload;
         const smsBody = {
             template_id: "66f980f5d6fc051a03386272",
             short_url: 0,
@@ -66,7 +67,7 @@ const sendRideRescheduledSms = async (mobile, payload) => {
                 "mobiles": mobile,
                 "var1": `${clientName}`,
                 "var2": `${bookingId}`,
-                "var3": `${newPickupDateTime}`
+                "var3": `${pickupDate} ${pickupTime}`
             }]
         }
         const { data } = await axios({

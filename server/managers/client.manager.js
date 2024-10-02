@@ -23,7 +23,7 @@ const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../servic
 const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
 const { incrementBookingNumber, incrementInvoiceNumber } = require('../services/common.service');
 const { getTotalPrice } = require('../services/calculation.service');
-const { sendBookingConfirmedSms } = require('../services/sms.service');
+const { sendBookingConfirmedSms, sendRideRescheduledSms, sendBookingCancelledByPassengerSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
 const { sendDriverAllotedMessage, sendBookingConfirmWhatsapp, sendCancelByPassenger } = require('../services/whatsapp.service');
 
@@ -248,9 +248,11 @@ const getCars = async (req, res) => {
 const savePackage = async (req, res) => {
   try {
     const package = await EnquirePackageModel.create(req.body)
-    res.status(201).send({ message: `Enquiry Confirmed! 🎉 
+    res.status(201).send({
+      message: `Enquiry Confirmed! 🎉 
   Thanks,${req.body.name}. We’ve received your package enquiry and will get back to you soon!
-  - DDD CABS`, package })
+  - DDD CABS`, package
+    })
   } catch (error) {
     logger.log('server/managers/admin.manager.js-> savePackage', { error: error })
     res.status(500).send({ message: 'Server Error' })
@@ -558,6 +560,7 @@ const initiatePayment = async (req, res) => {
   }
 }
 
+
 const sendNotificationToClient = async (bookingId, type) => {
   const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
     .populate([
@@ -584,17 +587,19 @@ const sendNotificationToClient = async (bookingId, type) => {
     cancellationReason: bookingDetails.reason,
   }
   if (type === 'BOOKING_CONFIRM') {
-    await sendBookingConfirmedSms(req.user.primaryPhone, payload)
-    await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
+    await sendBookingConfirmedSms(user.primaryPhone, payload)
+    // await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'DRIVER_ALLOTED') {
     await sendDriverAllotedMessage(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'BOOKING_CANCEL') {
     await sendCancelByPassenger(`91${user.primaryPhone}`, payload)
+    await sendBookingCancelledByPassengerSms(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'BOOKING_RESCHEDULED') {
     await sendRescheduledToPassenger(`91${user.primaryPhone}`, payload)
+    await sendRideRescheduledSms(`91${user.primaryPhone}`, payload)
   }
 }
 
@@ -882,17 +887,17 @@ const getInvoiceInfo = async (req, res) => {
   try {
     const bookingId = req?.params?.id
     let bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
-    .populate([
-      { path: 'pickUpCity', select: 'name' },
-      { path: 'dropCity', select: 'name' },
-      { path: 'vehicleId', select: 'vehicleType vehicleName' },
-      { path: 'paymentId', select: 'dueAmount invoiceNo advancePercent couponCode payableAmount extraAmount totalDistance totalPrice extraDistance isPaymentCompleted '  },
-      { path: 'userId', select: 'primaryPhone email'}
-    ]).lean();
-    if(bookingDetails?.paymentId?.couponCode) {
-      const refCoupon = await CouponModel.findOne({code: bookingDetails?.paymentId?.couponCode}, { discountValue: 1 })
+      .populate([
+        { path: 'pickUpCity', select: 'name' },
+        { path: 'dropCity', select: 'name' },
+        { path: 'vehicleId', select: 'vehicleType vehicleName' },
+        { path: 'paymentId', select: 'dueAmount invoiceNo advancePercent couponCode payableAmount extraAmount totalDistance totalPrice extraDistance isPaymentCompleted ' },
+        { path: 'userId', select: 'primaryPhone email' }
+      ]).lean();
+    if (bookingDetails?.paymentId?.couponCode) {
+      const refCoupon = await CouponModel.findOne({ code: bookingDetails?.paymentId?.couponCode }, { discountValue: 1 })
       console.log(refCoupon)
-      bookingDetails['discountValue'] = (refCoupon?.discountValue * bookingDetails?.paymentId?.totalPrice)/100
+      bookingDetails['discountValue'] = (refCoupon?.discountValue * bookingDetails?.paymentId?.totalPrice) / 100
     }
     return res.status(200).send({ bookingDetails });
   } catch (error) {
