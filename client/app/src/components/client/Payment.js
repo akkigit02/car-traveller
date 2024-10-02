@@ -378,7 +378,7 @@ function Payment() {
               <div>
                 <div className="d-flex flex-column align-items-end border-top pt-2">
                   <div className="mb-2 font-bold">
-                    Due amount:<span className="font-22"> &#x20b9;  {roundToDecimalPlaces(bookingDetails.paymentId.dueAmount)}</span>
+                    Due amount:<span className="font-22"> &#x20b9;  {roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount)}</span>
                   </div>
                 </div>
                 <div className="d-flex flex-column align-items-end mb-sm">
