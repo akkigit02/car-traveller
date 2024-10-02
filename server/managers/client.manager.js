@@ -23,7 +23,7 @@ const { initiatePhonepePayment, chackStatusPhonepePayment } = require('../servic
 const { isSchedulabel, roundToDecimalPlaces } = require('../utils/format.util');
 const { incrementBookingNumber, incrementInvoiceNumber, generateInvoiceHTML, getPdfFromHtml } = require('../services/common.service');
 const { getTotalPrice } = require('../services/calculation.service');
-const { sendBookingConfirmedSms } = require('../services/sms.service');
+const { sendBookingConfirmedSms, sendRideRescheduledSms, sendBookingCancelledByPassengerSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
 const { sendDriverAllotedMessage, sendBookingConfirmWhatsapp, sendCancelByPassenger } = require('../services/whatsapp.service');
 
@@ -560,6 +560,7 @@ const initiatePayment = async (req, res) => {
   }
 }
 
+
 const sendNotificationToClient = async (bookingId, type) => {
   const bookingDetails = await RideModel.findOne({ _id: new ObjectId(bookingId) })
     .populate([
@@ -586,17 +587,19 @@ const sendNotificationToClient = async (bookingId, type) => {
     cancellationReason: bookingDetails.reason,
   }
   if (type === 'BOOKING_CONFIRM') {
-    await sendBookingConfirmedSms(req.user.primaryPhone, payload)
-    await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
+    await sendBookingConfirmedSms(user.primaryPhone, payload)
+    // await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'DRIVER_ALLOTED') {
     await sendDriverAllotedMessage(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'BOOKING_CANCEL') {
     await sendCancelByPassenger(`91${user.primaryPhone}`, payload)
+    await sendBookingCancelledByPassengerSms(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'BOOKING_RESCHEDULED') {
     await sendRescheduledToPassenger(`91${user.primaryPhone}`, payload)
+    await sendRideRescheduledSms(`91${user.primaryPhone}`, payload)
   }
 }
 
