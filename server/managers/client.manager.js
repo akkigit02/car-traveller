@@ -404,6 +404,7 @@ const getBookingList = async (req, res) => {
           rideStatus: 1
         }
       }])
+      console.log(bookingList.length)
     res.status(200).send({ list: bookingList });
   } catch (error) {
     logger.log('server/managers/client.manager.js-> getBookingList', { error: error });
