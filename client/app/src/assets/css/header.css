@@ -170,6 +170,7 @@
   display: block; /* It's conditionally rendered in React */
   transition: all 0.4s ease;
   overflow: hidden;
+  z-index: 11;
 }
 
 .dropdown-cstm ul {
