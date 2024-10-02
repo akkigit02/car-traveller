@@ -10,8 +10,7 @@ function UnProtected() {
   const location=useLocation()
   return (
     <>
-      {location.pathname!=='/login'&&<ClientHeaderBar />}
-      {/* {location.pathname!=='/admin-login'&&<ClientHeaderBar />} */}
+      {!['/login','/admin-login'].includes(location.pathname)&&<ClientHeaderBar />}
       <Routes>
         <Route path="/" element={<Navigate to='/login' />} exact />
         <Route path="/login" Component={ClientLogin} exact />
@@ -21,12 +20,9 @@ function UnProtected() {
         <Route path="/booking/:query" Component={BookingForm} exact />
         <Route path="/*" element={<Navigate to='/login' />} exact />
       </Routes>
-      {location.pathname!=='/login'&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
+      {!['/login','/admin-login'].includes(location.pathname)&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
         <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
       </footer>}
-      {/* {location.pathname!=='/admin-login'&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">
-        <p className="mb-0">© Copyright 2024 by dddcabs.com</p>
-      </footer>} */}
     </>
   )
 }

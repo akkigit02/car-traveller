@@ -134,6 +134,13 @@
       padding: 0 40px;
     }
   }
+
+  @media only screen and (max-width: 1199px) {
+    .d-none-cstm{
+        display: none !important;
+    }
+  }
+
   @media only screen and (max-width: 991px) {
     .header-1 .container-fluid {
       padding: 0 30px;
@@ -301,9 +308,7 @@ a {
         display: flex;
         flex-direction: column-reverse;
     }
-    .d-none-cstm{
-        display: none !important;
-    }
+    
     .cstm-calHeight{
         height: auto !important;
     }
@@ -1197,3 +1202,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     }
   }
   
+  .height-170 {
+    height: calc(100vh - 170px);
+    overflow-y: auto;
+  }

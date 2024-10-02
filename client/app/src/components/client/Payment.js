@@ -10,6 +10,7 @@ const CLIENT_URL = process.env.REACT_APP_CLIENT_URL;
 function Payment() {
   const { bookingId } = useParams();
   const [bookingDetails, setBookingDetails] = useState({});
+  const [couponList, setCopounList] = useState([])
   const [advancePercentage, setAdvancePercentage] = useState(25)
   const [payblePrice, setPayblePrice] = useState(0)
   const [isButtonLoad, setIsButtonLoad] = useState('')
@@ -76,6 +77,29 @@ function Payment() {
     }
   }
 
+  const downloadFileFromBlob = (blob, name = 'download', mimeType) => {
+    const bloba = new Blob([blob], { type: mimeType });
+    var a = document.createElement('a');
+    a.href = window.URL.createObjectURL(bloba);
+    a.download = name;
+    setTimeout(function () { a.dispatchEvent(new MouseEvent('click')); });
+  }
+
+
+  const getInvoiceInfo = async () => {
+    try {
+      const { data } = await axios({
+        method: 'POST',
+        url: '/api/client/invoice/' + bookingId,
+        responseType: "blob"
+      })
+      downloadFileFromBlob(data, "invoice.pdf", 'application/pdf')
+      console.log(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const submitForPayment = async (isPayLater) => {
     try {
       setIsButtonLoad(isPayLater ? 'paylater' : 'payment')
@@ -130,10 +154,22 @@ function Payment() {
       discountAmount: '',
     })
   }
+  const getCouponCodes = async () => {
+    try {
 
+      const { data } = await axios({
+        url: '/api/client/coupons',
+        method: 'GET',
+      })
+      setCopounList(data.coupons)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   useEffect(() => {
     if (bookingId) {
       getBookingDetails();
+      getCouponCodes()
     } else window.location.href = CLIENT_URL;
   }, []);
   return (
@@ -235,32 +271,32 @@ function Payment() {
                     {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
-                    {bookingDetails?.isInvoiceGenerate && 
-                    <div className="text-center mt-2 pb-5">
-                      <div className="pt-1">
-                      <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/></svg>
-                      </div>
-                      {/* <img src={carImg} /> */}
-                      <h3 className="text-success fw-bold">Car Rental <br></br>Successfully Booked</h3>
-                      <p className="px-5">Thank you for booking with us! Your car rental is confirmed, and details will be emailed shortly. Contact our support team with any questions. We look forward to serving you. Safe travels!</p>
+                    {['completed', 'booked'].includes(bookingDetails?.rideStatus) &&
+                      <div className="text-center mt-2 pb-5">
+                        <div className="pt-1">
+                          <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" /><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" /></svg>
+                        </div>
+                        {/* <img src={carImg} /> */}
+                        <h3 className="text-success fw-bold">Car Rental <br></br>{['booked'].includes(bookingDetails?.rideStatus) ? 'Successfully Booked' : 'Successfully Completed'}</h3>
+                        <p className="px-5">Thank you for booking with us! Your car rental is confirmed, and details will be emailed shortly. Contact our support team with any questions. We look forward to serving you. Safe travels!</p>
                       </div>}
                     <div className="border p-2 rounded">
                       <div className="d-flex justify-content-between border-bottom py-2">
-                        <div>Estimated KM</div>
-                        <div className="fw-bold">{roundToDecimalPlaces(bookingDetails?.totalDistance)} Km</div>
+                        <div>Estimated distance (Km)</div>
+                        <div className="fw-bold">{roundToDecimalPlaces(bookingDetails?.totalDistance)}</div>
                       </div>
                       <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Total Fare</div>
                         <div className="fw-bold">&#x20b9;  {roundToDecimalPlaces(bookingDetails?.totalPrice)}</div>
                       </div>
-                      <div className="d-flex justify-content-between border-bottom py-2">
+                      {!['none'].includes(bookingDetails?.rideStatus) && <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Due Amount</div>
-                        <div className="fw-bold">&#x20b9;  {roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount)}</div>
-                      </div>
-                      {bookingDetails?.isInvoiceGenerate && <div className="d-flex justify-content-end mt-2"><button onClick={() => setIsInvoicePreview(true)} className="cstm-btn-trans">
-                      Preview Invoice
-                    </button></div>}
-                      {bookingDetails?.rideStatus === 'none' && <>
+                        <div className="fw-bold">&#x20b9;  {bookingDetails?.isPaymentCompleted ? 0 : roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount)}</div>
+                      </div>}
+                      {bookingDetails?.isInvoiceGenerate && <div className="d-flex justify-content-end mt-2"><button onClick={() => getInvoiceInfo(bookingDetails._id)} className="cstm-btn-trans">
+                        Download Invoice
+                      </button></div>}
+                      {bookingDetails?.rideStatus === 'none' && couponList.length > 0 && <>
                         <div className="row m-0 py-2 border-bottom">
                           <div className="col-lg-2 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
                           <div className="col-lg-10 col-md-9 col-12 row m-0">
@@ -311,10 +347,10 @@ function Payment() {
                 </div>
               </div>
 
-              {!['completed'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
+              {!['completed', 'booked'].includes(bookingDetails?.rideStatus) && <div className="border rounded mx-3 mb-3">
                 <div className="row m-0 py-2">
                   {[0, 10, 25, 50, 100].map((ele, index) => (
-                    <div key={'pay'+index} className="col-lg-3 col-md-6 col-12">
+                    <div key={'pay' + index} className="col-lg-3 col-md-6 col-12">
                       <div className={`payment-percentage ${advancePercentage === ele ? 'active' : ''}`}>
                         <label className="d-flex align-items-center p-2">
                           <input
@@ -374,11 +410,11 @@ function Payment() {
             </div>
           }
           {
-            !bookingDetails?.rideStatus === 'booked' && <>
+            bookingDetails?.rideStatus == 'booked' && roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount) > 0 &&<>
               <div>
                 <div className="d-flex flex-column align-items-end border-top pt-2">
                   <div className="mb-2 font-bold">
-                    Due amount:<span className="font-22"> &#x20b9;  {roundToDecimalPlaces(bookingDetails.paymentId.dueAmount)}</span>
+                    Due amount:<span className="font-22"> &#x20b9;  {roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount)}</span>
                   </div>
                 </div>
                 <div className="d-flex flex-column align-items-end mb-sm">
@@ -413,13 +449,6 @@ function Payment() {
           </div>
         </div>
       </div >
-      {
-        isInvoicePreview && <Modal isOpen={isInvoicePreview} onClose={() => setIsInvoicePreview(false)} title="Invoice">
-          <div className="invoice-width">
-            <Invoice bookingId={bookingDetails._id} />
-          </div>
-        </Modal>
-      }
     </>
   );
 }

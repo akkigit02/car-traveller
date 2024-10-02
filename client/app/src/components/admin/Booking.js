@@ -494,7 +494,7 @@ export default function BookingManagement() {
                       <td>{li?.phone}</td>
                       <td>{getDateAndTimeString(li.pickupDate)}</td>
                       <td>&#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
-                      <td>&#8377; {!li.isPaymentCompleted ? (roundToDecimalPlaces(li?.dueAmount) || roundToDecimalPlaces(li?.totalPrice) || '0') : '0'}</td>
+                      <td>&#8377; {!li.isPaymentCompleted ? (roundToDecimalPlaces(li?.dueAmount) || '0') : '0'}</td>
                       <td className="d-flex align-items-center">
                         <Tooltip message={'View More'} direction="bottom">
                           <button

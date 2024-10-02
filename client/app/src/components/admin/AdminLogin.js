@@ -100,9 +100,9 @@ function AdminLogin() {
                                                 <span>{errors?.password?.message}</span>
                                             )}
                                         </div>
-                                        <div className="form-group-login d-flex justify-content-end">
+                                        {/* <div className="form-group-login d-flex justify-content-end">
                                         <p className="">Forgot Password</p>
-                                    </div>
+                                    </div> */}
                                         <div className="form-group-login form-button">
                                             <button className="form-submit">
                                                 Log in
