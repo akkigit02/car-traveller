@@ -28,9 +28,9 @@ const Invoice = ({ bookingId }) => {
 
     return (
         <>
-            <div className="d-flex justify-content-end py-2" onClick={() => generatePDF(targetRef, { filename: 'DDDCABS-INVOICE.pdf', resolution: 2,page:{margin:5} })}> <i className="fa fa-download"></i></div>
-            <div ref={targetRef}>
-                <div style={{ display: "flex" }}>
+            <div className="d-flex justify-content-end mb-2" style={{ position: "absolute", top:"12px", right: "50px", cursor:"pointer" }} title="Download Invoice" onClick={() => generatePDF(targetRef, { filename: 'DDDCABS-INVOICE.pdf', resolution: 2,page:{margin:5} })}> <i className="fa fa-download border rounded p-2"></i></div>
+            <div ref={targetRef} className="position-relative font-none">
+                <div className="d-flex">
                     <div style={{ flex: 1, background: "#37858D", padding: 20 }}>
                         <div style={{ display: "flex" }}>
                             <svg
@@ -139,23 +139,23 @@ const Invoice = ({ bookingId }) => {
                     </div>
                 </div>
                 {/* <p style="text-align: right; color: #888;">Date: <strong>2024-09-09</strong></p> */}
-                <div style={{ display: "flex" }}>
+                <div className="d-flex">
                     <div style={{ flex: 1 }}>
                         <h3 style={{ margin: "10px 0 8px", color: "#37858D" }}>Bill To</h3>
                         <p style={{ margin: "5px 0", display: "flex" }}>
-                            <span style={{ display: "inline", width: 100 }}>Name</span>:
+                            <span style={{ display: "inline", width: 180 }}>Name</span>:
                             <span style={{ paddingLeft: 10 }}>{bookingDetails?.name}</span>
                         </p>
                         {/* <p style={{ margin: "5px 0", display: "flex" }}>
-                        <span style={{ display: "inline", width: 100 }}>Address</span>:
+                        <span style={{ display: "inline", width: 180 }}>Address</span>:
                         <span style={{ paddingLeft: 10 }}>NA</span>
                     </p> */}
                         <p style={{ margin: "5px 0", display: "flex" }}>
-                            <span style={{ display: "inline", width: 100 }}>Email</span>:
+                            <span style={{ display: "inline", width: 180 }}>Email</span>:
                             <span style={{ paddingLeft: 10 }}>{bookingDetails?.userId?.email}</span>
                         </p>
                         <p style={{ margin: "5px 0", display: "flex" }}>
-                            <span style={{ display: "inline", width: 100 }}>Phone</span>:
+                            <span style={{ display: "inline", width: 180 }}>Phone</span>:
                             <span style={{ paddingLeft: 10 }}>{bookingDetails?.userId?.primaryPhone}</span>
                         </p>
                     </div>
@@ -185,31 +185,31 @@ const Invoice = ({ bookingId }) => {
                         Description
                     </h3>
                     <p style={{ margin: "5px 0", display: "flex" }}>
-                        <span style={{ display: "inline", width: 100 }}>Vehicle Type</span>:
+                        <span style={{ display: "inline", width: 180 }}>Vehicle Type</span>:
                         <span style={{ paddingLeft: 10 }}>{bookingDetails?.vehicleId?.vehicleType}</span>
                     </p>
                     <p style={{ margin: "5px 0", display: "flex" }}>
-                        <span style={{ display: "inline", width: 100 }}>Ride Type</span>:
+                        <span style={{ display: "inline", width: 180 }}>Ride Type</span>:
                         <span style={{ paddingLeft: 10 }}>{TRIP_TYPE?.find(li => li.value === bookingDetails?.trip?.tripType)?.name}</span>
                     </p>
                     <p style={{ margin: "5px 0", display: "flex" }}>
-                        <span style={{ display: "inline", width: 100 }}>Pickup Date & Time</span>:
+                        <span style={{ display: "inline", width: 180 }}>Pickup Date & Time</span>:
                         <span style={{ paddingLeft: 10 }}>{`${bookingDetails?.pickupDate?.date}/${bookingDetails?.pickupDate?.month}/${bookingDetails?.pickupDate?.year} `} {bookingDetails?.pickupTime}</span>
                     </p>
                     <p style={{ margin: "5px 0", display: "flex" }}>
-                        <span style={{ display: "inline", width: 100 }}>Pickup Location</span>:
+                        <span style={{ display: "inline", width: 180 }}>Pickup Location</span>:
                         <span style={{ paddingLeft: 10 }}>{bookingDetails?.pickupLocation}</span>
                     </p>
 
                     {['cityCab', 'oneWay'].includes(bookingDetails?.trip?.tripType) && <>
                         <p style={{ margin: "5px 0", display: "flex" }}>
-                            <span style={{ display: "inline", width: 100 }}>Drop Location</span>:
+                            <span style={{ display: "inline", width: 180 }}>Drop Location</span>:
                             <span style={{ paddingLeft: 10 }}>{bookingDetails?.dropoffLocation}</span>
                         </p>
                     </>}
                     {['roundTrip'].includes(bookingDetails?.trip?.tripType) && <>
                         <p style={{ margin: "5px 0", display: "flex" }}>
-                            <span style={{ display: "inline", width: 100 }}>Cities</span>:
+                            <span style={{ display: "inline", width: 180 }}>Cities</span>:
                             <span style={{ paddingLeft: 10 }}>
                                 {bookingDetails?.pickUpCity?.name}
                             </span>
@@ -506,13 +506,15 @@ const Invoice = ({ bookingId }) => {
                         </div>
                     </div>
                 </div>
-                <div style={{ marginTop: 40, textAlign: "center" }}>
+                <div style={{ marginTop: 10, textAlign: "center" }}>
                     <p
                         style={{ background: "#37858D", margin: 0, padding: 10, color: "white" }}
                     >
                         Thank you for renting with <strong>DDD Cabs</strong>!
                     </p>
                 </div>
+
+                <div className="invoice-watermark">DDD CABS</div>
             </div>
         </>
 

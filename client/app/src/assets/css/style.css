@@ -1132,3 +1132,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     margin-bottom: 8px;
     padding: 10px;
   }
+  .invoice-watermark{
+    font-size: 106px;
+    position: absolute;
+    top: 50%;
+    font-weight: bold;
+    color: #ff000017;
+    transform: rotate(316deg);
+    left: 17%;
+  }
+  .font-none{
+    font-family: 'Times New Roman', Times, serif !important;
+  }

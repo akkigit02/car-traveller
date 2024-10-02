@@ -234,9 +234,7 @@ function Payment() {
                     {/* <h4 className="mb-2"><b>Flexible Payment Options:</b></h4>
                     <p className=" pb-2">Moreover, companies can implement these flexible payment models seamlessly through various online
                       payment gateways, ensuring a smooth and secure transaction process for the customer.</p> */}
-                    {bookingDetails?.isInvoiceGenerate && <button onClick={() => setIsInvoicePreview(true)} className="cstm-btn">
-                      Preview Invoice
-                    </button>}
+                    
                     <div className="border p-2 rounded">
                       <div className="d-flex justify-content-between border-bottom py-2">
                         <div>Estimated KM</div>
@@ -246,6 +244,9 @@ function Payment() {
                         <div>Total Fare</div>
                         <div className="fw-bold">&#x20b9;  {Math.ceil(bookingDetails?.totalPrice)}</div>
                       </div>
+                      {bookingDetails?.isInvoiceGenerate && <div className="d-flex justify-content-end mt-2"><button onClick={() => setIsInvoicePreview(true)} className="cstm-btn">
+                      Preview Invoice
+                    </button></div>}
                       {bookingDetails?.rideStatus === 'none' && <>
                         <div className="row m-0 py-2 border-bottom">
                           <div className="col-lg-2 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
