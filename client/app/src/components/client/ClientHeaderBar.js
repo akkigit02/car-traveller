@@ -86,13 +86,13 @@ function TopNavBar() {
                         <a href={CLIENT_URL}>Home</a>
                       </li>
                       <li>
-                        <a href="package.html">Packages</a>
+                        <a href="https://www.dddcabs.com/package.html#">Packages</a>
                       </li>
                       <li>
-                        <a href="#">About Us</a>
+                        <a href="https://www.dddcabs.com/about.html">About Us</a>
                       </li>
-                      <li>
-                        <a href="#contact">Contact</a>
+                      <li>https://sentencestack.com/check/website_are_not_clickable
+                        <a href="https://www.dddcabs.com/contactUs.html">Contact</a>
                       </li>
                     </ul>
                   </nav>
@@ -137,13 +137,13 @@ function TopNavBar() {
                           <a href={CLIENT_URL}>Home</a>
                         </li>
                         <li>
-                          <a href="package.html">Packages</a>
+                          <a href="https://www.dddcabs.com/package.html#!">Packages</a>
                         </li>
                         <li>
-                          <a href="#">About Us</a>
+                          <a href="https://www.dddcabs.com/about.html">About Us</a>
                         </li>
                         <li>
-                          <a href="#contact">Contact</a>
+                          <a href="https://www.dddcabs.com/contactUs.html">Contact</a>
                         </li>
                       </ul>
                     </nav>

@@ -247,7 +247,7 @@ function BookingForm() {
                             <div className="car-details-wrapper">
                                 <div className="">
                                     <div className="col-lg-12 mb-3">
-                                        <div className="car-booking-items">
+                                        <div className="car-booking-items height-170">
                                             <div className="booking-header">
                                                 <h3>Request for Booking</h3>
                                                 <p>
