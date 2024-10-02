@@ -428,8 +428,8 @@ const getReferralById = async (req, res) => {
 
 const getLeads = async (req, res) => {
     try {
-        const leads = await RideModel.find({ paymentStatus: "pending" },
-            { _id: 1, name: 1, pickupDate: 1, createdOn: 1, isConnected: 1 }
+        const leads = await RideModel.find({ rideStatus: "none" },
+            { _id: 1, name: 1, pickupDate: 1, createdOn: 1, isConnected: 1, bookingNo: 1 }
         ).populate('userId', 'primaryPhone email').populate('pickUpCity', 'name').populate('dropCity', 'name').sort({ createdOn: -1 });
         res.status(200).send({ leads })
     } catch (error) {
@@ -444,7 +444,7 @@ const confirmCall = async (req, res) => {
         if (!id) {
             return res.status(400).send({ message: 'Invalid ID' });
         }
-        await RideModel.updateOne({ _id: id }, { isConnected: true });
+        await RideModel.updateOne({ _id: id }, { $set: { isConnected: true } });
         res.status(200).send({ message: 'Lead marked as called' });
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> confirmCall', { error: error });
@@ -651,7 +651,7 @@ const generateFinalInvoice = async (req, res) => {
         let extraDistance = (distance - rideInfo?.totalDistance) || 0;
         let extraHour = null
         let extraDay = 0
-        if ((extraDistance > 0) || (['hourly','roundTrip'].includes(rideInfo?.trip?.tripType))) {
+        if ((extraDistance > 0) || (['hourly', 'roundTrip'].includes(rideInfo?.trip?.tripType))) {
 
             /**********************************************************************************************************/
             if (rideInfo?.trip?.tripType === 'oneWay') {
@@ -674,7 +674,7 @@ const generateFinalInvoice = async (req, res) => {
                 extraDay = numberOfDay - oldnumberOfDay
                 let totalPrice = 0
                 let pricesAdd = 0
-                if(extraDistance < 0) {
+                if (extraDistance < 0) {
                     extraDistance = 0
                 }
                 if (extraDay > 0) {
@@ -726,7 +726,7 @@ const generateFinalInvoice = async (req, res) => {
         let payableAmount = extraAmount + rideInfo?.payments?.payableAmount
         let dueAmount = extraAmount + rideInfo?.payments?.dueAmount
         console.log(extraAmount, extraDay, extraDistance)
-        await incrementInvoiceNumber(rideInfo?.payments?._id )
+        await incrementInvoiceNumber(rideInfo?.payments?._id)
         await PaymentModel.updateOne({ _id: rideInfo?.payments?._id }, {
             extraAmount: roundToDecimalPlaces(extraAmount, 2),
             payableAmount: roundToDecimalPlaces(payableAmount, 2),

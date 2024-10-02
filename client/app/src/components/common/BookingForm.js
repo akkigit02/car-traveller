@@ -376,7 +376,7 @@ function BookingForm() {
                                                         </div>
                                                     </div>}
                                                     <div className="col-lg-12 d-flex justify-content-end">
-                                                        <button className="theme-btn-2 d-flex align-items-center" type="submit">
+                                                        <button className="theme-btn-2 d-flex align-items-center" disabled={isSubmitting} type="submit">
                                                             {isSubmitting && <div className="spinner-border spinner-border-sm text-white me-2" role="status">
                                                                 <span className="sr-only">Loading...</span>
                                                             </div>}

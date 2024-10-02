@@ -26,13 +26,13 @@ export default function Leads() {
     }
   };
 
-  const confirmCall = async (leadId) => {
+  const confirmCall = async () => {
       try {
-        const { data } = await axios.put(`/api/admin/leads/${leadId}`);
+        const { data } = await axios.put(`/api/admin/leads/${selectedId}`);
         toast.success(data.message);
         setList((prevList) =>
           prevList.map((lead) =>
-            lead._id === leadId ? { ...lead, isConnected: true } : lead
+            lead._id === selectedId ? { ...lead, isConnected: true } : lead
           )
         );
         setSelectedId(null)
@@ -55,6 +55,7 @@ export default function Leads() {
         <table className="cstm-table">
           <thead>
             <tr>
+              <th>Booking Id</th>
               <th>Name</th>
               <th>Email</th>
               <th>Phone</th>
@@ -70,6 +71,7 @@ export default function Leads() {
             {list.length > 0 ? (
               list.map((lead, index) => (
                 <tr key={index}>
+                  <td>#{lead?.bookingNo || "N/A"}</td>
                   <td>{lead?.name || "N/A"}</td>
                   <td>{lead?.userId?.email || "N/A"}</td>
                   <td>{lead?.userId?.primaryPhone || "N/A"}</td>

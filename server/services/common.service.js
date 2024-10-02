@@ -5,63 +5,62 @@ const puppeteer = require('puppeteer');
 const { getDateAndTimeString, roundToDecimalPlaces } = require('../utils/format.util');
 const { TRIP_TYPE, HOURLY_TYPE } = require('../../client/app/src/constants/common.constants');
 const incrementBookingNumber = async (rideId) => {
-    const generateBookingNumber = (lastBookingNo) => {
-        const prefix = 'DDD';
-        let newCount = 1
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-        if (lastBookingNo) {
-            const lastYear = parseInt(lastBookingNo.substring(3, 7)); // YYYY
-            const lastMonth = parseInt(lastBookingNo.substring(7, 9)); // MM
-            const lastCount = parseInt(lastBookingNo.substring(9)); // ####
-            newCount = (currentYear !== lastYear || currentMonth !== lastMonth) ? 1 : lastCount + 1;
-        }
-        const formattedMonth = String(currentMonth).padStart(2, '0');
-        const formattedCount = String(newCount).padStart(4, '0');
-        return `${prefix}${currentYear}${formattedMonth}${formattedCount}`;
+  const generateBookingNumber = (lastBookingNo) => {
+    const prefix = 'DDD';
+    let newCount = 1
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    if (lastBookingNo) {
+      const lastYear = parseInt(lastBookingNo.substring(3, 7)); // YYYY
+      const lastMonth = parseInt(lastBookingNo.substring(7, 9)); // MM
+      const lastCount = parseInt(lastBookingNo.substring(9)); // ####
+      newCount = (currentYear !== lastYear || currentMonth !== lastMonth) ? 1 : lastCount + 1;
     }
-    const ride = await RideModel.find({}).sort({ createdOn: -1 }).limit(1)
-    const lastBookingNo = ride[0]?.bookingNo || null
-    let ID = generateBookingNumber(lastBookingNo)
-    const isExist = await RideModel.exists({ bookingNo: ID })
-    if (isExist) {
-        ID = generateBookingNumber(lastBookingNo)
-    }
-    await RideModel.updateOne({ _id: rideId }, { $set: { bookingNo: ID } })
-    return ID
+    const formattedMonth = String(currentMonth).padStart(2, '0');
+    const formattedCount = String(newCount).padStart(4, '0');
+    return `${prefix}${currentYear}${formattedMonth}${formattedCount}`;
+  }
+  const ride = await RideModel.find({ bookingNo: { $exists: 1 } }).sort({ createdOn: -1 }).limit(1)
+  const lastBookingNo = ride[0]?.bookingNo || null
+  let ID = generateBookingNumber(lastBookingNo)
+  const isExist = await RideModel.exists({ bookingNo: ID })
+  if (isExist) {
+    ID = generateBookingNumber(lastBookingNo)
+  }
+  await RideModel.updateOne({ _id: rideId }, { $set: { bookingNo: ID } })
+  return ID
 }
-
 const incrementInvoiceNumber = async (invoiceId) => {
-    const gererateInvoiceNumber = (lastInvoiceNumber) => {
-        const prefix = 'DDD';
-        let newCount = 1
-        const currentDate = new Date();
-        const currentYear = currentDate.getFullYear();
-        const currentMonth = currentDate.getMonth() + 1;
-        if (lastInvoiceNumber) {
-            const lastMonth = parseInt(lastInvoiceNumber.substring(3, 5)); // MM
-            const lastYear = parseInt(lastInvoiceNumber.substring(5, 9)); // YYYY
-            const lastCount = parseInt(lastInvoiceNumber.substring(9)); // ####
-            newCount = (currentYear !== lastYear || currentMonth !== lastMonth) ? 1 : lastCount + 1;
-        }
-        const formattedMonth = String(currentMonth).padStart(2, '0');
-        const formattedCount = String(newCount).padStart(4, '0');
-        return `${prefix}${formattedMonth}${currentYear}${formattedCount}`;
+  const gererateInvoiceNumber = (lastInvoiceNumber) => {
+    const prefix = 'DDD';
+    let newCount = 1
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    if (lastInvoiceNumber) {
+      const lastMonth = parseInt(lastInvoiceNumber.substring(3, 5)); // MM
+      const lastYear = parseInt(lastInvoiceNumber.substring(5, 9)); // YYYY
+      const lastCount = parseInt(lastInvoiceNumber.substring(9)); // ####
+      newCount = (currentYear !== lastYear || currentMonth !== lastMonth) ? 1 : lastCount + 1;
     }
-    const payment = await PaymentModel.find({ invoiceNo: { $exists: 1 } }).sort({ createdOn: -1 }).limit(1)
-    const lastInvoiceNumber = payment[0]?.invoiceNo || null
-    let ID = gererateInvoiceNumber(lastInvoiceNumber)
-    const isExist = await PaymentModel.exists({ invoiceNo: ID })
-    if (isExist)
-        ID = gererateInvoiceNumber(lastInvoiceNumber)
-    await PaymentModel.updateOne({ _id: invoiceId }, { $set: { invoiceNo: ID } })
-    return ID
+    const formattedMonth = String(currentMonth).padStart(2, '0');
+    const formattedCount = String(newCount).padStart(4, '0');
+    return `${prefix}${formattedMonth}${currentYear}${formattedCount}`;
+  }
+  const payment = await PaymentModel.find({ invoiceNo: { $exists: 1 } }).sort({ createdOn: -1 }).limit(1)
+  const lastInvoiceNumber = payment[0]?.invoiceNo || null
+  let ID = gererateInvoiceNumber(lastInvoiceNumber)
+  const isExist = await PaymentModel.exists({ invoiceNo: ID })
+  if (isExist)
+    ID = gererateInvoiceNumber(lastInvoiceNumber)
+  await PaymentModel.updateOne({ _id: invoiceId }, { $set: { invoiceNo: ID } })
+  return ID
 
 }
 
 const generateInvoiceHTML = (bookingDetails) => {
-    return `
+  return `
 <body style="font-family: Arial, sans-serif; max-width: 900px;font-size: 14px; margin: auto; border: 1px solid #ddd; padding: 10px;">
 <div style="position:relative;">
 <div style="display:flex;">
@@ -255,9 +254,9 @@ const generateInvoiceHTML = (bookingDetails) => {
         Fare
       </td>
       <td style="border: 1px solid #ddd; padding: 10px;">
-        ${['hourly'].includes(bookingDetails?.trip?.tripType) 
-          ? `${bookingDetails?.paymentId?.totalDistance || '0'} Km || ${HOURLY_TYPE.find(li => li.value === bookingDetails?.trip?.hourlyType)?.label || 'N/A'} hr` 
-          : `${bookingDetails?.paymentId?.totalDistance || '0'} Km`}
+        ${['hourly'].includes(bookingDetails?.trip?.tripType)
+      ? `${bookingDetails?.paymentId?.totalDistance || '0'} Km || ${HOURLY_TYPE.find(li => li.value === bookingDetails?.trip?.hourlyType)?.label || 'N/A'} hr`
+      : `${bookingDetails?.paymentId?.totalDistance || '0'} Km`}
       </td>
       <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">
         &#8377; ${bookingDetails?.paymentId?.totalPrice || 0}
@@ -268,8 +267,8 @@ const generateInvoiceHTML = (bookingDetails) => {
       <td style="border: 1px solid #ddd; padding: 10px;">Extra Fare</td>
       <td style="border: 1px solid #ddd; padding: 10px;">
         ${['hourly'].includes(bookingDetails?.trip?.tripType)
-          ? `${bookingDetails?.paymentId?.extraDistance || 0} Km / ${bookingDetails?.paymentId?.extraHour || 0} hr`
-          : ['roundTrip'].includes(bookingDetails?.trip?.tripType)
+        ? `${bookingDetails?.paymentId?.extraDistance || 0} Km / ${bookingDetails?.paymentId?.extraHour || 0} hr`
+        : ['roundTrip'].includes(bookingDetails?.trip?.tripType)
           ? `${bookingDetails?.paymentId?.extraDistance || 0} Km / ${bookingDetails?.paymentId?.extraDay || 0} Day`
           : `${bookingDetails?.paymentId?.extraDistance || 0} Km`}
       </td>
@@ -293,9 +292,9 @@ const generateInvoiceHTML = (bookingDetails) => {
         Advance Amount
       </td>
       <td style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">
-        &#8377; ${bookingDetails?.paymentId?.advancePercent 
-          ? ((bookingDetails?.paymentId?.totalPrice - (bookingDetails?.discountValue || 0)) * bookingDetails?.paymentId?.advancePercent / 100).toFixed(2)
-          : 0}
+        &#8377; ${bookingDetails?.paymentId?.advancePercent
+      ? ((bookingDetails?.paymentId?.totalPrice - (bookingDetails?.discountValue || 0)) * bookingDetails?.paymentId?.advancePercent / 100).toFixed(2)
+      : 0}
       </td>
     </tr>
     ${bookingDetails?.paymentId?.couponCode ? `
@@ -363,25 +362,25 @@ const generateInvoiceHTML = (bookingDetails) => {
 }
 
 const getPdfFromHtml = async (html) => {
-    try {
-        let buffer;
-        const browser = await puppeteer.launch({ headless: 'shell', args: ["--no-sandbox"] });
-        const page = await browser.newPage();
-        await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.emulateMediaType('screen');
-        buffer = await page.pdf({
-            scale: 1.3,
-            format: 'a4',
-            printBackground: true,
-            pageRanges: ''
-        })
-        await browser.close()
-        return Buffer.from(buffer);
+  try {
+    let buffer;
+    const browser = await puppeteer.launch({ headless: 'shell', args: ["--no-sandbox"] });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: 'domcontentloaded' });
+    await page.emulateMediaType('screen');
+    buffer = await page.pdf({
+      scale: 1.3,
+      format: 'a4',
+      printBackground: true,
+      pageRanges: ''
+    })
+    await browser.close()
+    return Buffer.from(buffer);
 
-    } catch (error) {
-        logger.log('getPdfOrImageBuffer', error);
-        throw new Error(error);
-    }
+  } catch (error) {
+    logger.log('getPdfOrImageBuffer', error);
+    throw new Error(error);
+  }
 }
 
 

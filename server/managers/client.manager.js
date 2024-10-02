@@ -396,6 +396,7 @@ const getBookingList = async (req, res) => {
       {
         $project: {
           name: 1,
+          bookingNo:1,
           pickupDate: 1,
           pickupTime: 1,
           trip: 1,

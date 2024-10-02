@@ -191,6 +191,7 @@ function BookingHistory() {
             <table className='cstm-table '>
               <thead>
                 <tr>
+                  <th>Booking No.</th>
                   <th>Name</th>
                   <th>Pick Up Date</th>
                   <th>Booking Amount</th>
@@ -202,6 +203,7 @@ function BookingHistory() {
               <tbody>
                 {bookingList.length > 0 ? bookingList.map(item => (
                   <tr key={item._id}>
+                    <td className='text-capitalize'>{item.bookingNo}</td>
                     <td className='text-capitalize'>{item.name}</td>
                     <td>{getDateAndTimeString(item.pickupDate, item.pickupTime)}</td>
                     <td> &#8377; {roundToDecimalPlaces(item?.payableAmount) || roundToDecimalPlaces(item?.totalPrice) || '0'}</td>
