@@ -396,7 +396,7 @@ const getBookingList = async (req, res) => {
       {
         $project: {
           name: 1,
-          bookingNo:1,
+          bookingNo: 1,
           pickupDate: 1,
           pickupTime: 1,
           trip: 1,
@@ -549,7 +549,7 @@ const initiatePayment = async (req, res) => {
         paymentId = payment._id
       }
       await RideModel.updateOne({ _id: bookingDetails._id }, { $set: { paymentId: paymentId, rideStatus: 'booked' } })
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV !== 'development') {
         sendNotificationToAdmin(bookingDetails._id, 'NEW_BOOKING')
         sendNotificationToClient(bookingDetails._id, 'BOOKING_CONFIRM')
       }
@@ -779,7 +779,7 @@ const bookingReshuduled = async (req, res) => {
     const { params, body } = req
 
     const bookingDetails = await RideModel.findOne({ _id: new ObjectId(params.bookingId) }).populate([
-      {path: 'vehicleId', select: 'driverAllowance costPerKmRoundTrip'},
+      { path: 'vehicleId', select: 'driverAllowance costPerKmRoundTrip' },
       { path: 'paymentId', select: 'dueAmount advancePercent couponCode payableAmount' },
     ]).lean()
 
@@ -823,13 +823,13 @@ const bookingReshuduled = async (req, res) => {
       }
 
       let payableAmount = roundToDecimalPlaces(totalPrice - coupanDiscount)
-      let dueAmount = roundToDecimalPlaces(payableAmount - ((payableAmount * bookingDetails?.paymentId?.advancePercent)/100))
+      let dueAmount = roundToDecimalPlaces(payableAmount - ((payableAmount * bookingDetails?.paymentId?.advancePercent) / 100))
 
       data = {
         ...data,
-        payableAmount, 
-        dueAmount, 
-        totalPrice, 
+        payableAmount,
+        dueAmount,
+        totalPrice,
         totalDistance,
         dropDate: {
           date: new Date(body.resheduleReturnDate).getDate(),
@@ -844,7 +844,7 @@ const bookingReshuduled = async (req, res) => {
         totalPrice: totalPrice
       }
 
-      await PaymentModel.updateOne({_id: bookingDetails?.paymentId?._id}, {payableAmount: payableAmount, dueAmount: dueAmount})
+      await PaymentModel.updateOne({ _id: bookingDetails?.paymentId?._id }, { payableAmount: payableAmount, dueAmount: dueAmount })
 
       console.log(payableAmount, dueAmount, totalPrice, totalDistance, coupanDiscount)
     }
