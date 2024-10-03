@@ -382,7 +382,7 @@ function Payment() {
 
                   </div>
                   <div className="d py-3 justify-content-end pe-2 ">
-                    <div className="d-flex flex-column align-items-end pt-2 pe-3">
+                    <div className="d-flex flex-column align-items-end pt-2 pe-md-3">
                       <div className="mb-2 font-bold">
                         Advance amount:<span className="font-22"> &#x20b9;  {payblePrice}</span>
                       </div>
