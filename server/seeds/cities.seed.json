@@ -14231,7 +14231,8 @@
     "country_name": "India",
     "latitude": "19.15096000",
     "longitude": "72.99625000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Ajara",
@@ -14376,7 +14377,8 @@
     "country_name": "India",
     "latitude": "19.20900000",
     "longitude": "73.18600000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Amgaon",
@@ -14400,7 +14402,8 @@
     "country_name": "India",
     "latitude": "19.11916667",
     "longitude": "72.84694444",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Andura",
@@ -14634,7 +14637,8 @@
     "country_name": "India",
     "latitude": "19.05444444",
     "longitude": "72.84055556",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Baner",
@@ -14730,7 +14734,8 @@
     "country_name": "India",
     "latitude": "19.14000000",
     "longitude": "72.93000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Bhayandar",
@@ -14866,7 +14871,8 @@
     "country_name": "India",
     "latitude": "19.23000000",
     "longitude": "72.86000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Brahmapuri",
@@ -14898,7 +14904,8 @@
     "country_name": "India",
     "latitude": "18.98000000",
     "longitude": "72.83500000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Chakan",
@@ -14987,7 +14994,8 @@
     "country_name": "India",
     "latitude": "19.05871111",
     "longitude": "72.89969444",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Chicholi",
@@ -15067,7 +15075,8 @@
     "country_name": "India",
     "latitude": "18.91000000",
     "longitude": "72.81000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Dabhol",
@@ -15323,7 +15332,8 @@
     "country_name": "India",
     "latitude": "19.21667000",
     "longitude": "73.08333000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Dondaicha",
@@ -15387,7 +15397,8 @@
     "country_name": "India",
     "latitude": "18.93500000",
     "longitude": "72.83590000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Gadchiroli",
@@ -15459,7 +15470,8 @@
     "country_name": "India",
     "latitude": "19.08000000",
     "longitude": "72.91000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Ghoti Budrukh",
@@ -15507,7 +15519,8 @@
     "country_name": "India",
     "latitude": "18.15483000",
     "longitude": "73.29147000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Guhagar",
@@ -15780,7 +15793,8 @@
     "country_name": "India",
     "latitude": "19.10000000",
     "longitude": "72.83000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Junnar",
@@ -15852,7 +15866,8 @@
     "country_name": "India",
     "latitude": "19.03333000",
     "longitude": "73.10000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Kalamnuri",
@@ -16150,7 +16165,8 @@
     "country_name": "India",
     "latitude": "19.03614722",
     "longitude": "73.06172222",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Kharsundi",
@@ -16247,7 +16263,8 @@
     "country_name": "India",
     "latitude": "19.10305556",
     "longitude": "73.01055556",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Kopargaon",
@@ -16425,7 +16442,8 @@
     "country_name": "India",
     "latitude": "19.11776000",
     "longitude": "73.02693800",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Mahim",
@@ -16465,7 +16483,8 @@
     "country_name": "India",
     "latitude": "18.95000000",
     "longitude": "72.79500000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Malad",
@@ -16473,7 +16492,8 @@
     "country_name": "India",
     "latitude": "19.18611111",
     "longitude": "72.84861111",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Malegaon",
@@ -16802,7 +16822,8 @@
     "country_name": "India",
     "latitude": "19.17168056",
     "longitude": "72.95600000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Mumbai Suburban",
@@ -17214,7 +17235,8 @@
     "country_name": "India",
     "latitude": "18.98878000",
     "longitude": "73.11013000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Parbhani",
@@ -17230,7 +17252,8 @@
     "country_name": "India",
     "latitude": "18.99000000",
     "longitude": "72.84000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Parli Vaijnath",
@@ -17430,7 +17453,8 @@
     "country_name": "India",
     "latitude": "19.11640000",
     "longitude": "72.90471000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Prabhadevi",
@@ -18203,7 +18227,8 @@
     "country_name": "India",
     "latitude": "18.97000000",
     "longitude": "72.81000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Tasgaon",
@@ -18284,7 +18309,8 @@
     "country_name": "India",
     "latitude": "19.21667000",
     "longitude": "73.15000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Umarga",
@@ -18396,7 +18422,8 @@
     "country_name": "India",
     "latitude": "19.08000000",
     "longitude": "73.01000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Vasind",
@@ -18452,7 +18479,8 @@
     "country_name": "India",
     "latitude": "19.11000000",
     "longitude": "72.94000000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Vile Parle",
@@ -18501,7 +18529,8 @@
     "country_name": "India",
     "latitude": "19.02163056",
     "longitude": "72.86458889",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Wadgaon",
@@ -18613,7 +18642,8 @@
     "country_name": "India",
     "latitude": "19.00000000",
     "longitude": "72.81500000",
-    "isActive": true
+    "isActive": true,
+    "isMetroCity": true
   },
   {
     "name": "Yaval",
