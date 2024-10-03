@@ -36,14 +36,16 @@ const login = async (req, res) => {
       return res.status(400).send({ message: "Phone Number are required." });
     else if (userType === 'ADMIN' && (!userName || !password))
       return res.status(400).send({ message: "Username and password are required." });
-
+    console.log(body)
     const query = userType === 'CLIENT' ? { primaryPhone: String(phoneNumber) } : {
       $or: [
         { email: String(body.userName) },
         { primaryPhone: String(body.userName) },
       ],
+      'modules.userType': 'ADMIN'
     }
     const user = await UserModel.findOne(query, { name: 1, password: 1, status: 1, authentication: 1, email: 1, primaryPhone: 1, modules: 1, });
+    console.log(user)
     if (!user) {
       return res.status(401).send({ message: userType === 'CLIENT' ? "Incorrect phone Number" : "Incorrect username or password. Please try again." });
     }

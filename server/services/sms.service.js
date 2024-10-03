@@ -57,9 +57,6 @@ const sendBookingConfirmedSms = async (mobile, payload) => {
     }
 }
 
-(async ()=>{
-    await sendBookingConfirmedSms('919792726499',{clientName:"Suraj",bookingId:"DDD202409345"})
-})()
 const sendRideRescheduledSms = async (mobile, payload) => {
     try {
         const { clientName, bookingId, pickupDate,pickupTime } = payload;

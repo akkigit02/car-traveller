@@ -1,10 +1,34 @@
 [
   {
+    "name": "Rajan Gupta",
+    "email": "guptarajan778@gmail.com",
+    "primaryPhone": "8290109580",
+    "status": "verified",
+    "password": "$2b$10$jwRGHJpDr69Z4TGoU4z7je8qoV6p29PR9Ws3VbJb9ZgWhDwVh8gga",
+    "modules": {
+      "userType": "ADMIN",
+      "accessibleModule": []
+    },
+    "currentAddress": {
+      "addressLine": "noida",
+      "city": "noida",
+      "state": "noida",
+      "zip": "123456"
+    },
+    "permanentAddress": {
+      "addressLine": "noida",
+      "city": "noida",
+      "state": "noida",
+      "zip": "123456"
+    },
+    "logo": ""
+  },
+  {
     "name": "Suraj Sharma",
     "email": "panditup571@gmail.com",
-    "primaryPhone": "1234567890",
+    "primaryPhone": "7500568681",
     "status": "verified",
-    "password": "$2b$10$7A3XZYDwqHbJcMoIulV.qedHSq4T7kExFm4b6M/W0ZJh3GnaaVSdG",
+    "password": "$2b$10$jYYVlX3ehY0ZBaMAvcqkMOqdhshiPLTRTxxPEL5B6r0jzk7KdB55O",
     "modules": {
       "userType": "ADMIN",
       "accessibleModule": []
