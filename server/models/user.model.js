@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 const userTypeSchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
-    email: { type: String},
+    email: { type: String },
     primaryPhone: { type: String, required: true },
     secondaryPhone: { type: String, },
     dateOfBirth: {
@@ -13,7 +13,7 @@ const userTypeSchema = new mongoose.Schema(
     },
     password: { type: String, default: null },
     modules: {
-      userType: { type: String, emum: ['DEVELOPER', 'ADMIN', 'DRIVER', 'CLIENT'] },
+      userType: { type: String, emum: ['ADMIN', 'CLIENT'] },
     },
     currentAddress: {
       addressLine: { type: String, default: "" },

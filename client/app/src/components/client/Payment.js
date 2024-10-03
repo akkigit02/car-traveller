@@ -11,7 +11,7 @@ function Payment() {
   const { bookingId } = useParams();
   const [bookingDetails, setBookingDetails] = useState({});
   const [couponList, setCopounList] = useState([])
-  const [advancePercentage, setAdvancePercentage] = useState(25)
+  const [advancePercentage, setAdvancePercentage] = useState(0)
   const [payblePrice, setPayblePrice] = useState(0)
   const [isButtonLoad, setIsButtonLoad] = useState('')
   const [isApplyCoupon, setIsApplyCoupon] = useState(false)
@@ -296,8 +296,8 @@ function Payment() {
                       {bookingDetails?.isInvoiceGenerate && <div className="d-flex justify-content-end mt-2"><button onClick={() => getInvoiceInfo(bookingDetails._id)} className="cstm-btn-trans">
                         Download Invoice
                       </button></div>}
-                      {bookingDetails?.rideStatus === 'none' && couponList.length > 0 && <>
-                        <div className="row m-0 py-2 border-bottom">
+                      {bookingDetails?.rideStatus === 'none' && <>
+                        {couponList.length > 0 && <div className="row m-0 py-2 border-bottom">
                           <div className="col-lg-2 col-md-3 col-12 align-items-center d-flex">Coupan listing</div>
                           <div className="col-lg-10 col-md-9 col-12 row m-0">
                             <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
@@ -305,7 +305,7 @@ function Payment() {
                             <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
                             <div className="col-lg-3 col-md-3 col-12 mb-2"><div className="coupan-card">Coupon-1</div></div>
                           </div>
-                        </div>
+                        </div>}
 
 
                         <div className="py-2">
@@ -356,6 +356,7 @@ function Payment() {
                           <input
                             type="radio"
                             name="advancePayment"
+                            disabled={ele !== 0}
                             value={ele}
                             checked={advancePercentage === ele}
                             onChange={() => setAdvancePercentage(ele)}
@@ -382,7 +383,7 @@ function Payment() {
 
                   </div>
                   <div className="d py-3 justify-content-end pe-2 ">
-                    <div className="d-flex flex-column align-items-end pt-2 pe-3">
+                    <div className="d-flex flex-column align-items-end pt-2 pe-md-3">
                       <div className="mb-2 font-bold">
                         Advance amount:<span className="font-22"> &#x20b9;  {payblePrice}</span>
                       </div>
@@ -410,7 +411,7 @@ function Payment() {
             </div>
           }
           {
-            bookingDetails?.rideStatus == 'booked' && roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount) > 0 &&<>
+            bookingDetails?.rideStatus == 'booked' && roundToDecimalPlaces(bookingDetails?.paymentId?.dueAmount) > 0 && <>
               <div>
                 <div className="d-flex flex-column align-items-end border-top pt-2">
                   <div className="mb-2 font-bold">
