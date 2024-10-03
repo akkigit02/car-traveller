@@ -25,7 +25,7 @@ const { incrementBookingNumber, incrementInvoiceNumber, generateInvoiceHTML, get
 const { getTotalPrice } = require('../services/calculation.service');
 const { sendBookingConfirmedSms, sendRideRescheduledSms, sendBookingCancelledByPassengerSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
-const { sendDriverAllotedMessage, sendBookingConfirmWhatsapp, sendCancelByPassenger } = require('../services/whatsapp.service');
+const { sendDriverAllotedMessage, sendBookingConfirmWhatsapp, sendCancelByPassenger, sendRescheduledToPassenger } = require('../services/whatsapp.service');
 
 const getCities = async (req, res) => {
   try {
@@ -589,7 +589,7 @@ const sendNotificationToClient = async (bookingId, type) => {
   }
   if (type === 'BOOKING_CONFIRM') {
     await sendBookingConfirmedSms(user.primaryPhone, payload)
-    // await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
+    await sendBookingConfirmWhatsapp(`91${user.primaryPhone}`, payload)
   }
   else if (type === 'DRIVER_ALLOTED') {
     await sendDriverAllotedMessage(`91${user.primaryPhone}`, payload)
@@ -792,9 +792,9 @@ const bookingReshuduled = async (req, res) => {
     }
     let data = {
       pickupDate: {
-        date: new Date(body.reshedulePickupDate).getDate(),
-        month: new Date(body.reshedulePickupDate).getMonth(),
-        year: new Date(body.reshedulePickupDate).getFullYear(),
+        date: String(new Date(body.reshedulePickupDate).getDate()).padStart(2,'0'),
+        month: String(new Date(body.reshedulePickupDate).getMonth()+1).padStart(2,'0'),
+        year: String(new Date(body.reshedulePickupDate).getFullYear()).padStart(2,'0'),
       },
       pickupTime: body.reshedulePickupTime,
       rideStatus: 'booked',
@@ -823,7 +823,7 @@ const bookingReshuduled = async (req, res) => {
       }
 
       let payableAmount = roundToDecimalPlaces(totalPrice - coupanDiscount)
-      let dueAmount = roundToDecimalPlaces(payableAmount - ((payableAmount * bookingDetails?.paymentId?.advancePercent) / 100))
+      let dueAmount = roundToDecimalPlaces(payableAmount - ( bookingDetails?.paymentId?.advancePercent ? (payableAmount * bookingDetails?.paymentId?.advancePercent)/100 : 0))
 
       data = {
         ...data,
@@ -832,9 +832,9 @@ const bookingReshuduled = async (req, res) => {
         totalPrice,
         totalDistance,
         dropDate: {
-          date: new Date(body.resheduleReturnDate).getDate(),
-          month: new Date(body.resheduleReturnDate).getMonth(),
-          year: new Date(body.resheduleReturnDate).getFullYear(),
+          date: String(new Date(body.resheduleReturnDate).getDate()).padStart(2,'0'),
+          month: String(new Date(body.resheduleReturnDate).getMonth()).padStart(2,'0'),
+          year: String(new Date(body.resheduleReturnDate).getFullYear()).padStart(2,'0'),
         },
         totalPrice: totalPrice
       }
@@ -854,6 +854,7 @@ const bookingReshuduled = async (req, res) => {
       $push: { activity: oldData }
     })
 
+    sendNotificationToClient(bookingDetails?._id, 'BOOKING_RESCHEDULED')
 
     return res.status(200).send({ message: 'Booking reschedule successfully', booking: data })
   } catch (error) {
