@@ -26,6 +26,7 @@ const { getTotalPrice } = require('../services/calculation.service');
 const { sendBookingConfirmedSms, sendRideRescheduledSms, sendBookingCancelledByPassengerSms } = require('../services/sms.service');
 const SMTPService = require('../services/smtp.service');
 const { sendDriverAllotedMessage, sendBookingConfirmWhatsapp, sendCancelByPassenger, sendRescheduledToPassenger } = require('../services/whatsapp.service');
+const { bookigSchedule } = require('../services/schedule.service');
 
 const getCities = async (req, res) => {
   try {
@@ -553,6 +554,8 @@ const initiatePayment = async (req, res) => {
         sendNotificationToAdmin(bookingDetails._id, 'NEW_BOOKING')
         sendNotificationToClient(bookingDetails._id, 'BOOKING_CONFIRM')
       }
+
+      bookigSchedule(bookingDetails._id)
       return res.status(200).send({ message: 'Ride Bokked successfully' })
     }
   } catch (error) {

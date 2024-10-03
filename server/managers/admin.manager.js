@@ -13,7 +13,8 @@ const PaymentModel = require('../models/payment.model');
 const { CITY_CAB_PRICE } = require('../constants/common.constants');
 const { roundToDecimalPlaces } = require('../utils/format.util');
 const { dateDifference } = require('../utils/calculation.util');
-const { incrementInvoiceNumber } = require('../services/common.service');
+const { incrementInvoiceNumber, incrementBookingNumber } = require('../services/common.service');
+const { bookigSchedule } = require('../services/schedule.service');
 const { ObjectId } = require('mongoose').Types
 
 const saveVehiclePrice = async (req, res) => {
@@ -269,6 +270,7 @@ const saveBooking = async (req, res) => {
         }
 
         const booking = await getTotalPrice(bookingDetails)
+        const paymentId = new ObjectId()
         let rideInfo = {
             name: body?.name,
             userId: user._id,
@@ -276,7 +278,7 @@ const saveBooking = async (req, res) => {
                 tripType: body?.bookingType,
                 hourlyType: body?.hourlyType
             },
-            rideStatus: "scheduled",
+            rideStatus: "none",
             source: 'ADMIN',
             pickupLocation: body?.pickupLocation,
             dropoffLocation: body?.dropLocation,
@@ -289,13 +291,38 @@ const saveBooking = async (req, res) => {
             pickUpCity: body?.pickupCityId,
             dropCity: body?.bookingType === 'roundTrip' ? toCityId : [toCityId],
             dropDate: dropDate,
-            totalPrice: booking?.totalPrice?.toFixed(2),
-            payablePrice: booking?.totalPrice?.toFixed(2),
-            totalDistance: booking?.distance
+            paymentId: paymentId,
+            totalPrice: roundToDecimalPlaces(booking?.totalPrice),
+            payablePrice: roundToDecimalPlaces(booking?.totalPrice),
+            totalDistance: roundToDecimalPlaces(booking?.distance)
         }
 
-        const info = await RideModel.create(rideInfo);
-        res.status(201).send({ message: 'Booking created successfully', booking: info });
+
+        let info = await RideModel.create(rideInfo);
+        await incrementBookingNumber(info._id)
+        const paymentInfo = {
+            _id: paymentId,
+            totalPrice: roundToDecimalPlaces(booking?.totalPrice),
+            payableAmount: roundToDecimalPlaces(booking?.totalPrice),
+            totalDistance: roundToDecimalPlaces(booking?.distance),
+            dueAmount: roundToDecimalPlaces(booking?.totalPrice),
+            adadvancePercent: 0,
+            userId: user._id,
+            bookingId: info._id,
+            createdBy: req?.userId,
+            updateBy: req?.userId
+        }
+
+        let payInfo = await PaymentModel.create(paymentInfo)
+        console.log(payInfo, info)
+        info = JSON.parse(JSON.stringify(info))
+        payInfo = JSON.parse(JSON.stringify(payInfo))
+        delete payInfo?._id
+        res.status(201).send({
+            message: 'Booking created successfully', booking: {
+                ...info, ...payInfo
+            }
+        });
     } catch (error) {
         logger.log('server/managers/admin.manager.js-> saveBooking', { error: error, userId: req?.userId });
         res.status(500).send({ message: 'Server Error' });
@@ -515,14 +542,22 @@ const confirmBooking = async (req, res) => {
         const id = req?.params?.id
         const body = req?.body
 
-        const booking = await RideModel.findOne({ _id: id }, { totalPrice: 1, payablePrice: 1 })
+        const booking = await RideModel.findOne({ _id: id }, { paymentId: 1 }).populate('paymentId', 'dueAmount totalPrice payableAmount');
 
-        const advancePercent = (body?.advanceAmount / booking?.payablePrice) * 100;
-        await RideModel.updateOne({ _id: id }, {
-            advancePercent: advancePercent?.toFixed(2),
-            paymentStatus: advanced
+        const advancePercent = parseFloat(body?.advanceAmount) > 0 ? ((parseFloat(body?.advanceAmount) / booking?.paymentId?.payableAmount) * 100) : 0;
+ 
+        await PaymentModel.updateOne({ _id: booking.paymentId?._id }, {
+            advancePercent: roundToDecimalPlaces(advancePercent),
+            dueAmount: booking?.paymentId?.dueAmount - parseFloat(body?.advanceAmount),
+            isPayLater: parseFloat(body?.advanceAmount) > 0 ? false : true,
+            isAdvancePaymentCompleted: parseFloat(body?.advanceAmount) > 0 ? true : false
         })
-        res.status(200).send({ message: 'Booking Confirm!' });
+        await RideModel.updateOne({ _id: id }, {
+            rideStatus: 'booked'
+        })
+
+        bookigSchedule(id)
+        res.status(200).send({ message: 'Booking Confirm!'});
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> confirmBooking', { error: error });
         res.status(500).send({ message: 'Server Error' });

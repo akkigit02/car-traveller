@@ -115,8 +115,8 @@ export default function BookingManagement() {
       const res = await axios.post("/api/admin/bookings", data);
       let info = res.data.booking
       setPaymentInfo({
-        distance: info.totalDistance,
-        price: info.payablePrice,
+        distance: info?.totalDistance,
+        price: info?.payableAmount,
         id: info._id
       })
       setList([info, ...list]);
@@ -490,7 +490,7 @@ export default function BookingManagement() {
                     <tr key={index}>
                       <td>#{li.bookingNo}</td>
                       <td>{li.name}</td>
-                      <td>{TRIP_TYPE.find((ele) => ele.value === li.trip.tripType)?.name}</td>
+                      <td>{TRIP_TYPE.find((ele) => ele.value === li?.trip?.tripType)?.name}</td>
                       <td>{li?.phone}</td>
                       <td>{getDateAndTimeString(li.pickupDate)}</td>
                       <td>&#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
