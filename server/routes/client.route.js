@@ -7,6 +7,7 @@ router.get('/address-suggestion', ClientManager.getAddressSuggestion)
 router.get('/places-suggestion', ClientManager.getAddressSuggestionOnLandingPage)
 router.get('/car-list', ClientManager.getCars)
 router.post('/package',ClientManager.savePackage)
+router.post('/contact',ClientManager.saveContact)
 // must be protected
 router.post('/booking', jwtUserAuthentication, ClientManager.saveBooking)
 router.get('/booking', jwtUserAuthentication, ClientManager.getBookingList)

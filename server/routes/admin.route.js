@@ -30,6 +30,7 @@ router.delete('/package/:id',jwtUserAuthentication, AdminManager.deletePackage)
 router.get('/package/:id',jwtUserAuthentication, AdminManager.getPackageById)
 
 router.get('/enquire-package',jwtUserAuthentication, AdminManager.getEnquirePackage)
+router.get('/enquire-contact',jwtUserAuthentication, AdminManager.getEnquireContact)
 
 router.post('/coupons',jwtUserAuthentication, AdminManager.saveReferral)
 router.get('/coupons',jwtUserAuthentication, AdminManager.getReferral)

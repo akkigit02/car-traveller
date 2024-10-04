@@ -69,6 +69,13 @@ export default function SideNavBar() {
             <span>Users</span>
           </Link>
           <Link
+            to={`/contact-enquiry`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/contact-enquiry` ? 'active-admin' : ''}`}
+          >
+            <i className="fas fa-envelope me-3"></i>
+            <span>Contact Enquiry</span>
+          </Link>
+          <Link
             to={`/notification`}
             className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/notification` ? 'active-admin' : ''}`}
           >
@@ -144,6 +151,20 @@ export default function SideNavBar() {
           >
             <i className="fas fa-users fa-fw me-3"></i>
             <span>Users</span>
+          </Link>
+          <Link
+            to={`/contact-enquiry`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/contact-enquiry` ? 'active-admin' : ''}`}
+          >
+            <i className="fas fa-bell me-3"></i>
+            <span>Contact Enquiry</span>
+          </Link>
+          <Link
+            to={`/notification`}
+            className={`list-group-item list-group-item-action py-2 ripple ${pathname === `/notification` ? 'active-admin' : ''}`}
+          >
+            <i className="fas fa-envelope me-3"></i>
+            <span>Notification</span>
           </Link>
         </div>
       </div>

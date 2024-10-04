@@ -6,6 +6,7 @@ const CouponModel = require("../models/coupon.model");
 const UserModel = require("../models/user.model");
 const BillingModel = require('../models/billing.model')
 const EnquirePackageModel = require("../models/enquire.package.model")
+const EnquireContactModel = require("../models/enquire.contact.model")
 const PaymentModel = require('../models/payment.model');
 const NewBokkingTemplate = require('../templates/NewBokking')
 const NewLeadTemplate = require('../templates/NewLead')
@@ -259,6 +260,22 @@ const savePackage = async (req, res) => {
     res.status(500).send({ message: 'Server Error' })
   }
 }
+
+const saveContact = async (req, res) => {
+  try {
+    req.body.date = new Date();
+    await EnquireContactModel.create(req.body);
+    res.status(201).send({
+      message: `Enquiry Received! 🎉 
+  Thanks, ${req.body.name}. We’ve received your enquiry and will get back to you soon!
+  - DDD CABS`
+    });
+  } catch (error) {
+    logger.log('server/managers/admin.manager.js-> saveContact', { error: error });
+    res.status(500).send({ message: 'Server Error' });
+  }
+}
+
 
 
 const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
@@ -954,5 +971,6 @@ module.exports = {
   changePaymentStatus,
   initiateDuePayment,
   savePackage,
+  saveContact,
   getInvoiceInfo
 };

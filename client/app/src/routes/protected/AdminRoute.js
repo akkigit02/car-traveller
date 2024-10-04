@@ -12,6 +12,7 @@ import Profile from "../../components/common/Profile";
 import Leads from "../../components/admin/Leads"
 import Users from "../../components/admin/User"
 import Notifiaction from "../../components/admin/Notification";
+import ContactEnquiry from "../../components/admin/EnquireContact"
 
 function AdminRoute() {
   return (
@@ -42,6 +43,7 @@ function AdminRoute() {
                 <Route path={`/leads`} Component={Leads} exact />
                 <Route path={`/users`} Component={Users} exact />
                 <Route path={`/notification`} Component={Notifiaction} exact />
+                <Route path={`/contact-enquiry`} Component={ContactEnquiry} exact />
                 <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
               </Routes>
             </div>

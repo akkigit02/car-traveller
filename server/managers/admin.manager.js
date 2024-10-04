@@ -3,6 +3,7 @@ const VehicleModel = require('../models/vehicle.model');
 const RideModel = require('../models/ride.model')
 const PackageModel = require('../models/packages.model');
 const EnquirePackage = require('../models/enquire.package.model');
+const EnquireContactModel = require("../models/enquire.contact.model")
 const CouponModel = require('../models/coupon.model');
 const UserModel = require('../models/user.model');
 const { getTotalPrice } = require('../services/calculation.service');
@@ -397,6 +398,16 @@ const getEnquirePackage = async (req, res) => {
         res.status(200).send({ packages })
     } catch (error) {
         logger.log('server/managers/admin.manager.js-> getEnquirePackage', { error: error })
+        res.status(500).send({ message: 'Server Error' })
+    }
+}
+
+const getEnquireContact = async (req, res) => {
+    try {
+        const contacts = await EnquireContactModel.find({})
+        res.status(200).send({ contacts })
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js-> getEnquireContact', { error: error })
         res.status(500).send({ message: 'Server Error' })
     }
 }
@@ -821,6 +832,7 @@ module.exports = {
     getPackageInfo,
 
     getEnquirePackage,
+    getEnquireContact,
 
     getReferralById,
     deleteReferral,
