@@ -182,7 +182,7 @@ const getBookingCount = async (req, res) => {
           { $and: [{ "pickupDate.year": currentYear }, { "pickupDate.month": currentMonth }, { "pickupDate.date": { $gte: currentDay } }] }
         ],
         paymentStatus: {$ne: 'pending'}
-      },{vehicleId: 1, name: 1, userId: 1, pickupDate: 1, totalPrice: 1, totalDistance: 1, paymentStatus: 1}).populate([
+      },{vehicleId: 1, name: 1, userId: 1, pickupDate: 1, pickupTime:1, totalPrice: 1, totalDistance: 1, paymentStatus: 1}).populate([
         { path: 'userId', select: 'name primaryPhone' },
         { path: 'vehicleId', select: 'vehicleType vehicleName' },
       ]).limit(15)

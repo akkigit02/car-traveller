@@ -140,15 +140,18 @@ const Dashboard = () => {
             <tr>
               <th>Name</th>
               <th>Pickup Date</th>
+              <th>Pickup Time</th>
               <th>Vehicle Type</th>
               <th>Total Price</th>
             </tr>
           </thead>
           <tbody>
+            {console.log(bookingList)}
             {bookingList.length > 0 ? bookingList.map((row, i) => (
               <tr key={"new" + i}>
                 <td>{row?.userId?.name}</td>
                 <td>{`${row?.pickupDate?.date}/${row?.pickupDate?.month}/${row?.pickupDate?.year}`}</td>
+                <td>{row?.pickupTime}</td>
                 <td>{row?.vehicleId?.vehicleType}</td>
                 <td>{row.totalPrice}</td>
               </tr>

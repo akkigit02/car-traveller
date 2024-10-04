@@ -838,6 +838,12 @@ export default function BookingManagement() {
               {getDateAndTimeString(previewData.pickupDate)}
             </div>
           </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Pickup Time</label>
+            <div className="mb-0 desti-details-2">
+              {previewData.pickupTime}
+            </div>
+          </div>
           {previewData?.trip?.tripType !== 'cityCab' && <div className="col-lg-6 col-md-6 col-12">
             <label>Pickup City</label>
             <div className="mb-0 desti-details-2">
