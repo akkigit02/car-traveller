@@ -45,7 +45,13 @@ const rideSchema = new Schema({
   reason: { type: String },
   isConnected: { type: Boolean, default: false },
   activity: [{ type: Schema.Types.Mixed }],
-  source: { type: String }
+  source: { type: String },
+  driver: {
+    name: { type: String },
+    phone: { type: String },
+    registrationNumber: { type: String }
+  },
+  isDriverAlloted: { type: Boolean }
 }, { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } });
 
 // Create a model based on the schema

@@ -16,6 +16,8 @@ const { roundToDecimalPlaces } = require('../utils/format.util');
 const { dateDifference } = require('../utils/calculation.util');
 const { incrementInvoiceNumber, incrementBookingNumber } = require('../services/common.service');
 const { bookigSchedule } = require('../services/schedule.service');
+const { sendBookingConfirmedSms } = require('../services/sms.service');
+const { sendNotificationToClient, sendNotificationToAdmin } = require('../services/notification.service');
 const { ObjectId } = require('mongoose').Types
 
 const saveVehiclePrice = async (req, res) => {
@@ -214,7 +216,9 @@ const getBookingInfo = async (req, res) => {
                     rideStatus: 1,
                     totalDistance: 1,
                     dropoffLocation: 1,
-                    bookingNo: 1
+                    bookingNo: 1,
+                    isDriverAlloted: 1,
+                    driver: 1
                 }
             }
         ]);
@@ -275,6 +279,7 @@ const saveBooking = async (req, res) => {
         let rideInfo = {
             name: body?.name,
             userId: user._id,
+            vehicleId: body?.vehicleId,
             trip: {
                 tripType: body?.bookingType,
                 hourlyType: body?.hourlyType
@@ -298,9 +303,9 @@ const saveBooking = async (req, res) => {
             totalDistance: roundToDecimalPlaces(booking?.distance)
         }
 
-
+        
         let info = await RideModel.create(rideInfo);
-        await incrementBookingNumber(info._id)
+        const bookingNo = await incrementBookingNumber(info._id)
         const paymentInfo = {
             _id: paymentId,
             totalPrice: roundToDecimalPlaces(booking?.totalPrice),
@@ -315,9 +320,9 @@ const saveBooking = async (req, res) => {
         }
 
         let payInfo = await PaymentModel.create(paymentInfo)
-        console.log(payInfo, info)
         info = JSON.parse(JSON.stringify(info))
         payInfo = JSON.parse(JSON.stringify(payInfo))
+        info['bookingNo'] = bookingNo
         delete payInfo?._id
         res.status(201).send({
             message: 'Booking created successfully', booking: {
@@ -553,7 +558,7 @@ const confirmBooking = async (req, res) => {
         const id = req?.params?.id
         const body = req?.body
 
-        const booking = await RideModel.findOne({ _id: id }, { paymentId: 1 }).populate('paymentId', 'dueAmount totalPrice payableAmount');
+        const booking = await RideModel.findOne({ _id: id }).populate('paymentId', 'dueAmount totalPrice payableAmount');
 
         const advancePercent = parseFloat(body?.advanceAmount) > 0 ? ((parseFloat(body?.advanceAmount) / booking?.paymentId?.payableAmount) * 100) : 0;
  
@@ -566,9 +571,12 @@ const confirmBooking = async (req, res) => {
         await RideModel.updateOne({ _id: id }, {
             rideStatus: 'booked'
         })
-
+        if (process.env.NODE_ENV !== 'development') {
+        sendNotificationToAdmin(id, 'NEW_BOOKING')
+        sendNotificationToClient(id, 'BOOKING_CONFIRM')
+        }
         bookigSchedule(id)
-        res.status(200).send({ message: 'Booking Confirm!'});
+        res.status(200).send({ message: 'Booking Confirm!', booking: booking});
     } catch (error) {
         logger.log('server/managers/admin.manager.js -> confirmBooking', { error: error });
         res.status(500).send({ message: 'Server Error' });
@@ -808,6 +816,23 @@ const confirmFullPayment = async (req, res) => {
     }
 }
 
+const driverAllot = async (req, res) => {
+    try {
+        const id = req?.params?.id
+        const body = req?.body
+        await RideModel.updateOne({_id: id}, {$set: {
+            driver: body,
+            isDriverAlloted: true
+        }})
+
+        sendNotificationToClient(id, 'DRIVER_ALLOTED')
+        res.status(200).send({ message: 'Driver alloted successfully!' });
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> confirmFullPayment', { error: error, userId: req.userId });
+        res.status(500).send({ message: 'Server Error' });
+    }
+}
+
 module.exports = {
     saveVehiclePrice,
     getVehiclePrice,
@@ -855,6 +880,8 @@ module.exports = {
     getRecentNotification,
     generateFinalInvoice,
 
-    confirmFullPayment
+    confirmFullPayment,
+
+    driverAllot
 
 }

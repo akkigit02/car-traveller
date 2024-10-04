@@ -16,9 +16,9 @@ try {
     console.log(date,dateString)
     date.setMinutes(date.getMinutes() - 60)
 
-    schedule.scheduleJob(bookingId?.toString, date, function(){
-        console.log('The world is going to end today.');
-      });
+    // schedule.scheduleJob(bookingId?.toString, date, function(){
+    //     console.log('The world is going to end today.');
+    //   });
 } catch (error) {
     console.log(error)
 }

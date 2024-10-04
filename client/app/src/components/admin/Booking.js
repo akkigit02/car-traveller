@@ -30,6 +30,7 @@ export default function BookingManagement() {
   const [isFullPaymentConfirm, setIsFullPaymentConfirm] = useState(false)
   const [searchQuery, setSearchQuery] = useState('');
   const [paymentId, setPaymentId] = useState(null)
+  const [isDriverAlloted, setIsDriverAlloted] = useState(false)
   const [suggestions, setSuggestions] = useState({
     pickupLocationId: '',
     dropLocationId: '',
@@ -61,6 +62,10 @@ export default function BookingManagement() {
   });
 
   const { register: register1, handleSubmit: handleSubmit1, reset: reset1, watch: watch1, setValue: setValue1, formState: { errors: errors1, isSubmitting: isSubmitting1 } } = useForm({
+    mode: "onChange",
+  });
+
+  const { register: register2, handleSubmit: handleSubmit2, reset: reset2, watch: watch2, setValue: setValue2, formState: { errors: errors2, isSubmitting: isSubmitting2 } } = useForm({
     mode: "onChange",
   });
 
@@ -179,6 +184,28 @@ export default function BookingManagement() {
       console.error(error);
     }
   };
+
+  const allotDriver = async (driverInfo) => {
+    try {
+      const { data } = await axios({
+        method: 'PUT',
+        url: '/api/admin/driver/' + selectedBookingId,
+        data: driverInfo
+      })
+      setList(old => old.map(li => {
+        if(li._id === selectedBookingId) {
+          li['driver'] = driverInfo
+          li['isDriverAlloted'] = true
+        }
+
+        return li
+      }))
+      setIsDriverAlloted(false)
+      setSelectedBookingId(null)
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
@@ -496,13 +523,23 @@ export default function BookingManagement() {
                       <td>&#8377; {roundToDecimalPlaces(li?.payableAmount) || roundToDecimalPlaces(li?.totalPrice) || '0'}</td>
                       <td>&#8377; {!li.isPaymentCompleted ? (roundToDecimalPlaces(li?.dueAmount) || '0') : '0'}</td>
                       <td className="d-flex align-items-center">
-                        <Tooltip message={'View More'} direction="bottom">
+                        <Tooltip message={'View'} direction="bottom">
                           <button
                             onClick={() => setPreviewData(li)}
                             className="icon-btn me-2"
                             type="button"
                           >
                             <i className="fa fa-eye"></i>
+                          </button>
+                        </Tooltip>
+                        <Tooltip message={'Driver'} direction="bottom">
+                          <button
+                            onClick={() => {setIsDriverAlloted(true); setSelectedBookingId(li._id)}}
+                            className={`icon-btn me-2 ${li.isDriverAlloted ? 'disabled' : ''}`}
+                            disabled={li.isDriverAlloted}
+                            type="button"
+                          >
+                            <i class="fas fa-universal-access"></i>
                           </button>
                         </Tooltip>
                         <Tooltip message={'Publish Invoice'} direction="bottom">
@@ -832,6 +869,26 @@ export default function BookingManagement() {
               {previewData.name}
             </div>
           </div>
+          {previewData?.isDriverAlloted && <>
+            <div className="col-lg-6 col-md-6 col-12">
+            <label>Driver Name</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.driver?.name}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Registration Number</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.driver?.registrationNumber}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Driver phone number</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.driver?.phone}
+            </div>
+          </div>
+          </>}
           <div className="col-lg-6 col-md-6 col-12">
             <label>Pickup Date</label>
             <div className="mb-0 desti-details-2">
@@ -950,28 +1007,28 @@ export default function BookingManagement() {
                   </div>
                 </>}
 
-              {watch1('tripType') === 'roundTrip' && 
-              <>
-              <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="hourlyType">Drop Date</label>
-                <div className="cstm-select-input" >
-                  {getDateAndTimeString(watch1('dropDate'))}
-                </div>
-              </div>
+              {watch1('tripType') === 'roundTrip' &&
+                <>
+                  <div className="form-group col-lg-6 col-md-6 col-12">
+                    <label htmlFor="hourlyType">Drop Date</label>
+                    <div className="cstm-select-input" >
+                      {getDateAndTimeString(watch1('dropDate'))}
+                    </div>
+                  </div>
 
-              <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
-                <label htmlFor="hourlyType">New Drop Date</label>
-                <input
-                  {...register1("newDropDate", { required: 'New Drop Date is Required' })}
-                  type='date'
-                  className="cstm-select-input"
-                  placeholder="Please enter new drop date"
-                />
-                {errors1?.newDropDate && (
-                  <span className="text-danger">{errors1?.newDropDate?.message}</span>
-                )}
-              </div>
-              </>}
+                  <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
+                    <label htmlFor="hourlyType">New Drop Date</label>
+                    <input
+                      {...register1("newDropDate", { required: 'New Drop Date is Required' })}
+                      type='date'
+                      className="cstm-select-input"
+                      placeholder="Please enter new drop date"
+                    />
+                    {errors1?.newDropDate && (
+                      <span className="text-danger">{errors1?.newDropDate?.message}</span>
+                    )}
+                  </div>
+                </>}
 
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="totalDistance"> Total Distance</label>
@@ -994,6 +1051,63 @@ export default function BookingManagement() {
                 <span className="sr-only">Loading...</span>
               </div>}
               Confirm
+            </button>
+          </div>
+        </form>
+      </Modal>}
+
+      {isDriverAlloted && <Modal isOpen={isDriverAlloted} onClose={() => {setIsDriverAlloted(false); setSelectedBookingId(null)}} title={'Driver Allot'}>
+        <form onSubmit={handleSubmit2(allotDriver)} className="modal-dropdown">
+          <div className="scroll-body">
+            <div className="form-row row m-0">
+
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="totalDistance"> Driver Name</label>
+                <input
+                  {...register2("name", { required: 'Driver name is Required' })}
+                  className="cstm-select-input"
+                  type='text'
+                  placeholder="Please driver name distance"
+                />
+
+                {errors2?.name && (
+                  <span className="text-danger">{errors2.name.message}</span>
+                )}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="totalDistance">Registration Number</label>
+                <input
+                  {...register2("registrationNumber", { required: 'Registration number is Required' })}
+                  className="cstm-select-input"
+                  type='text'
+                  placeholder="Please driver name distance"
+                />
+
+                {errors2?.registrationNumber && (
+                  <span className="text-danger">{errors2.registrationNumber.message}</span>
+                )}
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="totalDistance">Driver Phone Number</label>
+                <input
+                  {...register2("phone", phoneNumberValidation)}
+                  className="cstm-select-input"
+                  type='text'
+                  placeholder="Please driver phone number distance"
+                />
+
+                {errors2?.phone && (
+                  <span className="text-danger">{errors2.phone.message}</span>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="d-flex justify-content-end pt-2">
+            <button type="submit" disabled={isSubmitting2} className="cstm-btn">
+              {isSubmitting2 && <div className="spinner-border text-primary" role="status">
+                <span className="sr-only">Loading...</span>
+              </div>}
+              Allot
             </button>
           </div>
         </form>

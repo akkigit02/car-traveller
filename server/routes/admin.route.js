@@ -62,5 +62,7 @@ router.patch('/payment-confirmation/:paymentId', jwtUserAuthentication, AdminMan
 
 router.get('/notification',jwtUserAuthentication,AdminManager.getRecentNotification)
 
+router.put('/driver/:id',jwtUserAuthentication,AdminManager.driverAllot)
+
 
 module.exports = router
