@@ -36,8 +36,7 @@ const login = async (req, res) => {
       return res.status(400).send({ message: "Phone Number are required." });
     else if (userType === 'ADMIN' && (!userName || !password))
       return res.status(400).send({ message: "Username and password are required." });
-    console.log(body)
-    const query = userType === 'CLIENT' ? { primaryPhone: String(phoneNumber) } : {
+    const query = userType === 'CLIENT' ? { primaryPhone: String(phoneNumber), 'modules.userType': 'CLIENT' } : {
       $or: [
         { email: String(body.userName) },
         { primaryPhone: String(body.userName) },
@@ -73,8 +72,8 @@ const login = async (req, res) => {
           },
         }
       );
-      if (process.env.NODE_ENV !== 'development') {
-        await sendOtpSms(`91${user.primaryPhone}`, otp)
+      if (process.env.NODE_ENV === 'development') {
+        // await sendOtpSms(`91${user.primaryPhone}`, otp)
         const emailtempalte = EmailOtpTemplate({ fullName: user.name, otp })
         const emailData = { to: user.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
         if (user.email)
