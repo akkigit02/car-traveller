@@ -78,7 +78,7 @@ const updateProfile = async (req, res) => {
         "authentication.twoFactor.sessionId": 1,
       },
     });
-    return res.status(200).send({ message: 'Profile Update Successfull' });
+    return res.status(200).send({ message: 'Profile Update Successfully' });
   } catch (error) {
     logger.log(`${fileName} -> getUserProfile`, { error: error })
     res.status(500).send({ message: 'Server Error' })

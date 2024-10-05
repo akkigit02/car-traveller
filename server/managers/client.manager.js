@@ -678,7 +678,7 @@ const bookingCancel = async (req, res) => {
     await sendNotificationToAdmin(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
     await sendNotificationToClient(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
 
-    return res.status(200).send({ message: 'Booking cancel successfull' })
+    return res.status(200).send({ message: 'Booking cancel successfully' })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingCancel', { error: error })
     res.status(500).send({ message: 'Server Error' })
