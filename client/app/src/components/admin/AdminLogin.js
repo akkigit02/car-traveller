@@ -42,6 +42,10 @@ function AdminLogin() {
         });
         navigate("/dashboard", { replace: true });
     }
+    const [passwordShown, setPasswordShown] = useState(false);
+    const togglePasswordVisibility = () => {
+        setPasswordShown(!passwordShown);
+    };
 
     return (
         <>
@@ -53,7 +57,7 @@ function AdminLogin() {
                 <div className="container-login">
 
 
-                <div className="row m-0">
+                    <div className="row m-0">
                         <div className="col-lg-6 col-md-6 col-12 px-4 py-5 login-card-bg rounded-LTB In-mob">
                             <div className="my-5 ps-3">
                                 <p className="login-text">Welcome <br></br> Back !</p>
@@ -74,20 +78,21 @@ function AdminLogin() {
                                                 Email
                                             </label>
                                             <input type="text" placeholder="Enter your email"
-                                            {...register("userName", {
-                                                required: "Email is required",
-                                                pattern: emailPattern,
-                                            })}
-                                        />
-                                        {errors?.userName?.message && (
-                                            <span>{errors?.userName?.message}</span>
-                                        )}
+                                                {...register("userName", {
+                                                    required: "Email is required",
+                                                    pattern: emailPattern,
+                                                })}
+                                            />
+                                            {errors?.userName?.message && (
+                                                <span>{errors?.userName?.message}</span>
+                                            )}
                                         </div>
                                         <div className="cstm-login-input">
                                             <label>
                                                 Password
                                             </label>
-                                            <input type="password" placeholder="Enter Your password"
+                                            <div className="position-relative">
+                                            <input type={passwordShown ? 'text' : 'password'} placeholder="Enter Your password"
                                                 {...register("password", {
                                                     required: "Password is required",
                                                     minLength: {
@@ -96,6 +101,16 @@ function AdminLogin() {
                                                     },
                                                 })}
                                             />
+                                            <button
+                                                type="button"
+                                                className="passwordshow"
+                                                onClick={togglePasswordVisibility}
+                                            >
+                                                {passwordShown ?  <i class="far fa-eye"></i>: <i class="far fa-eye-slash"></i>}
+                                            </button>
+                                            </div>
+
+
                                             {errors?.password?.message && (
                                                 <span>{errors?.password?.message}</span>
                                             )}
@@ -120,7 +135,7 @@ function AdminLogin() {
 
 
 
-                    
+
                     {/* <div className="signin-content">
 
                         <div className="signin-form">

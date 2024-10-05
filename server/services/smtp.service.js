@@ -47,6 +47,9 @@ class SMTPService {
                     border-radius: 8px;
                     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
                 }
+                    .logo{
+                  text-align: center;
+                }
 
                 .header {
                     text-align: center;
@@ -82,11 +85,21 @@ class SMTPService {
                     color: #777;
                     padding: 20px;
                 }
+                    .footer-1{
+                     text-align: center;
+                    background-color:#b0cfff;
+                    color: #fff;
+                    padding: 10px;
+                    border-bottom-left-radius: 8px;
+                    border-bottom-right-radius: 8px;
+                    margin-top:10px;
+                }
             </style>
         </head>
 
         <body>
         <div class="container">
+        <div class="logo"> <img width="150"  src="https://app.dddcabs.com/static/media/logomain.9f3d4e7d928bc68e59fb.png"/></div>
       <div class="header">
         <h1>Welcome to DDDCabs!</h1>
       </div>
@@ -96,6 +109,9 @@ class SMTPService {
       <div class="footer">
         Best regards,<br />
         Team DDDCabs
+      </div>
+      <div class="footer-1">
+       <p style="margin-bottom: 5px;">&copy; 2024 ddd cabs</p>
       </div>
     </div>
   </body>
