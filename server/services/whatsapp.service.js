@@ -350,9 +350,9 @@ const sendRescheduledToPassenger = async (mobile, payload) => {
                 messaging_product: "whatsapp",
                 type: "template",
                 template: {
-                    name: "booking_cancellation_by_passenger",
+                    name: "ride_reschedule_by_passenger",
                     language: {
-                        "code": "en_GB",
+                        "code": "en",
                         "policy": "deterministic"
                     },
                     "namespace": null,
@@ -411,6 +411,7 @@ const sendRescheduledToPassenger = async (mobile, payload) => {
             headers: getHeader()
 
         })
+        console.log(data)
     } catch (error) {
         console.log(error)
     }

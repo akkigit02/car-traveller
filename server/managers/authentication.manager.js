@@ -73,7 +73,7 @@ const login = async (req, res) => {
         }
       );
       if (process.env.NODE_ENV !== 'development') {
-        // await sendOtpSms(`91${user.primaryPhone}`, otp)
+        await sendOtpSms(`91${user.primaryPhone}`, otp)
         const emailtempalte = EmailOtpTemplate({ fullName: user.name, otp })
         const emailData = { to: user.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
         if (user.email)

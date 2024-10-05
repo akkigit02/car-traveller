@@ -52,8 +52,11 @@ function BookingHistory() {
       reset({});
       setIsOpen(false);
       setTripData(null);
+      if(res.data.message)
+      toast.success(res.data.message);
     } catch (error) {
       console.error(error);
+      toast.error(error?.response?.data?.message || "Something went wrong please try again!");
     }
   };
 

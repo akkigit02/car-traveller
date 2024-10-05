@@ -29,7 +29,7 @@ const sendNotificationToAdmin = async (bookingId, type) => {
       pickupDate: `${bookingDetails.pickupDate.date}-${bookingDetails.pickupDate.month}-${bookingDetails.pickupDate.year}`,
       pickupTime: bookingDetails.pickupTime,
       payableAmount: bookingDetails?.paymentId?.payableAmount || bookingDetails.totalPrice,
-      advancePercent: bookingDetails?.paymentId?.advancePercent,
+      advancePercent: bookingDetails?.paymentId?.advancePercent||0,
       vehicleType: bookingDetails.vehicleId.vehicleType,
       vehicleName: bookingDetails.vehicleId.vehicleName,
       bookingType: bookingDetails.trip.tripType,
@@ -66,9 +66,9 @@ const sendNotificationToAdmin = async (bookingId, type) => {
         notificationData['title'] = 'Booking Cancel Recived';
       }
       else if (type === 'BOOKING_RESCHEDULED') {
-        emailData['subject'] = `Booking Cancel - Booking ID: #${bookingDetails.bookingNo}`
+        emailData['subject'] = `Booking Rescheduled - Booking ID: #${bookingDetails.bookingNo}`
         emailData['html'] = BookingReshuduledTemplate({ fullName: admin.name, payload })
-        notificationData['title'] = 'Booking Cancel Recived';
+        notificationData['title'] = 'Booking Rescheduled Recived';
       }
       await new SMTPService().sendMail(emailData)
       await NotificationModel.create(notificationData)

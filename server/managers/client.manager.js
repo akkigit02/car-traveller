@@ -704,9 +704,9 @@ const bookingReshuduled = async (req, res) => {
     }
     let data = {
       pickupDate: {
-        date: String(new Date(body.reshedulePickupDate).getDate()).padStart(2,'0'),
-        month: String(new Date(body.reshedulePickupDate).getMonth()+1).padStart(2,'0'),
-        year: String(new Date(body.reshedulePickupDate).getFullYear()).padStart(2,'0'),
+        date: String(new Date(body.reshedulePickupDate).getDate()).padStart(2, '0'),
+        month: String(new Date(body.reshedulePickupDate).getMonth() + 1).padStart(2, '0'),
+        year: String(new Date(body.reshedulePickupDate).getFullYear()).padStart(2, '0'),
       },
       pickupTime: body.reshedulePickupTime,
       rideStatus: 'booked',
@@ -735,7 +735,7 @@ const bookingReshuduled = async (req, res) => {
       }
 
       let payableAmount = roundToDecimalPlaces(totalPrice - coupanDiscount)
-      let dueAmount = roundToDecimalPlaces(payableAmount - ( bookingDetails?.paymentId?.advancePercent ? (payableAmount * bookingDetails?.paymentId?.advancePercent)/100 : 0))
+      let dueAmount = roundToDecimalPlaces(payableAmount - (bookingDetails?.paymentId?.advancePercent ? (payableAmount * bookingDetails?.paymentId?.advancePercent) / 100 : 0))
 
       data = {
         ...data,
@@ -744,9 +744,9 @@ const bookingReshuduled = async (req, res) => {
         totalPrice,
         totalDistance,
         dropDate: {
-          date: String(new Date(body.resheduleReturnDate).getDate()).padStart(2,'0'),
-          month: String(new Date(body.resheduleReturnDate).getMonth()).padStart(2,'0'),
-          year: String(new Date(body.resheduleReturnDate).getFullYear()).padStart(2,'0'),
+          date: String(new Date(body.resheduleReturnDate).getDate()).padStart(2, '0'),
+          month: String(new Date(body.resheduleReturnDate).getMonth()).padStart(2, '0'),
+          year: String(new Date(body.resheduleReturnDate).getFullYear()).padStart(2, '0'),
         },
         totalPrice: totalPrice
       }
@@ -765,9 +765,10 @@ const bookingReshuduled = async (req, res) => {
       $set: data,
       $push: { activity: oldData }
     })
-
-    sendNotificationToClient(bookingDetails?._id, 'BOOKING_RESCHEDULED')
-
+    if (process.env.NODE_ENV !== 'development') {
+      sendNotificationToClient(bookingDetails?._id, 'BOOKING_RESCHEDULED')
+      sendNotificationToAdmin(bookingDetails?._id, 'BOOKING_RESCHEDULED')
+    }
     return res.status(200).send({ message: 'Booking reschedule successfully', booking: data })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingReshuduled', { error: error })
