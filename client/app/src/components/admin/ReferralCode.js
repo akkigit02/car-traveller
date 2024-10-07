@@ -3,6 +3,7 @@ import Modal from "../Modal";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import ConfirmationModal from "../common/ConfirmationModal";
+import Tooltip from "../Tooltip";
 
 export default function CouponForm() {
   const [isOpen, setIsOpen] = useState(false);
@@ -139,21 +140,23 @@ export default function CouponForm() {
               <td>
                 <ul className="list-inline m-0">
                   <li className="list-inline-item">
+                    <Tooltip message={'Edit'} direction="bottom">
                     <button
                       onClick={() => getCouponById(li._id)}
-                      className="btn btn-success btn-sm rounded-0"
+                      className="icon-btn me-2"
                       type="button"
                       data-toggle="tooltip"
                       data-placement="top"
-                      title="Edit"
                     >
                       <i className="fa fa-edit"></i>
                     </button>
+                    </Tooltip>
                   </li>
                   <li className="list-inline-item">
+                  <Tooltip message={'Delete'} direction="bottom">
                     <button
                       onClick={() => { setConfirmationOpen(true); setSelectedId(li._id) }}
-                      className="btn btn-danger btn-sm rounded-0"
+                      className="icon-btn"
                       type="button"
                       data-toggle="tooltip"
                       data-placement="top"
@@ -161,6 +164,7 @@ export default function CouponForm() {
                     >
                       <i className="fa fa-trash"></i>
                     </button>
+                    </Tooltip>
                   </li>
                 </ul>
               </td>
