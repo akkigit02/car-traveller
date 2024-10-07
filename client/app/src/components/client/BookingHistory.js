@@ -349,7 +349,7 @@ function BookingHistory() {
             </div>
           </div>
           <div className="d-flex justify-content-end border-top mt-3 pt-2">
-            <button type="button" className="btn btn-primary" onClick={closeConfirmationModal}>
+            <button type="button" className="cstm-btn-trans me-2" onClick={closeConfirmationModal}>
               Cancel
             </button>
             <button type="button" className="btn btn-primary" disabled={isConfirmSubmit} onClick={() => confirmCancel()}>
