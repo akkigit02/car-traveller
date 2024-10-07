@@ -175,9 +175,6 @@ function TopNavBar() {
                       <Link to={`/booking-list`} className="dropdown-item" onClick={closeDropdown}>
                         <span>Booking List</span>
                       </Link>
-                      {/* <Link to={`/returnpolicy`} className="dropdown-item" onClick={closeDropdown}>
-                        <span>returnpolicy List</span>
-                      </Link> */}
                       <button onClick={handleLogout} className="dropdown-item">
                         Logout
                       </button>

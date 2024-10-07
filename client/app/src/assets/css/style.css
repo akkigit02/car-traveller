@@ -430,6 +430,9 @@ a {
     color: red;
     font-size: 0.9em;
 }
+.text-red{
+    color: var(--theme);
+}
 .right-0{
     right: 0;
 }

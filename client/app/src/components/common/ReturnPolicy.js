@@ -2,13 +2,14 @@ import React from 'react'
 
 function ReturnPolicy() {
   return (
+    
     <section className="py-5">
     <div className="container">
       <div className="pb-5 tc-style">
         <div className="text-center pb-5">
           <div className="section-title mb-0">
-            <span className="wow fadeInUp">DDD Cabs</span>
-            <h2 className=" wow fadeInUp">
+            <span className="wow fadeInUp text-red">DDD Cabs</span>
+            <h2 className="wow fadeInUp fw-bold">
               Our Refund Policy
             </h2>
           </div>
