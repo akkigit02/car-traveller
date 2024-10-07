@@ -1206,3 +1206,13 @@ input[type="time"]::-webkit-calendar-picker-indicator {
     height: calc(100vh - 170px);
     overflow-y: auto;
   }
+  .tc-style {
+	font-family: sans-serif;
+	font-size: 18px;
+  }
+  .tc-style p{
+	margin-bottom: 1rem !important;
+  }
+  .tc-style ol li{
+	margin-bottom: 10px !important;
+  }
