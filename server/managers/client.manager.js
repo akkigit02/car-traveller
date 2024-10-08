@@ -288,7 +288,7 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
       totalDistance: parseFloat(price?.distance)
     }
   });
-  if (process.env.NODE_ENV !== 'development') {
+  if (process.env.NODE_ENV === 'development') {
     await sendNotificationToAdmin(rideId, 'NEW_LEAD')
   }
 
