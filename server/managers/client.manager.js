@@ -288,7 +288,9 @@ const updatePriceAndSendNotification = async (bookingDetails, rideId) => {
       totalDistance: parseFloat(price?.distance)
     }
   });
-  await sendNotificationToAdmin(rideId, 'NEW_LEAD')
+  if (process.env.NODE_ENV !== 'development') {
+    await sendNotificationToAdmin(rideId, 'NEW_LEAD')
+  }
 
 }
 
@@ -332,7 +334,10 @@ const saveBooking = async (req, res) => {
     const ride = await RideModel.create(bookingData);
     await incrementBookingNumber(ride._id)
     if (!res) {
-      updatePriceAndSendNotification(body?.bookingDetails, ride._id)
+      if (req.imidiate)
+        await updatePriceAndSendNotification(body?.bookingDetails, ride._id)
+      else
+        updatePriceAndSendNotification(body?.bookingDetails, ride._id)
       return { rideId: ride._id }
     }
     else {
@@ -643,11 +648,15 @@ const changePaymentStatus = async (req, res) => {
         paymentUpdateData['isAdvancePaymentCompleted'] = true
         await RideModel.updateOne({ _id: billing.bookingId }, { $set: { rideStatus: 'booked' } })
         await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
-        sendNotificationToAdmin(billing.bookingId, 'NEW_BOOKING')
+        if (process.env.NODE_ENV !== 'development') {
+          sendNotificationToAdmin(billing.bookingId, 'NEW_BOOKING')
+        }
       }
       else if (['due', 'full'].includes(billing.paymentType)) {
         await PaymentModel.updateOne({ _id: billing.paymentId }, { $set: paymentUpdateData })
-        sendNotificationToAdmin(billing.bookingId, billing.paymentType === 'due' ? 'DUE_PAYMENT_RECEIVED' : 'NEW_BOOKING')
+        if (process.env.NODE_ENV !== 'development') {
+          sendNotificationToAdmin(billing.bookingId, billing.paymentType === 'due' ? 'DUE_PAYMENT_RECEIVED' : 'NEW_BOOKING')
+        }
       }
     }
     return res.status(200).send({ message: result.message, bookingId: billing.bookingId })
@@ -674,10 +683,10 @@ const bookingCancel = async (req, res) => {
         }
       })
     }
-
-    await sendNotificationToAdmin(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
-    await sendNotificationToClient(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
-
+    if (process.env.NODE_ENV !== 'development') {
+      await sendNotificationToAdmin(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
+      await sendNotificationToClient(new ObjectId(params.bookingId), 'BOOKING_CANCEL')
+    }
     return res.status(200).send({ message: 'Booking cancel successfully' })
   } catch (error) {
     logger.log('server/managers/client.manager.js-> bookingCancel', { error: error })

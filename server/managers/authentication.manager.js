@@ -172,30 +172,41 @@ const signup = async (req, res) => {
         },
       });
     }
-    const otp = generateOTP();
-    console.log(otp);
-    const sessionId = generateSecureRandomString();
-    await UserModel.updateOne(
-      { _id: user._id },
-      {
-        $set: {
-          "authentication.twoFactor.otp": otp,
-          "authentication.twoFactor.expiresOn": new Date(
-            new Date().getTime() + 300000
-          ),
-          "authentication.twoFactor.sessionId": sessionId,
-        },
+    if (user?.authentication?.twoFactor?.enabled) {
+      const otp = generateOTP();
+      console.log(otp);
+      const sessionId = generateSecureRandomString();
+      await UserModel.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            "authentication.twoFactor.otp": otp,
+            "authentication.twoFactor.expiresOn": new Date(
+              new Date().getTime() + 300000
+            ),
+            "authentication.twoFactor.sessionId": sessionId,
+          },
+        }
+      );
+      if (process.env.NODE_ENV !== 'development') {
+        sendOtpSms(`91${body.userDetails.phoneNumber}`, otp)
+        const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
+        const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
+        if (emailData)
+          new SMTPService().sendMail(emailData)
       }
-    );
-    const ride = await saveBooking({ body, user })
-    if (process.env.NODE_ENV !== 'development') {
-      await sendOtpSms(`91${body.userDetails.phoneNumber}`, otp)
-      const emailtempalte = EmailOtpTemplate({ fullName: body.userDetails.name, otp })
-      const emailData = { to: body.userDetails.email, subject: 'OTP Verification || DDD CABS', html: emailtempalte }
-      if (emailData)
-        new SMTPService().sendMail(emailData)
+      const ride = await saveBooking({ body, user, imidiate: false })
+      res.status(200).send({ sessionId: sessionId, booking_id: ride?.rideId, status: "TWO_STEP_AUTHENTICATION", });
+    } else {
+      const ride = await saveBooking({ body, user, imidiate: true })
+      const userSession = await getUserSession(user._id);
+      res.status(200).send({
+        message: "Login successful.",
+        session: userSession,
+        bookingId: ride.rideId,
+        status: "SKIP_TWO_STEP_AUTHENTICATION"
+      });
     }
-    res.status(200).send({ sessionId: sessionId, booking_id: ride?.rideId, status: "TWO_STEP_AUTHENTICATION", });
   } catch (error) {
     console.log(error);
     res.status(500).send({ message: "Something went wrong. Please try again later." });
