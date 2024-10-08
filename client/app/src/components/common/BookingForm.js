@@ -381,21 +381,8 @@ function BookingForm() {
                                                                 )}
                                                             </div>
                                                         </div>}
-                                                        <div className="col-lg-12 d-flex justify-content-between-mob">
-                                                            <div className="col-lg-6 d-flex" >
-                                                                <Link
-                                                                    to={`/term-condition`}
-                                                                    className={`list-group-item list-group-item-action py-2`}
-                                                                >
-                                                                    <span style={{ color: 'blue' }}>Terms & Conditions</span>
-                                                                </Link>
-                                                                <Link
-                                                                    to={`/refund-policy`}
-                                                                    className={`list-group-item list-group-item-action py-2`}
-                                                                >
-                                                                    <span style={{ color: 'blue' }}>Refund Policy</span>
-                                                                </Link>
-                                                            </div>
+                                                        <div className="col-lg-12 d-flex justify-content-end">
+                                                            
                                                             <button className="theme-btn-2 d-flex align-items-center" disabled={isSubmitting} type="submit">
                                                                 {isSubmitting && <div className="spinner-border spinner-border-sm text-white me-2" role="status">
                                                                     <span className="sr-only">Loading...</span>
@@ -406,6 +393,20 @@ function BookingForm() {
 
                                                     </div>
                                                 </form>
+                                                <div className="d-flex justify-content-end pt-4" >
+                                                                <Link
+                                                                    to={`/term-condition`}
+                                                                    className={`me-3`}
+                                                                >
+                                                                    <span style={{ color: 'blue' }}>Terms & Conditions</span>
+                                                                </Link>
+                                                                <Link
+                                                                    to={`/refund-policy`}
+                                                                    className={``}
+                                                                >
+                                                                    <span style={{ color: 'blue' }}>Refund Policy</span>
+                                                                </Link>
+                                                            </div>
                                             </div>
                                         </div>
                                     </div>

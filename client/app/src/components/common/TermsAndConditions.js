@@ -2,7 +2,7 @@ import React from 'react'
 
 function TermsAndConditions() {
   return (
-    <section className="py-5">
+    <section className="py-5 h_calc_140">
         <div className="container">
         <div className="pb-5 tc-style">
             <div className="text-center pb-5">
