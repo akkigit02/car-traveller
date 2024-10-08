@@ -4,9 +4,8 @@ import axios from "axios";
 import store from "../../store";
 import { setTokenToLocal } from "../../services/Authentication.service";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../../assets/css/authentication.css"; // Ensure CSS is imported
-// import vImg from "../../assets/img/loginimg.png";
 import logo from "../../assets/img/logomain.png";
 import OtpVerify from "../common/OtpVerify";
 
@@ -63,7 +62,7 @@ function Login() {
                                     <a href="https://dddcabs.com/index.html" rel="noopener noreferrer"><img className="h-60p mb-3" src={logo} alt="logo-img" /></a>
                                 </div>
                                 {otpDetails ? <OtpVerify otpDetails={otpDetails} handleOtpVerify={handleLoginSuccess} /> : <>
-                                    
+
 
                                     <form className="register-form" onSubmit={handleSubmit(login)}>
                                         <div className="cstm-login-input">
@@ -88,6 +87,20 @@ function Login() {
                                                     <span className="sr-only"></span>
                                                 </div>}
                                             </button>
+                                        </div>
+                                        <div className="col-lg-12 d-flex" >
+                                            <Link
+                                                to={`/term-condition`}
+                                                className={`list-group-item list-group-item-action py-2`}
+                                            >
+                                                <span style={{ color: 'blue' }}>Terms & Conditions</span>
+                                            </Link>
+                                            <Link
+                                                to={`/refund-policy`}
+                                                className={`list-group-item list-group-item-action py-2`}
+                                            >
+                                                <span style={{ color: 'blue' }}>Refund Policy</span>
+                                            </Link>
                                         </div>
                                     </form>
                                 </>}

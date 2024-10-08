@@ -5,6 +5,8 @@ import AvailableVehicle from '../components/common/AvailableVehicle'
 import BookingForm from '../components/common/BookingForm'
 import ClientHeaderBar from '../components/client/ClientHeaderBar'
 import AdminLogin from '../components/admin/AdminLogin'
+import TermsAndConditions from '../components/common/TermsAndConditions'
+import RefundPolicy from '../components/common/ReturnPolicy'
 
 function UnProtected() {
   const location=useLocation()
@@ -18,6 +20,8 @@ function UnProtected() {
         {/* <Route path="/forgot-password" Component={Login} exact /> */}
         <Route path="/car-list/:query" Component={AvailableVehicle} exact />
         <Route path="/booking/:query" Component={BookingForm} exact />
+        <Route path="/term-condition" Component={TermsAndConditions} exact />
+        <Route path="/refund-policy" Component={RefundPolicy} exact />
         <Route path="/*" element={<Navigate to='/login' />} exact />
       </Routes>
       {!['/login','/admin-login'].includes(location.pathname)&&<footer className="p-2 border-top w-100 shadow  d-flex justify-content-center position-absolute bottom-0 bg-grey">

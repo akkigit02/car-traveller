@@ -8,7 +8,8 @@ import BookingHistory from '../../components/client/BookingHistory'
 import Profile from '../../components/common/Profile'
 import AdminDashboard from '../../components/admin/Dashboard'
 import PaymentRedirect from '../../components/client/PaymentRedirect'
-
+import TermsAndConditions from '../../components/common/TermsAndConditions'
+import RefundPolicy from '../../components/common/ReturnPolicy'
 export default function ClientRoute() {
   return (
     <main className="position-relative h-100vh-client">
@@ -25,7 +26,10 @@ export default function ClientRoute() {
               <Route path={`/booking-list`} Component={BookingHistory} exact />
               <Route path={`/profile`} Component={Profile} exact />
               <Route path={`/payment-redirect/:transactionId`} Component={PaymentRedirect} exact />
+              <Route path="/term-condition" Component={TermsAndConditions} exact />
+              <Route path="/refund-policy" Component={RefundPolicy} exact />
               <Route path={`/*`} element={<Navigate to="/booking-list" />} exact />
+
             </Routes>
           </div>
         </div>

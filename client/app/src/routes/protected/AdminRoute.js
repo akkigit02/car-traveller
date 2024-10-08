@@ -13,7 +13,8 @@ import Leads from "../../components/admin/Leads"
 import Users from "../../components/admin/User"
 import Notifiaction from "../../components/admin/Notification";
 import ContactEnquiry from "../../components/admin/EnquireContact"
-
+import TermsAndConditions from '../../components/common/TermsAndConditions'
+import RefundPolicy from '../../components/common/ReturnPolicy'
 function AdminRoute() {
   return (
     <>
@@ -44,6 +45,8 @@ function AdminRoute() {
                 <Route path={`/users`} Component={Users} exact />
                 <Route path={`/notification`} Component={Notifiaction} exact />
                 <Route path={`/contact-enquiry`} Component={ContactEnquiry} exact />
+                <Route path="/term-condition" Component={TermsAndConditions} exact />
+                <Route path="/refund-policy" Component={RefundPolicy} exact />
                 <Route path={`/*`} element={<Navigate to="/dashboard" />} exact />
               </Routes>
             </div>
