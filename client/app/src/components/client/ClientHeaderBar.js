@@ -71,10 +71,10 @@ function TopNavBar() {
                     <img className='w-100 h-60p' src={logo} alt="logo-img" />
                   </a>
                 </div>
-                <div className="offcanvas__close">
-                  <button onClick={handleClose}>
+                <div className="offcanvas__close" onClick={handleClose}>
+                  
                     <i className="fas fa-times"></i>
-                  </button>
+                  
                 </div>
               </div>
 
@@ -91,7 +91,7 @@ function TopNavBar() {
                       <li>
                         <a href="https://www.dddcabs.com/about.html">About Us</a>
                       </li>
-                      <li>https://sentencestack.com/check/website_are_not_clickable
+                      <li>
                         <a href="https://www.dddcabs.com/contactUs.html">Contact</a>
                       </li>
                     </ul>

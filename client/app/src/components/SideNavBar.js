@@ -86,8 +86,7 @@ export default function SideNavBar() {
       </div>
     </nav>
 
-{/* MObile responsive */}
-    <nav id="sidebarMenu" className="sidebar border-top_LR d-none-M sidenav-mobile ">
+    <nav id="sidebarMenu" className="sidebar border-top_LR d-none-M sidenav-mobile">
       <div className="bg-white h-100 w-75">
         <div className="d-flex justify-content-between p-3">
         <a href="index.html">
