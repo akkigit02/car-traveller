@@ -88,20 +88,7 @@ function Login() {
                                                 </div>}
                                             </button>
                                         </div>
-                                        <div className="col-lg-12 d-flex" >
-                                            <Link
-                                                to={`/term-condition`}
-                                                className={`list-group-item list-group-item-action py-2`}
-                                            >
-                                                <span style={{ color: 'blue' }}>Terms & Conditions</span>
-                                            </Link>
-                                            <Link
-                                                to={`/refund-policy`}
-                                                className={`list-group-item list-group-item-action py-2`}
-                                            >
-                                                <span style={{ color: 'blue' }}>Refund Policy</span>
-                                            </Link>
-                                        </div>
+
                                     </form>
                                 </>}
                             </div>
@@ -110,6 +97,7 @@ function Login() {
 
 
                     </div>
+
 
                     {/* <div className="signin-content">
 
@@ -154,6 +142,21 @@ function Login() {
                         </div>
                     </div> */}
                 </div>
+                <div className="position-absolute bottom-20 right-30" >
+                    <Link
+                        to={`/term-condition`}
+                        className={`me-3`}
+                    >
+                        <span className="text-blue">Terms & Conditions</span>
+                    </Link>
+                    <Link
+                        to={`/refund-policy`}
+                        className={``}
+                    >
+                        <span className="text-blue">Refund Policy</span>
+                    </Link>
+                </div>
+
             </section >
         </>
     );

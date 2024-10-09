@@ -92,6 +92,10 @@
     height: calc(100vh - 245px);
     overflow-y: auto;
 }
+.h_calc_140{
+    height: calc(100vh - 140px);
+    overflow-y: auto;
+}
 .flex-1{
     flex: 1;
 }
@@ -1218,4 +1222,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   }
   .tc-style ol li{
 	margin-bottom: 10px !important;
+  }
+  .bottom-20{
+    bottom: 20px;
+  }
+  .right-30{
+    right: 30px;
   }
