@@ -53,6 +53,7 @@ router.get('/users',jwtUserAuthentication, AdminManager.getUsers)
 router.get('/users/:id',jwtUserAuthentication, AdminManager.getUserById)
 router.post('/users',jwtUserAuthentication, AdminManager.saveUser)
 router.put('/users/:id',jwtUserAuthentication, AdminManager.updateUser)
+router.patch('/users/:id',jwtUserAuthentication, AdminManager.updateUserStatus)
 router.get('/user/csv-dowload',jwtUserAuthentication, AdminManager.downloadUsersCSV)
 router.get('/vehicle-type/:type', jwtUserAuthentication, AdminManager.getVehicleByBookingType)
 

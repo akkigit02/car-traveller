@@ -497,7 +497,9 @@ export default function BookingManagement() {
             hasMore={scrollBar.hasMore}
             loader={<h6>Loading...</h6>}
             endMessage={<p className="py-2">No more data to show.</p>}
+            scrollableTarget="scrollableDiv"
           >
+            <div style={{height:'430px', overflowY:'auto', height: "70vh"}} id="scrollableDiv">
             <table className="cstm-table table">
               <thead>
                 <tr>
@@ -514,7 +516,7 @@ export default function BookingManagement() {
               {list.length > 0 && (
                 <tbody>
                   {list.map((li, index) => (
-                    <tr key={index}>
+                    <tr key={'table'+index}>
                       <td>#{li.bookingNo}</td>
                       <td>{li.name}</td>
                       <td>{TRIP_TYPE.find((ele) => ele.value === li?.trip?.tripType)?.name}</td>
@@ -576,6 +578,7 @@ export default function BookingManagement() {
                 </tbody>
               )}
             </table>
+            </div>
           </InfiniteScroll>
         </div>
       </div>

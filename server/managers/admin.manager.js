@@ -535,6 +535,17 @@ const updateUser = async (req, res) => {
     }
 }
 
+const updateUserStatus = async (req, res) => {
+    try {
+        console.log(req.params.id, req.body)
+        await UserModel.updateOne({ _id: req.params.id }, {$set: {isActive: req?.body?.isActive}})
+        res.status(200).send({ message: 'Status update successfully!' })
+    } catch (error) {
+        logger.log('server/managers/admin.manager.js -> updateUserStatus', { error: error });
+        res.status(500).send({ message: 'Server Error' });
+    }
+}
+
 const getVehicleByBookingType = async (req, res) => {
     try {
         const type = req?.params?.type;
@@ -882,6 +893,8 @@ module.exports = {
 
     confirmFullPayment,
 
-    driverAllot
+    driverAllot,
+
+    updateUserStatus
 
 }
