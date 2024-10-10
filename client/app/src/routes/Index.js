@@ -47,7 +47,7 @@ function Index() {
     <>
       {
         isLoading ? <div>Loading.....</div> :
-          <BrowserRouter >
+          <BrowserRouter basename="/">
             {userInfo ? <Protected /> : <UnProtected />}
           </BrowserRouter>
       }
