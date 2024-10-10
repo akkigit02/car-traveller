@@ -5,6 +5,7 @@ import { VEHICLE_TYPE } from "../../constants/common.constants";
 import axios from "axios";
 import Tooltip from "../Tooltip";
 import ConfirmationModal from "../common/ConfirmationModal";
+import { toast } from 'react-toastify';
 
 export default function VehiclePricing() {
   const [isOpen, setIsOpen] = useState(false);
@@ -48,15 +49,16 @@ export default function VehiclePricing() {
           basePrice: item.basePrice,
         }));
       }
-
+      let res;
       if (data?._id) {
-        await axios.put("/api/admin/vehicle-price", data);
+        res = await axios.put("/api/admin/vehicle-price", data);
         setList(list.map(li => (li._id === data._id ? data : li)));
       } else {
-        const res = await axios.post("/api/admin/vehicle-price", data);
+        res = await axios.post("/api/admin/vehicle-price", data);
         setList([res.data.price, ...list]);
       }
       setIsOpen(false);
+      toast.success(res?.data?.message);
     } catch (error) {
       console.error(error);
     }
@@ -115,13 +117,14 @@ export default function VehiclePricing() {
 
   const deleteVehiclePrice = async () => {
     try {
-      await axios.delete(`/api/admin/vehicle-price/${selectedId}`);
+      const res = await axios.delete(`/api/admin/vehicle-price/${selectedId}`);
       const vehicleData = list.find(li => li.id == selectedId)
       const vehicleType = VEHICLE_TYPE.find(car => car.value === vehicleData.vehicleType)
       if (vehicleType) {
         setVehicleTypes((prevTypes) => [...prevTypes, vehicleType]);
       }
       setList(list.filter(li => li._id !== selectedId));
+      toast.success(res?.data?.message);
     } catch (error) {
       console.error(error);
     }

@@ -3,18 +3,20 @@ import Modal from "../Modal";
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
 import Tooltip from "../Tooltip";
-import { emailPattern, namePattern, phoneNumberValidation } from '../../constants/Validation.constant';
+import { emailPattern, namePattern, phoneLengthValidation, phoneNumberValidation } from '../../constants/Validation.constant';
+import ConfirmationModal from "../common/ConfirmationModal";
+import { toast } from 'react-toastify';
 
 
 export default function UserManagement() {
   const [isOpen, setIsOpen] = useState(false);
-  const [isViewOpen, setIsViewOpen] = useState(false);
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
   const [list, setList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState(null);
   const [isDownloading, setIsDownloading] = useState(false)
 
-  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } = useForm({
+  const { register, handleSubmit, reset, setValue, watch, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
   });
 
@@ -24,14 +26,16 @@ export default function UserManagement() {
 
   const saveUser = async (data) => {
     try {
+      let res;
       if (data?._id) {
-        await axios.put(`/api/admin/users/${data._id}`, data);
+        res = await axios.put(`/api/admin/users/${data._id}`, data);
         setList(list.map(user => (user._id === data._id ? data : user)));
       } else {
-        const res = await axios.post("/api/admin/users", data);
+        res = await axios.post("/api/admin/users", data);
         setList([res.data.user, ...list]);
       }
       closeModal();
+      toast.success(res?.data?.message);
     } catch (error) {
       console.error(error);
     }
@@ -50,7 +54,6 @@ export default function UserManagement() {
     try {
       const res = await axios.get(`/api/admin/users/${id}`);
       reset(res.data.user);
-      setSelectedUser(res.data.user);
       setIsOpen(true);
       setIsEdit(true);
     } catch (error) {
@@ -59,11 +62,12 @@ export default function UserManagement() {
   };
 
 
-  const toggleStatus = async (id) => {
+  const toggleStatus = async () => {
     try {
-      const user = list.find(user => user._id === id);
-      await axios.put(`/api/admin/users/${id}`, { isActive: !user.isActive });
-      setList(list.map(user => (user._id === id ? { ...user, isActive: !user.isActive } : user)));
+      const user = list.find(user => user._id === selectedUserId);
+      const res = await axios.patch(`/api/admin/users/${selectedUserId}`, { isActive: !user.isActive });
+      setList(list.map(user => (user._id === selectedUserId ? { ...user, isActive: !user.isActive } : user)));
+      toast.success(res?.data?.message);
     } catch (error) {
       console.error(error);
     }
@@ -73,17 +77,7 @@ export default function UserManagement() {
     reset({});
     setIsOpen(false);
     setIsEdit(false);
-    setSelectedUser(null);
-  };
-
-  const openViewModal = (user) => {
-    setSelectedUser(user);
-    setIsViewOpen(true);
-  };
-
-  const closeViewModal = () => {
-    setIsViewOpen(false);
-    setSelectedUser(null);
+    setSelectedUserId(null);
   };
 
   const downloadCSV = async () => {
@@ -114,7 +108,7 @@ export default function UserManagement() {
           <p className="cstm-title">User Management</p>
         </div>
         <div>
-        <button onClick={downloadCSV} disabled={isDownloading} className="cstm-btn-trans me-2">
+          <button onClick={downloadCSV} disabled={isDownloading} className="cstm-btn-trans me-2">
             <i className="fa fa-file-download"></i> {/* Download icon */}
             Download Users CSV
           </button>
@@ -127,7 +121,7 @@ export default function UserManagement() {
           >
             <i className="fa fa-plus"></i>
           </button>
-         
+
         </div>
       </div>
       <table className="cstm-table">
@@ -150,7 +144,7 @@ export default function UserManagement() {
               <td>{user.modules.userType}</td>
               <td>
                 <button
-                  onClick={() => toggleStatus(user._id)}
+                  onClick={() => { setConfirmationOpen(true); setSelectedUserId(user._id) }}
                   className={`btn ${user.isActive ? "btn-success" : "btn-danger"}`}
                 >
                   {user.isActive ? "Active" : "Inactive"}
@@ -164,15 +158,6 @@ export default function UserManagement() {
                     type="button"
                   >
                     <i className="fa fa-edit"></i>
-                  </button>
-                </Tooltip>
-                <Tooltip message={'View More'} direction="bottom">
-                  <button
-                    onClick={() => openViewModal(user)}
-                    className="icon-btn me-2"
-                    type="button"
-                  >
-                    <i className="fa fa-eye"></i>
                   </button>
                 </Tooltip>
               </td>
@@ -236,7 +221,7 @@ export default function UserManagement() {
                 <label htmlFor="secondaryPhone">Secondary Phone</label>
                 <input
                   type="text"
-                  {...register("secondaryPhone", phoneNumberValidation)}
+                  {...register("secondaryPhone", phoneLengthValidation)}
                   className="cstm-select-input"
                   placeholder="Enter secondary phone"
                 />
@@ -247,64 +232,31 @@ export default function UserManagement() {
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="userType">User Type</label>
                 <select {...register("modules.userType", { required: 'User Type is Required' })} className="cstm-select-input">
-                  <option value="">Choose Type</option>
-                  <option value="CLIENT">Client</option>
+                  {/* <option value="" disabled>Choose Type</option> */}
+                  <option value="CLIENT" disabled selected>Client</option>
                 </select>
                 {errors?.modules?.userType && (
                   <span className="text-danger">{errors.modules.userType.message}</span>
-                )}
-              </div>
-              <div className="form-group col-lg-6 col-md-6 col-12">
-                {!isEdit && (
-                  <div>
-                    <label htmlFor="password">Password</label>
-                    <input
-                      type="password"
-                      {...register("password")}
-                      className="cstm-select-input"
-                      placeholder="Enter password"
-                    />
-                  </div>
                 )}
               </div>
             </div>
           </div>
           <div className="d-flex justify-content-end pt-2">
             <button type="submit" disabled={isSubmitting} className="btn btn-primary">
-            {isSubmitting && <div className="spinner-border text-primary" role="status">
-              <span className="sr-only"></span>
-            </div>}
+              {isSubmitting && <div className="spinner-border text-primary" role="status">
+                <span className="sr-only"></span>
+              </div>}
               {isEdit ? "Update" : "Save"}
             </button>
           </div>
         </form>
       </Modal>
-      <Modal isOpen={isViewOpen} onClose={closeViewModal} width={'w-auto'} title="View User Details">
-        <div className="scroll-body">
-          <table className="cstm-table">
-            <thead>
-              <tr>
-                <th className="">Name</th>
-                <th className="">Email</th>
-                <th className="">Primary Phone</th>
-                <th className="">Secondary Phone</th>
-                <th className="">User Type</th>
-                <th className="">Address</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{selectedUser?.name}</td>
-                <td>{selectedUser?.email}</td>
-                <td>{selectedUser?.primaryPhone}</td>
-                <td>{selectedUser?.secondaryPhone}</td>
-                <td>{selectedUser?.modules?.userType}</td>
-                <td>{selectedUser?.address}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Modal>
+      <ConfirmationModal
+        isOpen={confirmationOpen}
+        onClose={() => { setConfirmationOpen(false); setSelectedUserId(null) }}
+        onConfirm={toggleStatus}
+        message="Are you sure you want to change the status?"
+      />
     </div>
   );
 }

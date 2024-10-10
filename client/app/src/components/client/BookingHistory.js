@@ -222,7 +222,7 @@ function BookingHistory() {
           loader={<h6>Loading...</h6>}
           endMessage={<p className='py-2'>No more bookings to show.</p>}
         >
-          <div  style={{height:'430px', overflowY:'auto'}}>
+          <div style={{height:'430px', overflowY:'auto'}}>
           <table className='cstm-table '>
             <thead>
               <tr>

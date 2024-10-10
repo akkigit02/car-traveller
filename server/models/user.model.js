@@ -38,6 +38,7 @@ const userTypeSchema = new mongoose.Schema(
       loginSessionId: { type: String },
     },
     logo: { type: String },
+    isActive: {type: Boolean, default: true}
   },
   { timestamps: { createdAt: 'createdOn', updatedAt: 'updatedOn' } }
 );
