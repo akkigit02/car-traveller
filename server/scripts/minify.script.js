@@ -50,11 +50,11 @@ function minifyJsFile(filePath) {
         let jsContent = fs.readFileSync(filePath, 'utf-8');
         const localhostRegex = /http:\/\/localhost:\d+/g;
         jsContent = jsContent
-            .replace(/http:\/\/127.0.0.1:3000/g, 'https://www.dddcabs.com/car-bokking')
-            .replace(/http:\/\/127.0.0.1:3001/g, 'https://www.dddcabs.com/car-bokking')
+            .replace(/http:\/\/127.0.0.1:3000/g, 'https://www.dddcabs.com/car-booking')
+            .replace(/http:\/\/127.0.0.1:3001/g, 'https://www.dddcabs.com/car-booking')
             .replace(/http:\/\/127.0.0.1:5000/g, 'https://app.dddcabs.com')
             .replace(/http:\/\/127.0.0.1:5001/g, 'https://app.dddcabs.com')
-            .replace(localhostRegex, 'https://www.dddcabs.com/car-bokking');
+            .replace(localhostRegex, 'https://www.dddcabs.com/car-booking');
         const minifiedJs = UglifyJS.minify(jsContent);
 
         fs.writeFileSync(filePath.replace(projectDir, outputDir), minifiedJs.code);
