@@ -85,9 +85,9 @@ function TopNavBar() {
                       <li className="has-dropdown active menu-thumb">
                         <a href={CLIENT_URL}>Home</a>
                       </li>
-                      <li>
+                      {/* <li>
                         <a href="https://www.dddcabs.com/package.html#">Packages</a>
-                      </li>
+                      </li> */}
                       <li>
                         <a href="https://www.dddcabs.com/about.html">About Us</a>
                       </li>
