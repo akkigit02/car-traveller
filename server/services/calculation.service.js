@@ -98,6 +98,11 @@ const getTotalPrice = async (bookingDetails) => {
       if(car.vehicleType === 'Traveller') {
         extra = 2
       }
+
+      if(distance < 120 && car.vehicleType !== 'Traveller') {
+        if(toCity?.isMetroCity) metroCityPrice = 1.5
+        distance = 120
+      }
       totalPrice = distance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
       totalPrice = totalPrice - (totalPrice * car?.discount)/100;
       

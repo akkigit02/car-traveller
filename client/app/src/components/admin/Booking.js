@@ -974,8 +974,9 @@ export default function BookingManagement() {
               </div>
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="previousDistance"> Previous Distance</label>
-                <div className="cstm-select-input" />
+                <div className="cstm-select-input">
                 {watch1('previousDistance')} km
+                </div>
               </div>
               {watch1('tripType') === 'hourly' &&
                 <>

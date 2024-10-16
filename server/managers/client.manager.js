@@ -104,6 +104,7 @@ const getCars = async (req, res) => {
       );
       toDetail.push(toCity)
 
+      let tempDistance = distance
       let metroCityPrice = 1
       if (!toCity?.isMetroCity) metroCityPrice = 1.75
 
@@ -112,10 +113,16 @@ const getCars = async (req, res) => {
         if (car.vehicleType === 'Traveller') {
           extra = 2
         }
-        car["totalPrice"] =
-          distance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
 
-        car['showDistance'] = distance?.toFixed(2);
+        if(distance < 120 && car.vehicleType !== 'Traveller') {
+          if(toCity?.isMetroCity) metroCityPrice = 1.5
+          tempDistance = 120
+        }
+        car["totalPrice"] =
+          tempDistance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
+
+        car['distance'] = distance
+        car['showDistance'] = tempDistance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
         car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
         car["discountAmount"] = (car?.totalPrice * car?.discount) / 100

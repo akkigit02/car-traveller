@@ -267,13 +267,13 @@ const generateInvoiceHTML = (bookingDetails) => {
       <td style="border: 1px solid #ddd; padding: 10px;">Extra Fare</td>
       <td style="border: 1px solid #ddd; padding: 10px;">
         ${['hourly'].includes(bookingDetails?.trip?.tripType)
-        ? `${bookingDetails?.paymentId?.extraDistance || 0} Km / ${bookingDetails?.paymentId?.extraHour || 0} hr`
+        ? `${roundToDecimalPlaces(bookingDetails?.paymentId?.extraDistance) || 0} Km / ${bookingDetails?.paymentId?.extraHour || 0} hr`
         : ['roundTrip'].includes(bookingDetails?.trip?.tripType)
-          ? `${bookingDetails?.paymentId?.extraDistance || 0} Km / ${bookingDetails?.paymentId?.extraDay || 0} Day`
-          : `${bookingDetails?.paymentId?.extraDistance || 0} Km`}
+          ? `${roundToDecimalPlaces(bookingDetails?.paymentId?.extraDistance) || 0} Km / ${bookingDetails?.paymentId?.extraDay || 0} Day`
+          : `${roundToDecimalPlaces(bookingDetails?.paymentId?.extraDistance) || 0} Km`}
       </td>
       <td style="border: 1px solid #ddd; padding: 10px; text-align: right;">
-        &#8377; ${bookingDetails?.paymentId?.extraAmount}
+        &#8377; ${roundToDecimalPlaces(bookingDetails?.paymentId?.extraAmount)}
       </td>
     </tr>
     ` : ''}
@@ -345,7 +345,7 @@ const generateInvoiceHTML = (bookingDetails) => {
   </p>
 </div>
 <div style=" position: absolute;bottom: 5%;right: 27%;border:2px solid red; padding:14px;border-radius:50%;opacity:.5;transform: rotate(322deg);">
-    <div style="display:flex; align-items:center; justify-content:center;font-size: 24px;font-weight: bold;color: red; border:2px solid red; padding:20px;border-radius:50%; width:50px; height:50px;">${bookingDetails?.isPaymentCompleted ? 'Paid' : 'Unpaid'}</div>
+    <div style="display:flex; align-items:center; justify-content:center;font-size: 24px;font-weight: bold;color: red; border:2px solid red; padding:20px;border-radius:50%; width:50px; height:50px;">${bookingDetails?.paymentId?.isPaymentCompleted ? 'Paid' : 'Unpaid'}</div>
 </div>
 
 <div style="font-size: 86px;
@@ -369,7 +369,7 @@ const getPdfFromHtml = async (html) => {
     await page.setContent(html, { waitUntil: 'domcontentloaded' });
     await page.emulateMediaType('screen');
     buffer = await page.pdf({
-      scale: 1.3,
+      scale: 1.2,
       format: 'a4',
       printBackground: true,
       pageRanges: ''
