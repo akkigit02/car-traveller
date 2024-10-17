@@ -356,7 +356,7 @@ function Payment() {
                           <input
                             type="radio"
                             name="advancePayment"
-                            disabled={ele !== 0}
+                            // disabled={ele !== 0}
                             value={ele}
                             checked={advancePercentage === ele}
                             onChange={() => setAdvancePercentage(ele)}
