@@ -798,36 +798,26 @@ const getCoupons = async (req, res) => {
     const currentDate = new Date();
     const userId = req.userId;
 
+    // Get the ride count for the user
     const count = await RideModel.countDocuments({
       userId: userId,
       rideStatus: 'completed'
     });
 
+    // Base query for coupons: active and not expired
     const query = {
       isActive: true,
       expiryDate: { $gte: currentDate }
     };
 
-    if (userCondition === 0) {
-      // For all users
-    } else if (userCondition === 1) {
-      // For only new users with a count of 0
-      if (count === 0) {
-        query.userCondition = {
-          $eq: 0
-        };
-      } else {
-        // If count is not 0, exclude this condition
-        query.userCondition = {
-          $exists: false
-        };
-      }
-    } else {
-      // For other cases where userCondition is less than the count
-      query.userCondition = {
-        $lt: count
-      };
-    }
+    // Adjust query based on the user's ride count and the coupon's userCondition
+    query.$or = [
+      { userCondition: 0 }, // Applicable to all users
+      { userCondition: 1, $where: () => count === 0 }, // For new users (0 rides) when userCondition is 1
+      { userCondition: { $lte: count } } // Applicable if the user's ride count is greater than or equal to userCondition
+    ];
+
+    // Fetch coupons that match the query
     const coupons = await CouponModel.find(query).lean();
     console.log(coupons);
 
@@ -836,7 +826,7 @@ const getCoupons = async (req, res) => {
     logger.log('server/managers/client.manager.js-> getCoupons', { error: error });
     res.status(500).send({ message: 'Server Error' });
   }
-}
+};
 
 const getInvoiceInfo = async (req, res) => {
   try {
