@@ -7,7 +7,11 @@ const PricingSchema = new Schema({
   vehicleName: {type: String},
   vehicleImageUrl: {type: String},
   upToKm: {type: Number},
-  discount: {type: Number},
+  // discount: {type: Number},
+  cityCabDiscount: {type: Number},
+  houlyDiscount: {type: Number},
+  oneWayDiscount: {type: Number},
+  roundTripDiscount: {type: Number},
   upToCostPerKm: {type: Number},
   upToCostPerHour: {type: Number},
   capacity: {

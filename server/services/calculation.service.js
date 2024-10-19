@@ -104,7 +104,7 @@ const getTotalPrice = async (bookingDetails) => {
         distance = 120
       }
       totalPrice = distance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
-      totalPrice = totalPrice - (totalPrice * car?.discount)/100;
+      totalPrice = totalPrice - (totalPrice * car?.oneWayDiscount)/100;
       
     } else if (bookingDetails?.tripType === "roundTrip") {
       let cityIds = bookingDetails?.to?.map((vehicle) => vehicle._id || vehicle);
@@ -145,13 +145,13 @@ const getTotalPrice = async (bookingDetails) => {
           distance * car.costPerKmRoundTrip + numberOfDay * car.driverAllowance || 0;
       }
 
-      totalPrice = totalPrice - (totalPrice * car?.discount)/100
+      totalPrice = totalPrice - (totalPrice * car?.roundTripDiscount)/100
     } else if (bookingDetails?.tripType === "hourly") {
       fromDetail = await CitiesModel.findOne({ _id: bookingDetails.from }).lean();
       let hourlyData = car.hourly.find(hr => hr.type === bookingDetails.hourlyType)
       if (hourlyData) {
         totalPrice = hourlyData.basePrice + car.driverAllowance || 0;
-        totalPrice = totalPrice - (totalPrice * car?.discount)/100
+        totalPrice = totalPrice - (totalPrice * car?.houlyDiscount)/100
         distance = hourlyData?.distance
       }
     } else if (bookingDetails?.tripType === 'cityCab') {
@@ -167,7 +167,7 @@ const getTotalPrice = async (bookingDetails) => {
       } else {
         totalPrice = priceInfo.suv.base + priceInfo.suv.perKm * distance
       }
-      totalPrice = totalPrice - (totalPrice * car?.discount)/100
+      totalPrice = totalPrice - (totalPrice * car?.cityCabDiscount)/100
     }
 
     return { totalPrice, toDetail, distance: distance?.toFixed(2) };
