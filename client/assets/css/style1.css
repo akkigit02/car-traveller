@@ -112,7 +112,8 @@
     height: 60vh;
 }
 .bg-traveller p{
-background: #ff000066;
+background: #ff0000ba;
+color: white;
 }
 .bg-about {
     position: relative;
