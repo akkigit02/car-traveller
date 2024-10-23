@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import Modal from "../Modal";
 import { useForm, useFieldArray } from "react-hook-form";
 import { VEHICLE_TYPE } from "../../constants/common.constants";
@@ -16,6 +16,7 @@ export default function VehiclePricing() {
   const [isModalLoding, setIsModalLoading] = useState(false)
   const [confirmationOpen, setConfirmationOpen] = useState(false)
   const [selectedId, setSelectedId] = useState(null)
+  const [previewData, setPreviewData] = useState(null)
   const { register, handleSubmit, reset, setValue, control, watch, formState: { errors, isSubmitting } } = useForm({
     mode: "onChange",
   });
@@ -219,7 +220,7 @@ export default function VehiclePricing() {
           <div className="cstm-table-cell">Image</div>
           <div className="cstm-table-cell">Type</div>
           <div className="cstm-table-cell">Name</div>
-          <div className="cstm-table-cell">Minimum Fare</div>
+          {/* <div className="cstm-table-cell">Minimum Fare</div> */}
           <div className="cstm-table-cell">Cost per km (One Way)</div>
           <div className="cstm-table-cell">Cost per km (Round Trip)</div>
           <div className="cstm-table-cell">Cost per hour</div>
@@ -230,7 +231,7 @@ export default function VehiclePricing() {
             <div className="cstm-table-cell" data-label="Image"><img style={{ height: "50px", width: "70px" }} src={li.vehicleImageUrl} alt="Vehicle" /></div>
             <div className="cstm-table-cell" data-label="Type">{VEHICLE_TYPE.find(item => item.value === li.vehicleType)?.name}</div>
             <div className="cstm-table-cell" data-label="Name">{li.vehicleName}</div>
-            <div className="cstm-table-cell" data-label="Minimum Fare">{li.minimumFare}</div>
+            {/* <div className="cstm-table-cell" data-label="Minimum Fare">{li.minimumFare}</div> */}
             <div className="cstm-table-cell" data-label="Cost per km (One Way)">{li.costPerKmOneWay}</div>
             <div className="cstm-table-cell" data-label="Cost per km (Round Trip)">{li.costPerKmRoundTrip}</div>
             <div className="cstm-table-cell" data-label="Cost per hour">{li.costPerHour}</div>
@@ -247,7 +248,7 @@ export default function VehiclePricing() {
                 <Tooltip message={'View More'} direction="bottom">
                   <button
                     // onClick={() => deleteVehiclePrice(li._id)}
-                    onClick={openViewModal}
+                    onClick={() => setPreviewData(li)}
                     className="icon-btn me-2"
                     type="button"
                   >
@@ -344,7 +345,7 @@ export default function VehiclePricing() {
                   placeholder="Enter image URL"
                 />
               </div>
-              <div className="form-group col-lg-6 col-md-6 col-12">
+              {/* <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputPassword4">Minimum Fare *</label>
                 <input
                   type="number"
@@ -355,7 +356,7 @@ export default function VehiclePricing() {
                 {errors?.minimumFare && (
                   <span className="text-danger">{errors.minimumFare.message}</span>
                 )}
-              </div>
+              </div> */}
               {/* <div className="form-group col-lg-6 col-md-6 col-12">
               <label htmlFor="inputAddress">Cost per km</label>
               <input
@@ -429,14 +430,42 @@ export default function VehiclePricing() {
                 )}
               </div> */}
               <div className="form-group col-lg-6 col-md-6 col-12">
-                <label htmlFor="inputCity">Discount *</label>
+                <label htmlFor="inputCity">Discount(City Cab) *</label>
                 <input
                   type="number"
-                  {...register("discount")}
+                  {...register("cityCabDiscount")}
                   className="cstm-select-input"
                   placeholder="Enter discount percentage"
                 />
               </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputCity">Discount(Hourly) *</label>
+                <input
+                  type="number"
+                  {...register("hourlyDiscount")}
+                  className="cstm-select-input"
+                  placeholder="Enter discount percentage"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputCity">Discount(One Way) *</label>
+                <input
+                  type="number"
+                  {...register("oneWayDiscount")}
+                  className="cstm-select-input"
+                  placeholder="Enter discount percentage"
+                />
+              </div>
+              <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputCity">Discount(Round Trip) *</label>
+                <input
+                  type="number"
+                  {...register("roundTripDiscount")}
+                  className="cstm-select-input"
+                  placeholder="Enter discount percentage"
+                />
+              </div>
+
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputCity">Up to Cost per Km *</label>
                 <input
@@ -559,48 +588,110 @@ export default function VehiclePricing() {
           </div>
         </form>}
       </Modal>
-      <Modal isOpen={isViewOpen} onClose={closeViewModal} width={'w-auto'} title="View More Data">
-        <div className="scroll-body">
-          <table className="cstm-table">
-            <thead>
-              <tr>
-                <th className="">Similar</th>
-                <th className="">Luggage Carrier Cost</th>
-                <th className="">Additional Charges</th>
-                <th className="">Discount</th>
-                <th className="">Up to Cost per Km</th>
-                <th className="">Up to Cost per Hour</th>
-                <th className="">Capacity</th>
-                <th className="">AC Available</th>
-                <th className="">Driver Allowance</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.length > 0 ? list.map((li, index) => (
-                <tr key={'listing' + index}>
 
-                  <td>{li?.similar?.join()}</td>
-                  <td>{li.laguageCarrierCost}</td>
-                  <td>{li.additionalCharges}</td>
-                  <td>{li.discount}</td>
-                  <td>{li.upToCostPerKm}</td>
-                  <td>{li.upToCostPerHour}</td>
-                  <td>{`Seats: ${li.capacity.totalNumberOfSeats}, Reserved: ${li.capacity.reservedNumberOfSeats}`}</td>
-                  <td>{li.acAvailable ? "Yes" : "No"}</td>
-                  <td>{li.driverAllowance}</td>
+      {previewData && <Modal isOpen={previewData} onClose={() => setPreviewData(null)} title="Booking Detail">
+        <div className="row m-0 scroll-body">
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Vehicle Type</label>
+            <div className="mb-0 desti-details-2">
+              {previewData.vehicleType}
+            </div>
+          </div>
+          {previewData?.isDriverAlloted && <>
+            <div className="col-lg-6 col-md-6 col-12">
+            <label>Vehicle Name</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.vehicleName}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Cost per Km (One Way)</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.costPerKmOneWay}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Cost per Km (Round Trip)</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.costPerKmRoundTrip}
+            </div>
+          </div>
+          </>}
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Cost per Hour</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.costPerHour}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Discount (One Way)</label>
+            <div className="mb-0 desti-details-2">
+              {previewData.oneWayDiscount}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Discount (Round Trip)</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.roundTripDiscount}
+            </div>
+          </div>
 
-                </tr>
-              )) :
-                <tr className='no-data'>
-                  <td colSpan="100%">
-                    <div className='d-flex align-items-center justify-content-center'><div className='no-data-content'></div></div>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Discount (Hourly)</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.hourlyDiscount}
+            </div>
+          </div>
+
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Discount (City Cab)</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.cityCabDiscount}
+            </div>
+          </div>
+
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Up to cost per Km</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.upToCostPerKm}
+            </div>
+          </div>
+
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Up to cost per hour</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.upToCostPerHour}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Total Number Of Seat</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.capacity?.totalNumberOfSeats}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Driver Allowance</label>
+            <div className="mb-0 desti-details-2">
+              {previewData?.driverAllowance}
+            </div>
+          </div>
+          {previewData?.hourly.map((li, index) =>(<Fragment key={'hourly'+index}>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Type{index+1}</label>
+            <div className="mb-0 desti-details-2">
+              {li?.type}
+            </div>
+          </div>
+          <div className="col-lg-6 col-md-6 col-12">
+            <label>Base Price{index + 1}</label>
+            <div className="mb-0 desti-details-2">
+              {li?.basePrice}
+            </div>
+          </div>
+          </Fragment>))}
         </div>
-      </Modal>
+      </Modal>}
+
       <ConfirmationModal
         isOpen={confirmationOpen}
         onClose={() => { setConfirmationOpen(false); setSelectedId(null) }}

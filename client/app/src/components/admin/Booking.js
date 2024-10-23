@@ -455,6 +455,29 @@ export default function BookingManagement() {
     }
   }
 
+  const downloadFileFromBlob = (blob, name = 'download', mimeType) => {
+    const bloba = new Blob([blob], { type: mimeType });
+    var a = document.createElement('a');
+    a.href = window.URL.createObjectURL(bloba);
+    a.download = name;
+    setTimeout(function () { a.dispatchEvent(new MouseEvent('click')); });
+  }
+
+
+  const getInvoiceInfo = async (bookingId) => {
+    try {
+      const { data } = await axios({
+        method: 'POST',
+        url: '/api/client/invoice/' + bookingId,
+        responseType: "blob"
+      })
+      downloadFileFromBlob(data, "invoice.pdf", 'application/pdf')
+      console.log(data)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   const closeConfirmationModal = () => {
     setConfirmationOpen(false);
     setSelectedBookingId(null);
@@ -541,10 +564,19 @@ export default function BookingManagement() {
                             disabled={li.isDriverAlloted}
                             type="button"
                           >
-                            <i class="fas fa-universal-access"></i>
+                            <i className="fas fa-universal-access"></i>
                           </button>
                         </Tooltip>
-                        <Tooltip message={'Publish Invoice'} direction="bottom">
+                        {li.isInvoiceGenerate ? <Tooltip message={'Download Invoice'} direction="bottom">
+                          <button
+                            className={`icon-btn me-2 ${!li.isInvoiceGenerate ? 'disabled' : ''}`}
+                            onClick={() => getInvoiceInfo(li._id)}
+                            type="button"
+                            disabled={!li.isInvoiceGenerate}
+                          >
+                            <i className="fa fa-file-download"></i>
+                          </button>
+                        </Tooltip> : <Tooltip message={'Publish Invoice'} direction="bottom">
                           <button
                             className={`icon-btn me-2 ${li.isInvoiceGenerate ? 'disabled' : ''}`}
                             onClick={() => getDataForInvoice(li)}
@@ -553,7 +585,8 @@ export default function BookingManagement() {
                           >
                             <i className="fas fa-share-square"></i>
                           </button>
-                        </Tooltip>
+                        </Tooltip>}
+
                         <Tooltip message={'Mark Full Payment'} direction="bottom">
                           <button
                             className={`icon-btn me-2 ${li.isInvoiceGenerate && li.isPaymentCompleted || !li.isInvoiceGenerate ? 'disabled' : ''}`}

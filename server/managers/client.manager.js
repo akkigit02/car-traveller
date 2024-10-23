@@ -124,8 +124,8 @@ const getCars = async (req, res) => {
         car['distance'] = distance
         car['showDistance'] = tempDistance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
-        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
-        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.oneWayDiscount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.oneWayDiscount) / 100
         car['costPerKm'] = car.costPerKmOneWay
         carList.push(car);
       }
@@ -184,8 +184,8 @@ const getCars = async (req, res) => {
           car['showDistance'] = distance.toFixed(2)
         }
         car['showPrice'] = car?.totalPrice
-        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
-        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.roundTripDiscount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.roundTripDiscount) / 100
         car['costPerKm'] = car.costPerKmRoundTrip
         carList.push(car);
       }
@@ -199,8 +199,8 @@ const getCars = async (req, res) => {
           distance = hourlyData?.distance
           car['showDistance'] = distance?.toFixed(2);
           car['showPrice'] = car?.totalPrice
-          car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
-          car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
+          car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.houlyDiscount) / 100
+          car["discountAmount"] = (car?.totalPrice * car?.houlyDiscount) / 100
           carList.push(car);
         }
         hourlyCarDetails = [...car.hourly, ...hourlyCarDetails]
@@ -222,8 +222,8 @@ const getCars = async (req, res) => {
         }
         car['showDistance'] = distance?.toFixed(2);
         car['showPrice'] = car?.totalPrice
-        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.discount) / 100
-        car["discountAmount"] = (car?.totalPrice * car?.discount) / 100
+        car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.cityCabDiscount) / 100
+        car["discountAmount"] = (car?.totalPrice * car?.cityCabDiscount) / 100
         carList.push(car);
       }
     }

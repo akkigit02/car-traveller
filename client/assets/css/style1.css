@@ -102,6 +102,19 @@
     width: 100%;
     height: 50vh;
 }
+.bg-traveller{
+	background-image: url(../img/tepm-bg.jpg);
+    background-position: 100% 130%;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+	background-size: cover;
+    width: 100%;
+    height: 60vh;
+}
+.bg-traveller p{
+background: #ff0000ba;
+color: white;
+}
 .bg-about {
     position: relative;
     background-image: url(../img/about-bg.jpg);
@@ -1313,7 +1326,7 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 0.8;
     color: red;
 }
-.about-us-img-info h1 .counter {
+.about-us-img-info h2 .counter {
     font-size: 120px;
     line-height: 0.8;
     color: red;
@@ -1564,4 +1577,38 @@ h1, h2, h3, h4, h5, h6 {
   }
   .tc-style ol li{
 	margin-bottom: 10px !important;
+  }
+  .wahtsapp-icon{
+	position: fixed; 
+	bottom: 20px; 
+	left: 20px; 
+	text-decoration: none; 
+	z-index: 991;
+  }
+  .wahtsapp-icon i{
+	font-size: 40px; 
+	color: #25D366;
+  }
+  .body-color{
+	background-color: white; 
+	height: 100vh
+  }
+  .about-bg{
+	background-image: url('../img/bg-1.jpg');
+	background-attachment: fixed;
+  }
+  .funfact-bg{
+	background-image: url('../img/count-img.png');
+  }
+  .swanand-img{
+	background-image: url('../img/Swanand-Thorat.png');
+  }
+  .Jyoti-img{
+	background-image: url('../img/Jyoti-Bansal.png');
+  }
+  .Kailas-img{
+	background-image: url('../img/Kailas-Gaikwad.png');
+  }
+  .g10{
+	gap: 10px;
   }
