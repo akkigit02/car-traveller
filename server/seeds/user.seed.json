@@ -22,5 +22,29 @@
       "zip": "123456"
     },
     "logo": ""
+  },
+  {
+    "name": "ADMIN",
+    "email": "dddcabs@gmail.com",
+    "primaryPhone": "8290109580",
+    "status": "verified",
+    "password": "$2b$10$Op34HgOtt0n2p.6.VQY6veC3nHjgMDNIpOvfzycbPRy6NDbQ//cVm",
+    "modules": {
+      "userType": "ADMIN",
+      "accessibleModule": []
+    },
+    "currentAddress": {
+      "addressLine": "noida",
+      "city": "noida",
+      "state": "noida",
+      "zip": "123456"
+    },
+    "permanentAddress": {
+      "addressLine": "noida",
+      "city": "noida",
+      "state": "noida",
+      "zip": "123456"
+    },
+    "logo": ""
   }
 ]
