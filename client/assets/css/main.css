@@ -3020,6 +3020,9 @@ span {
   color: var(--theme);
   box-shadow: 0px 5px 20px 0px rgba(0, 0, 0, 0.1);
 }
+.header-1 .header-main .header-right .icon-items .icon i{
+transform: rotateY(180deg);
+}
 .header-1 .header-main .header-right .icon-items .content p {
   color: var(--text);
   font-size: 14px;

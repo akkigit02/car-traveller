@@ -37,3 +37,7 @@ document.getElementById("contact-form").addEventListener("submit", async functio
   window.addEventListener("load", function() {
     window.location.href = "#!";
   });
+ 
+    document.getElementById('loginBtn').addEventListener('click', () => {
+        window.location.href = 'http://127.0.0.1:3000/login'
+    })
