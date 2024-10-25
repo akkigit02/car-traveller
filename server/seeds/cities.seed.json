@@ -6292,11 +6292,12 @@
     "isActive": true
   },
   {
-    "name": "Palsana",
+    "name": "Palsana, Suraj",
     "state_name": "Gujarat",
     "country_name": "India",
     "latitude": "21.08000000",
     "longitude": "72.98000000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -6758,11 +6759,12 @@
     "isActive": true
   },
   {
-    "name": "Un",
+    "name": "Un, Surat",
     "state_name": "Gujarat",
     "country_name": "India",
     "latitude": "23.88745000",
     "longitude": "71.76975000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -14641,11 +14643,12 @@
     "isMetroCity": true
   },
   {
-    "name": "Baner",
+    "name": "Baner, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.56000000",
     "longitude": "73.79027778",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -14908,7 +14911,7 @@
     "isMetroCity": true
   },
   {
-    "name": "Chakan",
+    "name": "Chakan, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.76059000",
@@ -15175,11 +15178,12 @@
     "isActive": true
   },
   {
-    "name": "Dehu",
+    "name": "Dehu, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.71851000",
     "longitude": "73.76635000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -15536,6 +15540,7 @@
     "country_name": "India",
     "latitude": "18.49666667",
     "longitude": "73.94166667",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -16291,11 +16296,12 @@
     "isActive": true
   },
   {
-    "name": "Koregaon",
+    "name": "Koregaon, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.64573000",
     "longitude": "74.05909000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -17304,11 +17310,12 @@
     "isActive": true
   },
   {
-    "name": "Pathardi",
+    "name": "Pathardi Phata, Nashik",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "19.17279000",
     "longitude": "75.17425000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -17432,11 +17439,12 @@
     "isActive": true
   },
   {
-    "name": "Pimpri-Chinchwad",
+    "name": "Pimpri-Chinchwad, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.62777778",
     "longitude": "73.81305556",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -18182,11 +18190,12 @@
     "isActive": true
   },
   {
-    "name": "Talegaon Dabhade",
+    "name": "Talegaon Dabhade, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.73502000",
     "longitude": "73.67561000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -18533,11 +18542,12 @@
     "isMetroCity": true
   },
   {
-    "name": "Wadgaon",
+    "name": "Wadgaon, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.73920000",
     "longitude": "73.63945000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -18557,11 +18567,12 @@
     "isActive": true
   },
   {
-    "name": "Wagholi",
+    "name": "Wagholi, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "17.90000000",
     "longitude": "74.08300000",
+    "isMetroCity": true,
     "isActive": true
   },
   {
@@ -18573,11 +18584,12 @@
     "isActive": true
   },
   {
-    "name": "Wakad",
+    "name": "Wakad, Pune",
     "state_name": "Maharashtra",
     "country_name": "India",
     "latitude": "18.59930000",
     "longitude": "73.76250000",
+    "isMetroCity": true,
     "isActive": true
   },
   {

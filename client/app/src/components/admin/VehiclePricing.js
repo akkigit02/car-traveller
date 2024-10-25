@@ -369,6 +369,19 @@ export default function VehiclePricing() {
                 <span className="text-danger">{errors.costPerKm.message}</span>
               )}
             </div> */}
+             <div className="form-group col-lg-6 col-md-6 col-12">
+                <label htmlFor="inputAddress">Non Metro City(Percentage) *</label>
+                <input
+                  type="number"
+                  {...register("nonMetroCityPercentage", { required: 'Non metro percentage is Required' })}
+                  className="cstm-select-input"
+                  placeholder="Enter non metro percentage"
+                />
+                {errors?.nonMetroCityPercentage && (
+                  <span className="text-danger">{errors.nonMetroCityPercentage.message}</span>
+                )}
+              </div>
+
               <div className="form-group col-lg-6 col-md-6 col-12">
                 <label htmlFor="inputAddress">Cost per km(One Way) *</label>
                 <input

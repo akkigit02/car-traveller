@@ -113,6 +113,13 @@ function BookingHistory() {
       }
       const { data } = await axios.put(`/api/client/cancel-booking/${bookingId}`, { reason });
 
+      setBookingList(old => old.map(li => {
+        if(li._id === bookingId) {
+          li['rideStatus'] = 'cancelled'
+          li['isCancelable'] = true
+        }
+      }))
+
       setConfirmationOpen(false);
       setSelectedBookingId(null);
       setReasonError('')
@@ -246,7 +253,7 @@ function BookingHistory() {
                   <td className='text-capitalize'>{item.rideStatus}</td>
                   <td className='d-flex'>
                     <Tooltip message={'View Details'} direction='bottom'>
-                      <button className='icon-btn me-2' onClick={() => navigate(`/payment/${item._id}`)}>
+                      <button disabled={item.rideStatus === 'cancelled'} className={`icon-btn me-2 ${item.rideStatus === 'cancelled' ? 'disabled' : ''}`} onClick={() => navigate(`/payment/${item._id}`)}>
                         <i className="fa fa-eye" aria-hidden="true"></i>
                       </button>
                     </Tooltip>

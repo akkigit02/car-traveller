@@ -29,6 +29,7 @@ const PricingSchema = new Schema({
   additionalCharges: {type: Number},
   driverAllowance: {type: Number, default: 0},
   similar: [{type: String}],
+  nonMetroCityPercentage: {type: Number, default: 200},
   hourly: [{
     type: {type: String},
     hour: { type: Number },

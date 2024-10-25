@@ -31,6 +31,7 @@ export default function BookingManagement() {
   const [searchQuery, setSearchQuery] = useState('');
   const [paymentId, setPaymentId] = useState(null)
   const [isDriverAlloted, setIsDriverAlloted] = useState(false)
+  const [totalAmount, setTotalAmount] = useState(0)
   const [suggestions, setSuggestions] = useState({
     pickupLocationId: '',
     dropLocationId: '',
@@ -124,6 +125,7 @@ export default function BookingManagement() {
         price: info?.payableAmount,
         id: info._id
       })
+      setTotalAmount(info?.payableAmount)
       setList([info, ...list]);
       setIsOpen(false);
       setIsPaymentModal(true)
@@ -139,8 +141,16 @@ export default function BookingManagement() {
       if (advanceAmount <= 0) {
         setAdvanceAmountError('Please enter advance amount')
       }
-      const res = await axios.patch("/api/admin/confirm-booking/" + paymentInfo?.id, { advanceAmount });
+      const res = await axios.patch("/api/admin/confirm-booking/" + paymentInfo?.id, { advanceAmount, totalAmount });
       toast.success(res?.data?.message);
+      setList(old => old.map(li => {
+        if(li?._id === paymentInfo?.id) {
+          li['totalPrice'] = totalAmount
+          li['payableAmount'] = totalAmount
+          li['dueAmount'] = (totalAmount - advanceAmount)
+        }
+        return li
+      }))
       setIsPaymentModal(false)
       setPaymentInfo({})
       setAdvanceAmountError('')
@@ -598,8 +608,8 @@ export default function BookingManagement() {
                         </Tooltip>
                         <Tooltip message={'Cancel'} direction="bottom">
                           <button
-                            className={`icon-btn ${li.isCancelable ? 'disabled' : ''}`}
-                            disabled={li.isCancelable}
+                            className={`icon-btn ${(li.isCancelable || li.isInvoiceGenerate || li.isPaymentCompleted || li.isDriverAlloted) ? 'disabled' : ''}`}
+                            disabled={li.isCancelable || li.isInvoiceGenerate || li.isPaymentCompleted || li.isDriverAlloted}
                             onClick={() => handleCancelClick(li._id)}
                           >
                             <i className="fa fa-times" aria-hidden="true"></i>
@@ -696,6 +706,7 @@ export default function BookingManagement() {
                     onFocus={(e) => handleOnFocus(e.target.value, 'pickupCity')}
                     onChange={(e) => handleOnChange(e.target.value, 'pickupCity')}
                     onBlur={(e) => handleOnBlur('pickupCity')}
+                    autoComplete="off"
                   />
                   {errors?.pickupCity && (
                     <span className="text-danger">{errors.pickupCity.message}</span>
@@ -716,6 +727,7 @@ export default function BookingManagement() {
                     onFocus={(e) => handleOnFocus(e.target.value, 'dropCity')}
                     onChange={(e) => handleOnChange(e.target.value, 'dropCity')}
                     onBlur={(e) => handleOnBlur('dropCity')}
+                    autoComplete="off"
                   />
                   {errors?.dropCity && (
                     <span className="text-danger">{errors.dropCity.message}</span>
@@ -738,6 +750,7 @@ export default function BookingManagement() {
                       onFocus={(e) => handleOnFocus(e.target.value, `dropCities.${index}.dropCity`)}
                       onChange={(e) => handleOnChange(e.target.value, `dropCities.${index}.dropCity`)}
                       onBlur={(e) => handleOnBlur(`dropCities.${index}.dropCity`)}
+                      autoComplete="off"
                     />
                     {errors?.dropCities?.[index]?.dropCity && (
                       <span className="text-danger">{errors.dropCities[index]?.dropCity?.message}</span>
@@ -773,6 +786,7 @@ export default function BookingManagement() {
                   onFocus={(e) => handleOnFocus(e.target.value, 'pickupLocation')}
                   onChange={(e) => handleOnChange(e.target.value, 'pickupLocation')}
                   onBlur={(e) => handleOnBlur('pickupLocation')}
+                  autoComplete='off'
                 />
                 {errors?.pickupLocation && (
                   <span className="text-danger">{errors.pickupLocation.message}</span>
@@ -785,7 +799,7 @@ export default function BookingManagement() {
 
 
 
-              {(['cityCab', 'oneWay'].includes(watch('bookingType')) || watch('dropCity')) && <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
+              {(watch('dropCity') && (['cityCab', 'oneWay'].includes(watch('bookingType'))) || watch('dropCity')) && <div className="form-group col-lg-6 col-md-6 col-12 position-relative">
                 <label htmlFor="dropLocation">Drop Location</label>
                 <input
                   type="text"
@@ -795,6 +809,7 @@ export default function BookingManagement() {
                   onFocus={(e) => handleOnFocus(e.target.value, 'dropLocation')}
                   onChange={(e) => handleOnChange(e.target.value, 'dropLocation')}
                   onBlur={(e) => handleOnBlur('dropLocation')}
+                  autoComplete="off"
                 />
                 {errors?.dropLocation && (
                   <span className="text-danger">{errors.dropLocation.message}</span>
@@ -869,9 +884,15 @@ export default function BookingManagement() {
           </div>
           <div className="form-group col-lg-6 col-md-6 col-12">
             <label for="session-date">Total Amount</label>
-            <div className="cstm-select-input">
+            <input
+              type="number"
+              className="cstm-select-input"
+              onChange={(e) => setTotalAmount(e.target.value)}
+              value={totalAmount}
+            />
+            {/* <div className="cstm-select-input">
               {paymentInfo?.price}
-            </div>
+            </div> */}
           </div>
           <div className="form-group col-lg-6 col-md-6 col-12">
             <label for="session-date">Advance Amount</label>

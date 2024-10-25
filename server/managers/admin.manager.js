@@ -554,7 +554,7 @@ const getVehicleByBookingType = async (req, res) => {
         if (type === 'cityCab') {
             vehicle = vehicleList.filter(li => ['Hatchback', 'Sedan', 'SUV'].includes(li.vehicleType))
         } else {
-            vehicle = vehicleList.filter(li => !['Hatchback'].includes(li.vehicleType))
+            vehicle = vehicleList
         }
 
         res.status(200).send({ vehicleList: vehicle });
@@ -568,19 +568,23 @@ const confirmBooking = async (req, res) => {
     try {
         const id = req?.params?.id
         const body = req?.body
-
+        await PaymentModel.updateOne({ bookingId: id }, {
+            payableAmount: body?.totalAmount,
+            totalPrice: body?.totalAmount
+        })
         const booking = await RideModel.findOne({ _id: id }).populate('paymentId', 'dueAmount totalPrice payableAmount');
 
         const advancePercent = parseFloat(body?.advanceAmount) > 0 ? ((parseFloat(body?.advanceAmount) / booking?.paymentId?.payableAmount) * 100) : 0;
  
         await PaymentModel.updateOne({ _id: booking.paymentId?._id }, {
             advancePercent: roundToDecimalPlaces(advancePercent),
-            dueAmount: booking?.paymentId?.dueAmount - parseFloat(body?.advanceAmount),
+            dueAmount: booking?.paymentId?.payableAmount - parseFloat(body?.advanceAmount),
             isPayLater: parseFloat(body?.advanceAmount) > 0 ? false : true,
             isAdvancePaymentCompleted: parseFloat(body?.advanceAmount) > 0 ? true : false
         })
         await RideModel.updateOne({ _id: id }, {
-            rideStatus: 'booked'
+            rideStatus: 'booked',
+            totalPrice: body?.totalAmount
         })
         if (process.env.NODE_ENV !== 'development') {
         sendNotificationToAdmin(id, 'NEW_BOOKING')
@@ -721,11 +725,14 @@ const generateFinalInvoice = async (req, res) => {
             /**********************************************************************************************************/
             if (rideInfo?.trip?.tripType === 'oneWay') {
                 let totalPrice = null
-                let metroCityPrice = 1
-                if (!rideInfo?.cities?.isMetroCity) metroCityPrice = 1.75
+                let metroCityPrice = 1.4
+                if (!rideInfo?.cities?.isMetroCity) metroCityPrice = 2
                 let extra = 1
                 if (rideInfo?.vehiclePrice?.vehicleType === 'Traveller') {
                     extra = 2
+                }
+                if(rideInfo?.vehiclePrice?.nonMetroCityPercentage && !rideInfo?.cities?.isMetroCity) {
+                    metroCityPrice = rideInfo?.vehiclePrice?.nonMetroCityPercentage/100
                 }
                 totalPrice = extraDistance * rideInfo?.vehiclePrice?.upToCostPerKm * metroCityPrice * extra;
                 extraAmount = totalPrice

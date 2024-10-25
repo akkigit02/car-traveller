@@ -92,16 +92,20 @@ const getTotalPrice = async (bookingDetails) => {
         1.25
       );
       toDetail.push(toCity);
-      let metroCityPrice = 1
-      if (!toCity?.isMetroCity) metroCityPrice = 1.75
+      let metroCityPrice = 1.4
+      if (!toCity?.isMetroCity) metroCityPrice = 2
       let extra = 1
       if(car.vehicleType === 'Traveller') {
         extra = 2
       }
 
-      if(distance < 120 && car.vehicleType !== 'Traveller') {
-        if(toCity?.isMetroCity) metroCityPrice = 1.5
-        distance = 120
+      if(distance < 150 && car.vehicleType !== 'Traveller') {
+        if(toCity?.isMetroCity) metroCityPrice = 1
+        distance = 200
+      }
+
+      if(car?.nonMetroCityPercentage && !toCity?.isMetroCity) {
+        metroCityPrice = car?.nonMetroCityPercentage/100
       }
       totalPrice = distance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
       totalPrice = totalPrice - (totalPrice * car?.oneWayDiscount)/100;

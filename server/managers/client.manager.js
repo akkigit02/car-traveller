@@ -90,7 +90,7 @@ const getCars = async (req, res) => {
     if (['cityCab'].includes(search?.tripType)) {
       cars = cars.filter(vehicle => !['Traveller', 'Innova', 'Innova_Crysta'].includes(vehicle.vehicleType))
     } else {
-      cars = cars.filter(vehicle => !['Hatchback'].includes(vehicle.vehicleType))
+      cars = cars
     }
     if (search?.tripType === "oneWay") {
       let toCity = await CitiesModel.findOne({ _id: search.to }).lean();
@@ -105,8 +105,8 @@ const getCars = async (req, res) => {
       toDetail.push(toCity)
 
       let tempDistance = distance
-      let metroCityPrice = 1
-      if (!toCity?.isMetroCity) metroCityPrice = 1.75
+      let metroCityPrice = 1.4
+      if (!toCity?.isMetroCity) metroCityPrice = 2
 
       for (let car of cars) {
         let extra = 1
@@ -114,15 +114,19 @@ const getCars = async (req, res) => {
           extra = 2
         }
 
-        if(distance < 120 && car.vehicleType !== 'Traveller') {
-          if(toCity?.isMetroCity) metroCityPrice = 1.5
-          tempDistance = 120
+        if (car?.nonMetroCityPercentage && !toCity?.isMetroCity) {
+          metroCityPrice = car?.nonMetroCityPercentage / 100
+        }
+
+        if (distance < 120 && car.vehicleType !== 'Traveller') {
+          if (toCity?.isMetroCity) metroCityPrice = 1
+          tempDistance = 200
         }
         car["totalPrice"] =
           tempDistance * car.costPerKmOneWay * metroCityPrice * extra + (car?.driverAllowance ? car.driverAllowance : 0);
 
         car['distance'] = distance
-        car['showDistance'] = tempDistance?.toFixed(2);
+        car['showDistance'] = (distance + 15)?.toFixed(2);
         car['showPrice'] = car?.totalPrice
         car["totalPrice"] = car?.totalPrice - (car?.totalPrice * car?.oneWayDiscount) / 100
         car["discountAmount"] = (car?.totalPrice * car?.oneWayDiscount) / 100
