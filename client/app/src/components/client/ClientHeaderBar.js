@@ -92,7 +92,7 @@ function TopNavBar() {
                         <a href="https://www.dddcabs.com/about.html">About Us</a>
                       </li>
                       <li>
-                        <a href="https://www.dddcabs.com/contactUs.html">Contact</a>
+                        <a href="https://www.dddcabs.com/contactUs.html">Contact Us</a>
                       </li>
                     </ul>
                   </nav>
@@ -100,7 +100,7 @@ function TopNavBar() {
               </div>
               <div className="icon-items">
                 <div className="content">
-                  <p>Call Anytime</p>
+                  <p>Call Now</p>
                   <h6><a href="tel:+919090404005">+91 9090 404005</a></h6>
                 </div>
               </div>
@@ -143,7 +143,7 @@ function TopNavBar() {
                           <a href="https://www.dddcabs.com/about.html">About Us</a>
                         </li>
                         <li>
-                          <a href="https://www.dddcabs.com/contactUs.html">Contact</a>
+                          <a href="https://www.dddcabs.com/contactUs.html">Contact Us</a>
                         </li>
                       </ul>
                     </nav>
@@ -156,7 +156,7 @@ function TopNavBar() {
                     <i className="fas fa-phone-alt"></i>
                   </div>
                   <div className="content">
-                    <p className='mb-0'>Call Anytime</p>
+                    <p className='mb-0'>Call Now</p>
                     <h6><a href="tel:+919090404005">+91 9090 404005</a></h6>
                   </div>
                 </div>
