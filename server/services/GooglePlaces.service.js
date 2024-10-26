@@ -6,24 +6,44 @@ const getAutoSearchPlaces = async (input, city = '', type = '') => {
     try {
         const client = new Client({});
         let cityArray = []
-        if(!city) {
-            cityArray = ['Mumbai','Thane']
+        if (!city) {
+            cityArray = ['Mumbai', 'Thane', 'Kalyan', 'Dombivli', 'Badlapur', 'Ambernath', 'Ulhasnagar']
         } else {
             cityArray = [city]
         }
 
-        const combinedInput = cityArray.map(c => `${c} ${input}`).join('|');
-        const data = {
-            input: combinedInput,
-            key: GOOGLE_PLACE_API_KEY,
-            components:'country:in'
+        // const combinedInput = cityArray.map(c => `${c} ${input}`).join('|');
+        // console.log(combinedInput)
+        // const data = {
+        //     input: combinedInput,
+        //     key: GOOGLE_PLACE_API_KEY,
+        //     components:'country:in'
+        // }
+        // if (type)
+        //     data['type'] = type
+        // const res = await client.placeAutocomplete({
+        //     params: data,
+        // })
+        // return res.data.predictions
+
+        // Initialize an empty array to store all predictions
+        let allPredictions = [];
+
+        // Loop through each city to make an API request
+        for (const cityName of cityArray) {
+            const data = {
+                input: `${cityName} ${input}`,
+                key: GOOGLE_PLACE_API_KEY,
+                components: 'country:in',
+            };
+            if (type) data['type'] = type;
+
+            // Make the API request for each city
+            const res = await client.placeAutocomplete({ params: data });
+            allPredictions = allPredictions.concat(res.data.predictions);
         }
-        if (type)
-            data['type'] = type
-        const res = await client.placeAutocomplete({
-            params: data,
-        })
-        return res.data.predictions
+
+        return allPredictions.slice(0, 10);
     } catch (error) {
         console.error(error)
         return []
