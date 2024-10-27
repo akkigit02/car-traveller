@@ -37,7 +37,7 @@ const sendBookingConfirmedSms = async (mobile, payload) => {
     try {
         const { clientName, bookingId } = payload; 
         const smsBody = {
-            template_id: "66f10da7d6fc053cb465c262",
+            template_id: "671dcd51d6fc051740508432",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
@@ -61,7 +61,7 @@ const sendRideRescheduledSms = async (mobile, payload) => {
     try {
         const { clientName, bookingId, pickupDate,pickupTime } = payload;
         const smsBody = {
-            template_id: "66f980f5d6fc051a03386272",
+            template_id: "671dcdcfd6fc0534162743e2",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
@@ -82,11 +82,12 @@ const sendRideRescheduledSms = async (mobile, payload) => {
     }
 }
 
+
 const sendBookingCancelledByPassengerSms = async (mobile, payload) => {
     try {
         const { clientName, bookingId } = payload;
         const smsBody = {
-            template_id: "66f975edd6fc05490a7388f2",
+            template_id: "671dce7ad6fc0514d83ee873",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
@@ -106,11 +107,12 @@ const sendBookingCancelledByPassengerSms = async (mobile, payload) => {
     }
 }
 
+
 const sendBookingCancelledByAdminSms = async (mobile, payload) => {
     try {
         const { clientName, cancellationReason, bookingId } = payload;
         const smsBody = {
-            template_id: "66f9754cd6fc056f7a2b8113",
+            template_id: "671dce22d6fc0517103560b3",
             short_url: 0,
             recipients: [{
                 "mobiles": mobile,
@@ -130,7 +132,6 @@ const sendBookingCancelledByAdminSms = async (mobile, payload) => {
         console.log(error)
     }
 }
-
 
 module.exports = { sendOtpSms, sendBookingConfirmedSms, sendRideRescheduledSms, sendBookingCancelledByPassengerSms, sendBookingCancelledByAdminSms };
 
